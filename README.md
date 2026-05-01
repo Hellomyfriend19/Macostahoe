@@ -9,3 +9,5 @@
    `npm install`
 2. Run the app:
    `npm run dev`
+
+(you dont really need to use npm run dev, installing index.html alone will work fine)
