@@ -42,7 +42,7 @@
     display: flex;
     align-items: flex-end;
     gap: 10px;
-    height: 76px; /* 56px + 20px padding */
+    height: 76px;
     box-sizing: border-box;
     position: relative;
     z-index: 9999;
@@ -85,7 +85,7 @@
     position: relative;
     flex-shrink: 0;
     transform-origin: bottom center;
-    /* No CSS transitions for width/height/transform, handled by JS spring physics */
+    
   }
 
   .dock-icon.active::after {
@@ -161,7 +161,7 @@
   ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.2); border-radius: 3px; }
   ::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.4); }
 
-  /* Desktop Icons */
+  
   .desktop-icons {
     position: absolute;
     top: 40px;
@@ -206,7 +206,7 @@
     display: inline-block;
   }
 
-  /* Context Menu */
+  
   .context-menu {
     position: fixed;
     background: rgba(255, 255, 255, 0.85);
@@ -239,7 +239,7 @@
     margin: 4px 0;
   }
 
-  /* Modal */
+  
   .modal-overlay {
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
@@ -305,7 +305,7 @@
     border-color: #0062cc;
   }
 
-  /* Finder Grid Item Image */
+  
   .grid-item .icon {
     width: 60px;
     height: 60px;
@@ -313,13 +313,13 @@
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
-    font-size: 40px; /* Fallback for emoji */
+    font-size: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
   }
 
-  /* Terminal Styles */
+ 
   #terminal-window {
     width: 600px;
     height: 400px;
@@ -374,7 +374,7 @@
     outline: none;
   }
   
-  /* Safari Styles */
+  
   #safari-window {
     width: 1000px;
     height: 650px;
@@ -563,7 +563,7 @@
     pointer-events: auto;
   }
   
-  /* New Tab Page */
+  
   .safari-new-tab {
     padding-top: 10vh;
     width: 100%;
@@ -625,7 +625,7 @@
   .safari-nt-fav:hover .safari-nt-fav-icon { transform: scale(1.05); }
   .safari-nt-fav-title { font-size: 12px; color: #555; text-align: center; }
 
-  /* Error Page */
+  
   .safari-error-page {
     justify-content: center;
     text-align: center;
@@ -648,7 +648,7 @@
   @keyframes spin { 100% { transform: rotate(360deg); } }
   .spinner-anim { animation: spin 1s linear infinite; display: inline-block; }
 
-  /* Menu Bar Styles */
+  
   .menubar {
     position: absolute;
     top: 0;
@@ -738,7 +738,7 @@
     font-size: 10px;
   }
 
-  /* About This Mac Window */
+ 
   .about-window {
     width: 300px;
     height: auto;
@@ -856,7 +856,7 @@
     <div class="menu-item" id="menubar-time">Tue Mar 17 2:21 PM</div>
   </div>
   
-  <!-- Dropdowns -->
+ 
   <div class="menu-dropdown" id="apple-dropdown">
     <div class="menu-dropdown-item" id="about-mac">About This Mac</div>
     <div class="menu-dropdown-divider"></div>
@@ -972,7 +972,7 @@
     </div>
   </div>
   <div class="safari-tabs" id="safari-tabs-container">
-    <!-- Tabs injected here -->
+    <!-- Tabs injected here (bomboclat) -->
   </div>
   <div class="safari-content-area">
     <iframe class="safari-iframe" id="safari-iframe" sandbox="allow-scripts allow-same-origin allow-forms allow-popups"></iframe>
@@ -1205,7 +1205,7 @@
   let history = ['Bubuvar'];
   let historyIdx = 0;
   
-  // File System State
+  // File System State - also very bomboclat
   const FOLDER_ICON = 'url(https://static.wikia.nocookie.net/ipod/images/b/b5/MacFolder.png/revision/latest?cb=20220215150041)';
   const fileSystem = {
     'Desktop': [],
@@ -1229,11 +1229,11 @@
   const contextMenu = document.getElementById('context-menu');
   let contextMenuTarget = null; // 'desktop' or 'finder'
 
-  // Context Menu Logic
+  // Context Menu Logic - mindrape, ignore this shit
   document.addEventListener('contextmenu', (e) => {
     e.preventDefault();
     
-    // Determine context target
+    // Determine context target - mindblown, cannot ignore allat
     if (e.target.closest('#content-area')) {
       contextMenuTarget = 'finder';
     } else if (!e.target.closest('.window') && !e.target.closest('.menubar') && !e.target.closest('.dock-container') && !e.target.closest('.modal-overlay')) {
@@ -1379,7 +1379,7 @@
   renderDesktop();
   renderContent();
 
-  // --- Terminal Logic ---
+  // --- Terminal Logic. i dont know what to type in these anymore, i hope someone actually checks the index.htmls..---
   const terminalWindow = document.getElementById('terminal-window');
   const terminalTitlebar = document.getElementById('terminal-titlebar');
   const terminalState = {
@@ -1493,7 +1493,7 @@
     });
   }
 
-  // Terminal Window dragging
+  // Terminal Window dragging. im just gonna write the titles and what it is XD
   let isTerminalDragging = false;
   let terminalStartX, terminalStartY, terminalInitialDragX, terminalInitialDragY;
 
@@ -2048,7 +2048,7 @@
     requestAnimationFrame(animate);
   }
 
-  // Menu Bar Logic
+  // Menu Bar Logic - last one till eternal doom 
   const updateTime = () => {
     const now = new Date();
     const options = { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' };
