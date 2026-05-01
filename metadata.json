@@ -1,0 +1,5 @@
+{
+  "name": "macOS Dock Clone",
+  "description": "A vanilla HTML/JS/CSS implementation of the macOS dock",
+  "requestFramePermissions": []
+}

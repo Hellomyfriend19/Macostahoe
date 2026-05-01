@@ -1,0 +1,2110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="referrer" content="no-referrer">
+<title>macOS Dock</title>
+<style>
+  @font-face {
+    font-family: 'SF Pro Display';
+    src: url('https://raw.githubusercontent.com/Austcool-Walker/San-Francisco-Pro/main/SF-Pro-Display-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+  }
+
+  @font-face {
+    font-family: 'Apple Color Emoji Custom';
+    src: url('https://github.com/samuelngs/apple-emoji-ttf/releases/download/macos-26-20260219-2aa12422/AppleColorEmoji-Windows.ttf') format('truetype');
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    background: url('https://512pixels.net/wp-content/uploads/2025/06/26-Tahoe-Light-6K-thumb.jpeg') center/cover no-repeat;
+    overflow: hidden;
+    font-family: 'SF Pro Display', 'Apple Color Emoji Custom', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+
+  .dock-container {
+    margin-bottom: 20px;
+    padding: 10px;
+    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: flex-end;
+    gap: 10px;
+    height: 76px; /* 56px + 20px padding */
+    box-sizing: border-box;
+    position: relative;
+    z-index: 9999;
+  }
+
+  .dock-tooltip {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 4px 10px;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 6px;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: 0.2px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s ease-out;
+    white-space: nowrap;
+    z-index: 10000;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    will-change: transform, opacity;
+  }
+  
+  .dock-tooltip.show {
+    opacity: 1;
+  }
+
+  .dock-icon {
+    width: 56px;
+    height: 56px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3));
+    position: relative;
+    flex-shrink: 0;
+    transform-origin: bottom center;
+    /* No CSS transitions for width/height/transform, handled by JS spring physics */
+  }
+
+  .dock-icon.active::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    height: 4px;
+    background: #fff;
+    border-radius: 50%;
+    box-shadow: 0 0 2px rgba(0,0,0,0.5);
+  }
+
+  .window {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 800px;
+    height: 500px;
+    margin-left: -400px;
+    margin-top: -250px;
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3), 0 0 0 1px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    z-index: 50;
+    transform-origin: center;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .window.interactive { pointer-events: auto; }
+  .titlebar {
+    height: 52px;
+    background: #f5f5f5;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    border-bottom: 1px solid #e0e0e0;
+    user-select: none;
+  }
+  .traffic-lights { display: flex; gap: 8px; width: 60px; }
+  .traffic-lights .btn { width: 12px; height: 12px; border-radius: 50%; cursor: pointer; }
+  .btn.close { background: #FF5F57; border: 1px solid #E0443E; }
+  .btn.minimize { background: #FFBD2E; border: 1px solid #DEA123; }
+  .btn.maximize { background: #28C840; border: 1px solid #1AAB29; }
+  .nav-arrows { display: flex; gap: 12px; margin-left: 16px; color: #888; font-size: 18px; cursor: pointer; }
+  .window-title { flex: 1; text-align: center; font-size: 13px; font-weight: 500; color: #333; }
+  .toolbar-icons { display: flex; gap: 12px; color: #555; font-size: 14px; cursor: pointer; }
+  .toolbar-icons .view-btn { padding: 2px 6px; }
+  .toolbar-icons .view-btn.active { background: #e0e0e0; border-radius: 4px; }
+  .window-body { display: flex; flex: 1; height: calc(100% - 52px); }
+  .sidebar { width: 220px; background: #f5f5f5; border-right: 1px solid #e0e0e0; padding: 10px; overflow-y: auto; }
+  .sidebar-section { font-size: 11px; text-transform: uppercase; color: #888; font-weight: 600; margin-bottom: 6px; padding-left: 8px; }
+  .sidebar-item { font-size: 12px; padding: 6px 8px; border-radius: 6px; cursor: pointer; color: #333; display: flex; align-items: center; gap: 8px; }
+  .sidebar-item.active { background: #007aff; color: #fff; }
+  .sidebar-item .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .content-area { flex: 1; background: #fff; overflow-y: auto; padding: 20px; position: relative; transition: opacity 0.12s ease; }
+  .empty-state { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: #999; }
+  .empty-state .icon { font-size: 48px; margin-bottom: 10px; }
+  .grid-view { display: flex; flex-wrap: wrap; gap: 20px; }
+  .grid-item { width: 80px; text-align: center; }
+  .grid-item .icon { font-size: 40px; margin-bottom: 4px; }
+  .grid-item .name { font-size: 11px; word-wrap: break-word; }
+  .list-view { width: 100%; border-collapse: collapse; }
+  .list-view th { text-align: left; font-size: 11px; color: #888; padding: 4px 8px; border-bottom: 1px solid #eee; }
+  .list-view td { font-size: 11px; padding: 4px 8px; border-bottom: 1px solid #f9f9f9; }
+  ::-webkit-scrollbar { width: 3px; height: 3px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.2); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.4); }
+
+  /* Desktop Icons */
+  .desktop-icons {
+    position: absolute;
+    top: 40px;
+    right: 20px;
+    bottom: 80px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 20px;
+    z-index: 10;
+  }
+  .desktop-item {
+    width: 80px;
+    text-align: center;
+    cursor: pointer;
+    border-radius: 4px;
+    padding: 4px;
+  }
+  .desktop-item:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
+  .desktop-item.selected {
+    background: rgba(255, 255, 255, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+  }
+  .desktop-item .icon {
+    width: 60px;
+    height: 60px;
+    margin: 0 auto 4px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+  .desktop-item .name {
+    color: white;
+    font-size: 12px;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+    word-wrap: break-word;
+    background: rgba(0,0,0,0.2);
+    border-radius: 4px;
+    padding: 2px 4px;
+    display: inline-block;
+  }
+
+  /* Context Menu */
+  .context-menu {
+    position: fixed;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    padding: 4px 0;
+    min-width: 200px;
+    z-index: 100000;
+    display: none;
+    font-size: 13px;
+    color: #333;
+  }
+  .context-menu.show {
+    display: block;
+  }
+  .context-menu-item {
+    padding: 4px 12px;
+    cursor: pointer;
+  }
+  .context-menu-item:hover {
+    background: #007aff;
+    color: white;
+  }
+  .context-menu-divider {
+    height: 1px;
+    background: rgba(0, 0, 0, 0.1);
+    margin: 4px 0;
+  }
+
+  /* Modal */
+  .modal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.2);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 200000;
+  }
+  .modal-overlay.show {
+    display: flex;
+  }
+  .modal {
+    background: #ececec;
+    border-radius: 10px;
+    width: 300px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  .modal-title {
+    font-weight: 600;
+    font-size: 14px;
+    text-align: center;
+    padding: 12px;
+    border-bottom: 1px solid #dcdcdc;
+  }
+  .modal-body {
+    padding: 20px;
+  }
+  .modal-body input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 6px 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 13px;
+    outline: none;
+  }
+  .modal-body input:focus {
+    border-color: #007aff;
+    box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.3);
+  }
+  .modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 12px 20px;
+    background: #e5e5e5;
+    border-top: 1px solid #dcdcdc;
+  }
+  .modal-btn {
+    padding: 4px 12px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    background: white;
+    cursor: pointer;
+    font-size: 13px;
+  }
+  .modal-btn.primary {
+    background: #007aff;
+    color: white;
+    border-color: #0062cc;
+  }
+
+  /* Finder Grid Item Image */
+  .grid-item .icon {
+    width: 60px;
+    height: 60px;
+    margin: 0 auto 4px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    font-size: 40px; /* Fallback for emoji */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Terminal Styles */
+  #terminal-window {
+    width: 600px;
+    height: 400px;
+    background: rgba(30, 30, 30, 0.85);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    border-radius: 10px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    color: #fff;
+    font-family: 'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
+    font-size: 13px;
+  }
+  #terminal-window .titlebar {
+    background: transparent;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  #terminal-window .window-title {
+    color: #fff;
+    font-weight: 500;
+  }
+  .terminal-content {
+    flex: 1;
+    padding: 10px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+  .terminal-line {
+    margin-bottom: 4px;
+    line-height: 1.4;
+    word-break: break-all;
+  }
+  .terminal-input-line {
+    display: flex;
+    align-items: center;
+  }
+  .terminal-prompt {
+    color: #4af626;
+    margin-right: 8px;
+    white-space: nowrap;
+  }
+  .terminal-input {
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-family: inherit;
+    font-size: inherit;
+    flex: 1;
+    outline: none;
+  }
+  
+  /* Safari Styles */
+  #safari-window {
+    width: 1000px;
+    height: 650px;
+    margin-left: -500px;
+    margin-top: -325px;
+    background: #ECECEC;
+  }
+  .safari-toolbar {
+    height: 52px;
+    background: #ECECEC;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    user-select: none;
+    border-bottom: 1px solid #d1d1d1;
+  }
+  .safari-nav-btns {
+    display: flex;
+    gap: 12px;
+    margin-left: 16px;
+    color: #555;
+    font-size: 18px;
+  }
+  .safari-nav-btn {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .safari-nav-btn:hover { background: rgba(0,0,0,0.05); }
+  .safari-nav-btn.disabled { color: #aaa; cursor: default; background: transparent; }
+  
+  .safari-address-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    margin: 0 20px;
+  }
+  .safari-address-bar {
+    width: 60%;
+    max-width: 600px;
+    height: 28px;
+    background: #fff;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1) inset, 0 1px 0 rgba(255,255,255,0.5);
+    border: 1px solid #d1d1d1;
+  }
+  .safari-address-bar .icon {
+    font-size: 12px;
+    color: #888;
+    margin-right: 6px;
+  }
+  .safari-address-bar input {
+    border: none;
+    outline: none;
+    background: transparent;
+    flex: 1;
+    font-size: 13px;
+    font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+    color: #1C1C1E;
+  }
+  .safari-toolbar-right {
+    display: flex;
+    gap: 12px;
+    color: #555;
+  }
+  .safari-toolbar-right .btn {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .safari-toolbar-right .btn:hover { background: rgba(0,0,0,0.05); }
+
+  .safari-tabs {
+    height: 36px;
+    background: #ECECEC;
+    display: flex;
+    align-items: flex-end;
+    padding: 0 8px;
+    border-bottom: 1px solid #c0c0c0;
+    gap: 2px;
+  }
+  .safari-tab {
+    height: 28px;
+    background: #D8D8D8;
+    border-radius: 6px 6px 0 0;
+    padding: 0 10px;
+    display: flex;
+    align-items: center;
+    font-size: 12px;
+    color: #1C1C1E;
+    cursor: pointer;
+    max-width: 200px;
+    min-width: 100px;
+    flex: 1;
+    position: relative;
+    border: 1px solid transparent;
+    border-bottom: none;
+    transition: background 0.1s;
+  }
+  .safari-tab.active {
+    background: #FFFFFF;
+    border-color: #c0c0c0;
+  }
+  .safari-tab.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: #FFFFFF;
+  }
+  .safari-tab .favicon {
+    width: 14px;
+    height: 14px;
+    margin-right: 6px;
+  }
+  .safari-tab .title {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .safari-tab .close-btn {
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    opacity: 0;
+    font-size: 14px;
+  }
+  .safari-tab:hover .close-btn { opacity: 1; }
+  .safari-tab .close-btn:hover { background: rgba(0,0,0,0.1); }
+  .safari-add-tab {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border-radius: 4px;
+    margin-bottom: 4px;
+    margin-left: 4px;
+    color: #555;
+  }
+  .safari-add-tab:hover { background: rgba(0,0,0,0.05); }
+
+  .safari-content-area {
+    flex: 1;
+    position: relative;
+    background: #fff;
+  }
+  .safari-iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    background: #fff;
+  }
+  .safari-overlay {
+    position: absolute;
+    inset: 0;
+    background: #f5f5f5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 10;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s;
+  }
+  .safari-overlay.show {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  
+  /* New Tab Page */
+  .safari-new-tab {
+    padding-top: 10vh;
+    width: 100%;
+    max-width: 800px;
+  }
+  .safari-nt-title {
+    font-size: 32px;
+    font-weight: 600;
+    color: #333;
+    text-align: center;
+    margin-bottom: 40px;
+  }
+  .safari-nt-search {
+    width: 100%;
+    max-width: 500px;
+    height: 44px;
+    border-radius: 22px;
+    border: 1px solid #ddd;
+    background: #fff;
+    margin: 0 auto 40px;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  }
+  .safari-nt-search input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    margin-left: 10px;
+    font-family: inherit;
+  }
+  .safari-nt-favorites {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+  }
+  .safari-nt-fav {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    width: 80px;
+  }
+  .safari-nt-fav-icon {
+    width: 54px;
+    height: 54px;
+    background: #fff;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    margin-bottom: 8px;
+    font-size: 24px;
+    transition: transform 0.1s;
+  }
+  .safari-nt-fav:hover .safari-nt-fav-icon { transform: scale(1.05); }
+  .safari-nt-fav-title { font-size: 12px; color: #555; text-align: center; }
+
+  /* Error Page */
+  .safari-error-page {
+    justify-content: center;
+    text-align: center;
+    padding: 40px;
+  }
+  .safari-error-icon { font-size: 48px; margin-bottom: 20px; }
+  .safari-error-title { font-size: 24px; font-weight: 600; color: #333; margin-bottom: 10px; }
+  .safari-error-desc { font-size: 14px; color: #666; margin-bottom: 30px; max-width: 400px; line-height: 1.5; }
+  .safari-error-btn {
+    padding: 8px 16px;
+    background: #007aff;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  .safari-error-btn:hover { background: #0062cc; }
+
+  @keyframes spin { 100% { transform: rotate(360deg); } }
+  .spinner-anim { animation: spin 1s linear infinite; display: inline-block; }
+
+  /* Menu Bar Styles */
+  .menubar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 28px;
+    background: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 16px;
+    z-index: 100000;
+    font-size: 13px;
+    font-weight: 500;
+    color: #fff;
+    user-select: none;
+  }
+  .menubar-left, .menubar-right {
+    display: flex;
+    align-items: center;
+    height: 100%;
+  }
+  .menu-item {
+    padding: 0 10px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    border-radius: 4px;
+    cursor: default;
+    position: relative;
+  }
+  .menu-item:hover, .menu-item.open {
+    background: rgba(255, 255, 255, 0.2);
+  }
+  .menu-item.active {
+    font-weight: 700;
+  }
+  .apple-icon img {
+    height: 14px;
+    filter: invert(1);
+  }
+  
+  .menu-dropdown {
+    position: absolute;
+    top: 28px;
+    left: 10px;
+    background: rgba(30, 30, 30, 0.85);
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    padding: 6px;
+    min-width: 220px;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-10px);
+    transition: opacity 0.15s ease, transform 0.15s ease;
+    z-index: 100001;
+    color: #fff;
+  }
+  .menu-dropdown.show {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+  .menu-dropdown-item {
+    padding: 4px 10px;
+    border-radius: 4px;
+    cursor: default;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .menu-dropdown-item:hover {
+    background: #007aff;
+    color: #fff;
+  }
+  .menu-dropdown-divider {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.1);
+    margin: 6px 0;
+  }
+  .menu-dropdown-item .arrow {
+    font-size: 10px;
+  }
+
+  /* About This Mac Window */
+  .about-window {
+    width: 300px;
+    height: auto;
+    margin-left: -150px;
+    margin-top: -200px;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
+    z-index: 10000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    transform: scale(0.95);
+  }
+  .about-window.show {
+    opacity: 1;
+    pointer-events: auto;
+    transform: scale(1);
+  }
+  .about-content {
+    padding: 20px;
+    text-align: center;
+    color: #333;
+  }
+  .about-logo {
+    width: 60px;
+    height: 60px;
+    margin-bottom: 10px;
+  }
+  .about-title {
+    font-size: 24px;
+    font-weight: 700;
+    margin: 0 0 5px 0;
+    letter-spacing: -0.5px;
+  }
+  .about-version {
+    font-size: 12px;
+    color: #666;
+    margin: 0 0 15px 0;
+  }
+  .about-divider {
+    height: 1px;
+    background: #ddd;
+    margin: 15px 0;
+  }
+  .about-specs {
+    font-size: 11px;
+    text-align: left;
+    margin: 4px 0;
+    line-height: 1.4;
+  }
+  .about-footer {
+    margin-top: 20px;
+  }
+  .about-btn {
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 4px 12px;
+    font-size: 12px;
+    cursor: pointer;
+  }
+  .about-btn:hover {
+    background: #f0f0f0;
+  }
+  .btn.disabled {
+    background: #ddd !important;
+    border-color: #ccc !important;
+    cursor: default;
+  }
+</style>
+</head>
+<body>
+
+<div class="desktop-icons" id="desktop-icons"></div>
+
+<div class="context-menu" id="context-menu">
+  <div class="context-menu-item" id="ctx-new-folder">New Folder</div>
+  <div class="context-menu-divider"></div>
+  <div class="context-menu-item">Get Info</div>
+  <div class="context-menu-item">Change Desktop Background...</div>
+</div>
+
+<div class="modal-overlay" id="new-folder-modal">
+  <div class="modal">
+    <div class="modal-title">New Folder</div>
+    <div class="modal-body">
+      <input type="text" id="new-folder-input" value="untitled folder" />
+    </div>
+    <div class="modal-footer">
+      <button class="modal-btn" id="new-folder-cancel">Cancel</button>
+      <button class="modal-btn primary" id="new-folder-create">Create</button>
+    </div>
+  </div>
+</div>
+
+<div class="menubar">
+  <div class="menubar-left">
+    <div class="menu-item apple-icon" id="apple-menu-btn">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" alt="Apple">
+    </div>
+    <div class="menu-item active">Finder</div>
+    <div class="menu-item">File</div>
+    <div class="menu-item">Edit</div>
+    <div class="menu-item">View</div>
+    <div class="menu-item">Go</div>
+    <div class="menu-item">Window</div>
+    <div class="menu-item">Help</div>
+  </div>
+  <div class="menubar-right">
+    <div class="menu-item">🔋 100%</div>
+    <div class="menu-item">📶</div>
+    <div class="menu-item">🔍</div>
+    <div class="menu-item">🎛</div>
+    <div class="menu-item" id="menubar-time">Tue Mar 17 2:21 PM</div>
+  </div>
+  
+  <!-- Dropdowns -->
+  <div class="menu-dropdown" id="apple-dropdown">
+    <div class="menu-dropdown-item" id="about-mac">About This Mac</div>
+    <div class="menu-dropdown-divider"></div>
+    <div class="menu-dropdown-item">System Settings...</div>
+    <div class="menu-dropdown-item">App Store...</div>
+    <div class="menu-dropdown-divider"></div>
+    <div class="menu-dropdown-item">Recent Items <span class="arrow">▶</span></div>
+    <div class="menu-dropdown-divider"></div>
+    <div class="menu-dropdown-item">Force Quit...</div>
+    <div class="menu-dropdown-divider"></div>
+    <div class="menu-dropdown-item" id="sleep-mac">Sleep</div>
+    <div class="menu-dropdown-item" id="restart-mac">Restart...</div>
+    <div class="menu-dropdown-item" id="shutdown-mac">Shut Down...</div>
+    <div class="menu-dropdown-divider"></div>
+    <div class="menu-dropdown-item">Lock Screen</div>
+    <div class="menu-dropdown-item">Log Out...</div>
+  </div>
+</div>
+
+<div class="window about-window" id="about-window">
+  <div class="titlebar">
+    <div class="traffic-lights">
+      <div class="btn close" id="about-close"></div>
+      <div class="btn minimize disabled"></div>
+      <div class="btn maximize disabled"></div>
+    </div>
+  </div>
+  <div class="about-content">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" class="about-logo" alt="Apple">
+    <h2 class="about-title">macOS <span style="font-weight:300">Tahoe</span></h2>
+    <p class="about-version">Version 15.0</p>
+    <div class="about-divider"></div>
+    <p class="about-specs"><strong>Emulator:</strong> Bubu</p>
+    <p class="about-specs"><strong>Processor:</strong> Apple M4 Max</p>
+    <p class="about-specs"><strong>Memory:</strong> 128 GB</p>
+    <p class="about-specs"><strong>Startup Disk:</strong> Macintosh HD</p>
+    <div class="about-footer">
+      <button class="about-btn">More Info...</button>
+    </div>
+  </div>
+</div>
+
+<div class="window" id="finder-window">
+  <div class="titlebar">
+    <div class="traffic-lights">
+      <div class="btn close" id="btn-close"></div>
+      <div class="btn minimize" id="btn-minimize"></div>
+      <div class="btn maximize" id="btn-maximize"></div>
+    </div>
+    <div class="nav-arrows">
+      <span id="nav-back">⟨</span>
+      <span id="nav-forward">⟩</span>
+    </div>
+    <div class="window-title" id="window-title">Bubuvar</div>
+    <div class="toolbar-icons">
+      <span class="view-btn active" data-view="grid">⊞</span>
+      <span class="view-btn" data-view="list">☰</span>
+      <span class="view-btn" data-view="column">◫</span>
+      <span class="view-btn" data-view="gallery">🖼</span>
+      <span style="margin:0 4px;color:#ccc">|</span>
+      <span>⍗</span>
+      <span>🏷</span>
+      <span>⋯</span>
+      <span>🔍</span>
+    </div>
+  </div>
+  <div class="window-body">
+    <div class="sidebar">
+      <div class="sidebar-section">Favorites</div>
+      <div class="sidebar-item" data-folder="Setapp">📄 Setapp</div>
+      <div class="sidebar-item" data-folder="Applications">📱 Applications</div>
+      <div class="sidebar-item" data-folder="OneDrive">☁️ OneDrive</div>
+      <div class="sidebar-item" data-folder="My Drive">☁️ My Drive</div>
+      <div class="sidebar-item" data-folder="Camera">📷 Camera</div>
+      <div class="sidebar-item" data-folder="Pixel Screenshots">🖼 Pixel Screenshots</div>
+      <div class="sidebar-item" data-folder="Downloads">⬇️ Downloads</div>
+      <div class="sidebar-item active" data-folder="Bubuvar">🏠 Bubuvar</div>
+      <div class="sidebar-item" data-folder="Desktop">🖥 Desktop</div>
+      <div class="sidebar-item" data-folder="Documents">📄 Documents</div>
+      <div class="sidebar-section" style="margin-top: 15px;">Tags</div>
+      <div class="sidebar-item tag"><span class="dot" style="background:#007aff"></span>Screenshots</div>
+      <div class="sidebar-item tag"><span class="dot" style="background:#af52de"></span>Writing</div>
+      <div class="sidebar-item tag"><span class="dot" style="background:#34c759"></span>Invoice</div>
+      <div class="sidebar-item tag"><span class="dot" style="background:#ff3b30"></span>Red</div>
+      <div class="sidebar-item tag"><span class="dot" style="background:#ff9500"></span>Orange</div>
+      <div class="sidebar-item tag"><span class="dot" style="background:#ffcc00"></span>Yellow</div>
+    </div>
+    <div class="content-area" id="content-area"></div>
+  </div>
+</div>
+
+<div class="window" id="safari-window">
+  <div class="safari-toolbar" id="safari-titlebar">
+    <div class="traffic-lights">
+      <div class="btn close" id="safari-btn-close"></div>
+      <div class="btn minimize" id="safari-btn-minimize"></div>
+      <div class="btn maximize" id="safari-btn-maximize"></div>
+    </div>
+    <div class="safari-nav-btns">
+      <div class="safari-nav-btn" id="safari-btn-back">⟨</div>
+      <div class="safari-nav-btn" id="safari-btn-forward">⟩</div>
+      <div class="safari-nav-btn" id="safari-btn-reload">↻</div>
+    </div>
+    <div class="safari-address-container">
+      <div class="safari-address-bar">
+        <span class="icon" id="safari-address-icon">🔒</span>
+        <input type="text" id="safari-address-input" value="https://wikipedia.org" spellcheck="false" autocomplete="off">
+      </div>
+    </div>
+    <div class="safari-toolbar-right">
+      <div class="btn">⍗</div>
+      <div class="btn">⊞</div>
+    </div>
+  </div>
+  <div class="safari-tabs" id="safari-tabs-container">
+    <!-- Tabs injected here -->
+  </div>
+  <div class="safari-content-area">
+    <iframe class="safari-iframe" id="safari-iframe" sandbox="allow-scripts allow-same-origin allow-forms allow-popups"></iframe>
+    
+    <div class="safari-overlay" id="safari-new-tab-overlay">
+      <div class="safari-new-tab">
+        <div class="safari-nt-title">Favorites</div>
+        <div class="safari-nt-search">
+          <span>🔍</span>
+          <input type="text" placeholder="Search or enter website name" id="safari-nt-search-input">
+        </div>
+        <div class="safari-nt-favorites">
+          <div class="safari-nt-fav" data-url="https://wikipedia.org">
+            <div class="safari-nt-fav-icon">W</div>
+            <div class="safari-nt-fav-title">Wikipedia</div>
+          </div>
+          <div class="safari-nt-fav" data-url="https://github.com">
+            <div class="safari-nt-fav-icon">🐙</div>
+            <div class="safari-nt-fav-title">GitHub</div>
+          </div>
+          <div class="safari-nt-fav" data-url="https://youtube.com">
+            <div class="safari-nt-fav-icon" style="color:red">▶</div>
+            <div class="safari-nt-fav-title">YouTube</div>
+          </div>
+          <div class="safari-nt-fav" data-url="https://google.com">
+            <div class="safari-nt-fav-icon" style="color:#4285F4">G</div>
+            <div class="safari-nt-fav-title">Google</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="safari-overlay safari-error-page" id="safari-error-overlay">
+      <div class="safari-error-icon">⚠️</div>
+      <div class="safari-error-title">Safari Can't Open the Page</div>
+      <div class="safari-error-desc">The page you are trying to view cannot be shown because the site restricts embedding (X-Frame-Options or CSP).</div>
+      <button class="safari-error-btn" id="safari-error-btn">Try in new tab</button>
+    </div>
+  </div>
+</div>
+
+<div class="window" id="terminal-window">
+  <div class="titlebar" id="terminal-titlebar">
+    <div class="traffic-lights">
+      <div class="btn close" id="terminal-btn-close"></div>
+      <div class="btn minimize" id="terminal-btn-minimize"></div>
+      <div class="btn maximize" id="terminal-btn-maximize"></div>
+    </div>
+    <div class="window-title">bash — 80x24</div>
+  </div>
+  <div class="terminal-content" id="terminal-content">
+    <div class="terminal-line">Last login: <span id="term-time"></span> on console</div>
+    <div class="terminal-input-line">
+      <span class="terminal-prompt">user@MacBook-Pro ~ %</span>
+      <input type="text" class="terminal-input" id="terminal-input" autocomplete="off" spellcheck="false" autofocus>
+    </div>
+  </div>
+</div>
+
+<div class="dock-container" id="dock">
+  <div class="dock-tooltip" id="tooltip"></div>
+  <div class="dock-icon" data-name="Finder" style="background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Finder_Icon_macOS_Big_Sur.png/500px-Finder_Icon_macOS_Big_Sur.png')"></div>
+  <div class="dock-icon" data-name="Safari" style="background-image: url('https://images.icon-icons.com/3053/PNG/512/safari_macos_bigsur_icon_189770.png')"></div>
+  <div class="dock-icon" data-name="Calendar" style="background-image: url('https://upload.wikimedia.org/wikipedia/commons/1/1c/MacOSCalendar.png')"></div>
+  <div class="dock-icon" data-name="Terminal" style="background-image: url('https://upload.wikimedia.org/wikipedia/commons/b/b3/Terminalicon2.png')"></div>
+  <div class="dock-icon" data-name="Apple Music" style="background-image: url('https://upload.wikimedia.org/wikipedia/commons/6/6f/AppleMusicIcon_macOS%402x.png')"></div>
+  <div class="dock-icon" data-name="System Settings" style="background-image: url('https://www.tonymacx86.com/attachments/systemsettings-tahoe-png.595625/')"></div>
+  <div class="dock-icon" data-name="Trash" style="background-image: url('https://icons.iconarchive.com/icons/wwalczyszyn/iwindows/256/Recycle-Bin-icon.png')"></div>
+</div>
+
+<script>
+  const dock = document.getElementById('dock');
+  const icons = Array.from(document.querySelectorAll('.dock-icon'));
+  const tooltip = document.getElementById('tooltip');
+
+  const baseSize = 56;
+  const distanceLimit = 120;
+  
+  // Spring physics parameters
+  const stiffness = 0.18;
+  const damping = 0.72;
+
+  // Piecewise interpolation function
+  function interpolate(x, input, output) {
+    if (x <= input[0]) return output[0];
+    if (x >= input[input.length - 1]) return output[output.length - 1];
+    
+    for (let i = 0; i < input.length - 1; i++) {
+      if (x >= input[i] && x <= input[i + 1]) {
+        const t = (x - input[i]) / (input[i + 1] - input[i]);
+        return output[i] + t * (output[i + 1] - output[i]);
+      }
+    }
+    return output[output.length - 1];
+  }
+
+  // Keypoints for distance to scale mapping
+  const inputDistances = [0, 60, 100, distanceLimit];
+  const outputScales = [2.5, 1.6, 1.1, 1.0];
+
+  // State for each icon
+  const iconStates = icons.map(icon => ({
+    element: icon,
+    currentScale: 1,
+    targetScale: 1,
+    velocity: 0
+  }));
+
+  let mouseX = null;
+  let isHovering = false;
+
+  dock.addEventListener('mousemove', (e) => {
+    isHovering = true;
+    mouseX = e.clientX;
+  });
+
+  dock.addEventListener('mouseleave', () => {
+    isHovering = false;
+    mouseX = null;
+  });
+
+  let hoveredIcon = null;
+
+  icons.forEach(icon => {
+    icon.addEventListener('mouseenter', () => {
+      hoveredIcon = icon;
+      tooltip.textContent = icon.getAttribute('data-name');
+      tooltip.classList.add('show');
+    });
+    icon.addEventListener('mouseleave', () => {
+      if (hoveredIcon === icon) {
+        hoveredIcon = null;
+        tooltip.classList.remove('show');
+      }
+    });
+  });
+
+  const finderWindow = document.getElementById('finder-window');
+  const winState = {
+    scaleX: 0.85, targetScaleX: 0.85, velScaleX: 0,
+    scaleY: 0.85, targetScaleY: 0.85, velScaleY: 0,
+    opacity: 0, targetOpacity: 0, velOpacity: 0,
+    translateY: 0, targetTranslateY: 0, velTranslateY: 0,
+    dragX: 0, targetDragX: 0, velDragX: 0,
+    dragY: 0, targetDragY: 0, velDragY: 0,
+    width: 800, targetWidth: 800, velWidth: 0,
+    height: 500, targetHeight: 500, velHeight: 0,
+    isOpen: false, isMinimized: false, isMaximized: false,
+    preMaxDragX: 0, preMaxDragY: 0
+  };
+  const winStiffness = 0.12;
+  const winDamping = 0.75;
+
+  document.getElementById('btn-close').addEventListener('click', () => {
+    winState.targetScaleX = 0.85; winState.targetScaleY = 0.85;
+    winState.targetOpacity = 0; winState.isOpen = false;
+  });
+  document.getElementById('btn-minimize').addEventListener('click', () => {
+    if (!winState.isMinimized) {
+      winState.targetScaleX = 0.2; winState.targetScaleY = 0.05;
+      winState.targetTranslateY = 300; winState.targetOpacity = 0;
+      winState.isMinimized = true;
+    } else {
+      winState.targetScaleX = 1; winState.targetScaleY = 1;
+      winState.targetTranslateY = 0; winState.targetOpacity = 1;
+      winState.isMinimized = false;
+    }
+  });
+  document.getElementById('btn-maximize').addEventListener('click', () => {
+    if (!winState.isMaximized) {
+      winState.preMaxDragX = winState.targetDragX;
+      winState.preMaxDragY = winState.targetDragY;
+      winState.targetDragX = 0;
+      winState.targetDragY = 0;
+      winState.targetWidth = window.innerWidth - 40;
+      winState.targetHeight = window.innerHeight - 120;
+      winState.targetTranslateY = -30; winState.isMaximized = true;
+    } else {
+      winState.targetDragX = winState.preMaxDragX;
+      winState.targetDragY = winState.preMaxDragY;
+      winState.targetWidth = 800; winState.targetHeight = 500;
+      winState.targetTranslateY = 0; winState.isMaximized = false;
+    }
+  });
+  const finderIcon = document.querySelector('.dock-icon[data-name="Finder"]');
+  if(finderIcon) {
+    finderIcon.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (!winState.isOpen || winState.isMinimized) {
+        winState.targetScaleX = 1; 
+        winState.targetScaleY = 1;
+        winState.targetWidth = winState.isMaximized ? window.innerWidth - 40 : 800;
+        winState.targetHeight = winState.isMaximized ? window.innerHeight - 120 : 500;
+        winState.targetOpacity = 1; 
+        winState.targetTranslateY = winState.isMaximized ? -30 : 0;
+        winState.isOpen = true; winState.isMinimized = false;
+      }
+    });
+  }
+
+  const titlebar = document.querySelector('.titlebar');
+  let isDraggingWindow = false;
+  let dragStartX = 0;
+  let dragStartY = 0;
+  let initialDragX = 0;
+  let initialDragY = 0;
+
+  titlebar.addEventListener('mousedown', (e) => {
+    if (e.target.closest('.traffic-lights') || e.target.closest('.toolbar-icons') || e.target.closest('.nav-arrows')) return;
+    if (winState.isMaximized) return;
+    isDraggingWindow = true;
+    dragStartX = e.clientX;
+    dragStartY = e.clientY;
+    initialDragX = winState.dragX;
+    initialDragY = winState.dragY;
+  });
+
+  window.addEventListener('mousemove', (e) => {
+    if (!isDraggingWindow) return;
+    winState.targetDragX = initialDragX + (e.clientX - dragStartX);
+    winState.targetDragY = initialDragY + (e.clientY - dragStartY);
+  });
+
+  window.addEventListener('mouseup', () => {
+    isDraggingWindow = false;
+  });
+
+  let currentFolder = 'Bubuvar';
+  let currentView = 'grid';
+  let history = ['Bubuvar'];
+  let historyIdx = 0;
+  
+  // File System State
+  const FOLDER_ICON = 'url(https://static.wikia.nocookie.net/ipod/images/b/b5/MacFolder.png/revision/latest?cb=20220215150041)';
+  const fileSystem = {
+    'Desktop': [],
+    'Bubuvar': [
+      { name: 'File 1.txt', date: 'Today', size: '12 KB', icon: '📄', type: 'file' },
+      { name: 'Folder A', date: 'Yesterday', size: '--', icon: FOLDER_ICON, type: 'folder' },
+      { name: 'Image.png', date: 'Mar 10', size: '2.4 MB', icon: '🖼', type: 'file' }
+    ],
+    'Documents': [],
+    'Downloads': [],
+    'Applications': [],
+    'Setapp': [],
+    'OneDrive': [],
+    'My Drive': [],
+    'Camera': [],
+    'Pixel Screenshots': []
+  };
+
+  const contentArea = document.getElementById('content-area');
+  const desktopIcons = document.getElementById('desktop-icons');
+  const contextMenu = document.getElementById('context-menu');
+  let contextMenuTarget = null; // 'desktop' or 'finder'
+
+  // Context Menu Logic
+  document.addEventListener('contextmenu', (e) => {
+    e.preventDefault();
+    
+    // Determine context target
+    if (e.target.closest('#content-area')) {
+      contextMenuTarget = 'finder';
+    } else if (!e.target.closest('.window') && !e.target.closest('.menubar') && !e.target.closest('.dock-container') && !e.target.closest('.modal-overlay')) {
+      contextMenuTarget = 'desktop';
+    } else {
+      contextMenu.classList.remove('show');
+      return;
+    }
+
+    contextMenu.style.left = `${e.clientX}px`;
+    contextMenu.style.top = `${e.clientY}px`;
+    contextMenu.classList.add('show');
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.context-menu')) {
+      contextMenu.classList.remove('show');
+    }
+  });
+
+  const newFolderModal = document.getElementById('new-folder-modal');
+  const newFolderInput = document.getElementById('new-folder-input');
+  const newFolderCancel = document.getElementById('new-folder-cancel');
+  const newFolderCreate = document.getElementById('new-folder-create');
+
+  document.getElementById('ctx-new-folder').addEventListener('click', () => {
+    contextMenu.classList.remove('show');
+    newFolderModal.classList.add('show');
+    newFolderInput.value = "untitled folder";
+    newFolderInput.focus();
+    newFolderInput.select();
+  });
+
+  function createFolder() {
+    const folderName = newFolderInput.value.trim();
+    if (!folderName) return;
+
+    const newFolder = {
+      name: folderName,
+      date: 'Today',
+      size: '--',
+      icon: FOLDER_ICON,
+      type: 'folder'
+    };
+
+    if (contextMenuTarget === 'desktop') {
+      fileSystem['Desktop'].push(newFolder);
+      renderDesktop();
+    } else if (contextMenuTarget === 'finder') {
+      if (!fileSystem[currentFolder]) fileSystem[currentFolder] = [];
+      fileSystem[currentFolder].push(newFolder);
+      renderContent();
+    }
+    newFolderModal.classList.remove('show');
+  }
+
+  newFolderCreate.addEventListener('click', createFolder);
+  newFolderCancel.addEventListener('click', () => {
+    newFolderModal.classList.remove('show');
+  });
+  newFolderInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') createFolder();
+    if (e.key === 'Escape') newFolderModal.classList.remove('show');
+  });
+
+  function renderDesktop() {
+    let html = '';
+    const items = fileSystem['Desktop'] || [];
+    items.forEach(item => {
+      const bgStyle = item.type === 'folder' ? `background-image: ${item.icon}` : '';
+      const textIcon = item.type === 'folder' ? '' : item.icon;
+      html += `
+        <div class="desktop-item">
+          <div class="icon" style="${bgStyle}">${textIcon}</div>
+          <div class="name">${item.name}</div>
+        </div>
+      `;
+    });
+    desktopIcons.innerHTML = html;
+  }
+
+  const windowTitle = document.getElementById('window-title');
+  const sidebarItems = document.querySelectorAll('.sidebar-item[data-folder]');
+  const viewBtns = document.querySelectorAll('.view-btn');
+
+  function renderContent() {
+    contentArea.style.opacity = 0;
+    setTimeout(() => {
+      windowTitle.textContent = currentFolder;
+      sidebarItems.forEach(item => {
+        if (item.getAttribute('data-folder') === currentFolder) item.classList.add('active');
+        else item.classList.remove('active');
+      });
+      if (!fileSystem[currentFolder]) fileSystem[currentFolder] = [];
+      const items = fileSystem[currentFolder];
+      
+      if (items.length === 0) {
+        contentArea.innerHTML = `<div class="empty-state"><div class="icon">📁</div><div>No items</div></div>`;
+      } else {
+        if (currentView === 'grid' || currentView === 'gallery' || currentView === 'column') {
+          let html = '<div class="grid-view">';
+          items.forEach(item => {
+            const bgStyle = item.type === 'folder' ? `background-image: ${item.icon}` : '';
+            const textIcon = item.type === 'folder' ? '' : item.icon;
+            html += `<div class="grid-item"><div class="icon" style="${bgStyle}">${textIcon}</div><div class="name">${item.name}</div></div>`;
+          });
+          html += '</div>';
+          contentArea.innerHTML = html;
+        } else if (currentView === 'list') {
+          let html = '<table class="list-view"><tr><th>Name</th><th>Date Modified</th><th>Size</th></tr>';
+          items.forEach(item => {
+            const iconDisplay = item.type === 'folder' ? '📁' : item.icon;
+            html += `<tr><td>${iconDisplay} ${item.name}</td><td>${item.date}</td><td>${item.size}</td></tr>`;
+          });
+          html += '</table>';
+          contentArea.innerHTML = html;
+        }
+      }
+      contentArea.style.opacity = 1;
+    }, 120);
+  }
+  sidebarItems.forEach(item => {
+    item.addEventListener('click', () => {
+      const folder = item.getAttribute('data-folder');
+      if (folder !== currentFolder) {
+        history = history.slice(0, historyIdx + 1);
+        history.push(folder); historyIdx++; currentFolder = folder; renderContent();
+      }
+    });
+  });
+  document.getElementById('nav-back').addEventListener('click', () => {
+    if (historyIdx > 0) { historyIdx--; currentFolder = history[historyIdx]; renderContent(); }
+  });
+  document.getElementById('nav-forward').addEventListener('click', () => {
+    if (historyIdx < history.length - 1) { historyIdx++; currentFolder = history[historyIdx]; renderContent(); }
+  });
+  viewBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      viewBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active'); currentView = btn.getAttribute('data-view'); renderContent();
+    });
+  });
+  renderDesktop();
+  renderContent();
+
+  // --- Terminal Logic ---
+  const terminalWindow = document.getElementById('terminal-window');
+  const terminalTitlebar = document.getElementById('terminal-titlebar');
+  const terminalState = {
+    scaleX: 0.85, targetScaleX: 0.85, velScaleX: 0,
+    scaleY: 0.85, targetScaleY: 0.85, velScaleY: 0,
+    opacity: 0, targetOpacity: 0, velOpacity: 0,
+    translateY: 0, targetTranslateY: 0, velTranslateY: 0,
+    dragX: 0, targetDragX: 0, velDragX: 0,
+    dragY: 0, targetDragY: 0, velDragY: 0,
+    width: 600, targetWidth: 600, velWidth: 0,
+    height: 400, targetHeight: 400, velHeight: 0,
+    isOpen: false, isMinimized: false, isMaximized: false,
+    preMaxDragX: 0, preMaxDragY: 0
+  };
+
+  document.getElementById('term-time').innerText = new Date().toString().substring(0, 24);
+
+  const terminalInput = document.getElementById('terminal-input');
+  const terminalContent = document.getElementById('terminal-content');
+
+  terminalInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      const val = terminalInput.value.trim();
+      terminalInput.value = '';
+      
+      const cmdWrapper = document.createElement('div');
+      cmdWrapper.className = 'terminal-line';
+      cmdWrapper.innerHTML = `<span class="terminal-prompt">user@MacBook-Pro ~ %</span> ${val}`;
+      
+      const responseWrapper = document.createElement('div');
+      responseWrapper.className = 'terminal-line';
+      
+      let out = '';
+      if (val === 'help') {
+        out = 'Available commands: help, echo, ls, clear, date, whoami, pwd';
+      } else if (val.startsWith('echo ')) {
+        out = val.substring(5);
+      } else if (val === 'ls') {
+        out = 'Desktop Documents Downloads Music Pictures Public';
+      } else if (val === 'clear') {
+        terminalContent.innerHTML = '';
+        out = null;
+      } else if (val === 'date') {
+        out = new Date().toString();
+      } else if (val === 'whoami') {
+        out = 'user';
+      } else if (val === 'pwd') {
+        out = '/Users/user';
+      } else if (val !== '') {
+        out = `bash: ${val}: command not found`;
+      } else {
+        out = null;
+      }
+      
+      const prevLine = terminalContent.querySelector('.terminal-input-line');
+      terminalContent.insertBefore(cmdWrapper, prevLine);
+      if (out !== null) {
+        responseWrapper.innerText = out;
+        terminalContent.insertBefore(responseWrapper, prevLine);
+      }
+      
+      terminalContent.scrollTop = terminalContent.scrollHeight;
+    }
+  });
+
+  document.getElementById('terminal-btn-close').addEventListener('click', () => {
+    terminalState.targetScaleX = 0.85; terminalState.targetScaleY = 0.85;
+    terminalState.targetOpacity = 0; terminalState.isOpen = false;
+  });
+  document.getElementById('terminal-btn-minimize').addEventListener('click', () => {
+    if (!terminalState.isMinimized) {
+      terminalState.targetScaleX = 0.2; terminalState.targetScaleY = 0.05;
+      terminalState.targetTranslateY = 300; terminalState.targetOpacity = 0;
+      terminalState.isOpen = true; terminalState.isMinimized = true;
+    }
+  });
+  document.getElementById('terminal-btn-maximize').addEventListener('click', () => {
+    if (!terminalState.isMaximized) {
+      terminalState.preMaxDragX = terminalState.targetDragX;
+      terminalState.preMaxDragY = terminalState.targetDragY;
+      terminalState.targetDragX = 0; terminalState.targetDragY = 0;
+      terminalState.targetWidth = window.innerWidth - 40;
+      terminalState.targetHeight = window.innerHeight - 120;
+      terminalState.targetTranslateY = -30;
+      terminalState.isMaximized = true;
+    } else {
+      terminalState.targetDragX = terminalState.preMaxDragX;
+      terminalState.targetDragY = terminalState.preMaxDragY;
+      terminalState.targetWidth = 600; terminalState.targetHeight = 400;
+      terminalState.targetTranslateY = 0; terminalState.isMaximized = false;
+    }
+  });
+
+  const terminalIcon = document.querySelector('.dock-icon[data-name="Terminal"]');
+  if(terminalIcon) {
+    terminalIcon.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (!terminalState.isOpen || terminalState.isMinimized) {
+        terminalState.targetScaleX = 1; terminalState.targetScaleY = 1;
+        terminalState.targetWidth = terminalState.isMaximized ? window.innerWidth - 40 : 600;
+        terminalState.targetHeight = terminalState.isMaximized ? window.innerHeight - 120 : 400;
+        terminalState.targetOpacity = 1; 
+        terminalState.targetTranslateY = terminalState.isMaximized ? -30 : 0;
+        terminalState.isOpen = true; terminalState.isMinimized = false;
+        
+        terminalWindow.style.zIndex = 52;
+        safariWindow.style.zIndex = 51;
+        finderWindow.style.zIndex = 50;
+        setTimeout(() => terminalInput.focus(), 100);
+      }
+    });
+  }
+
+  // Terminal Window dragging
+  let isTerminalDragging = false;
+  let terminalStartX, terminalStartY, terminalInitialDragX, terminalInitialDragY;
+
+  terminalTitlebar.addEventListener('mousedown', (e) => {
+    if (e.target.closest('.traffic-lights')) return;
+    if (terminalState.isMaximized) return;
+    isTerminalDragging = true;
+    terminalStartX = e.clientX;
+    terminalStartY = e.clientY;
+    terminalInitialDragX = terminalState.targetDragX;
+    terminalInitialDragY = terminalState.targetDragY;
+    
+    terminalWindow.style.zIndex = 52;
+    safariWindow.style.zIndex = 51;
+    finderWindow.style.zIndex = 50;
+  });
+
+  document.addEventListener('mousemove', (e) => {
+    if (isTerminalDragging) {
+      terminalState.targetDragX = terminalInitialDragX + (e.clientX - terminalStartX);
+      terminalState.targetDragY = terminalInitialDragY + (e.clientY - terminalStartY);
+    }
+  });
+
+  document.addEventListener('mouseup', () => {
+    isTerminalDragging = false;
+  });
+
+  terminalWindow.addEventListener('mousedown', () => {
+    terminalWindow.style.zIndex = 52;
+    safariWindow.style.zIndex = 51;
+    finderWindow.style.zIndex = 50;
+  });
+
+  // --- End Terminal Logic ---
+
+  // --- Safari Logic ---
+  const safariWindow = document.getElementById('safari-window');
+  const safariState = {
+    scaleX: 0.85, targetScaleX: 0.85, velScaleX: 0,
+    scaleY: 0.85, targetScaleY: 0.85, velScaleY: 0,
+    opacity: 0, targetOpacity: 0, velOpacity: 0,
+    translateY: 0, targetTranslateY: 0, velTranslateY: 0,
+    dragX: 0, targetDragX: 0, velDragX: 0,
+    dragY: 0, targetDragY: 0, velDragY: 0,
+    width: 1000, targetWidth: 1000, velWidth: 0,
+    height: 650, targetHeight: 650, velHeight: 0,
+    isOpen: false, isMinimized: false, isMaximized: false,
+    preMaxDragX: 0, preMaxDragY: 0
+  };
+
+  let safariTabs = [
+    { id: 1, url: 'https://wikipedia.org', history: ['https://wikipedia.org'], historyIdx: 0, title: 'Wikipedia', isNewTab: false }
+  ];
+  let activeSafariTabId = 1;
+  let safariTabCounter = 1;
+
+  const safariIframe = document.getElementById('safari-iframe');
+  const safariAddressInput = document.getElementById('safari-address-input');
+  const safariAddressIcon = document.getElementById('safari-address-icon');
+  const safariTabsContainer = document.getElementById('safari-tabs-container');
+  const safariBtnBack = document.getElementById('safari-btn-back');
+  const safariBtnForward = document.getElementById('safari-btn-forward');
+  const safariNewTabOverlay = document.getElementById('safari-new-tab-overlay');
+  const safariErrorOverlay = document.getElementById('safari-error-overlay');
+  const safariErrorBtn = document.getElementById('safari-error-btn');
+
+  function getActiveTab() {
+    return safariTabs.find(t => t.id === activeSafariTabId);
+  }
+
+  function renderSafariTabs() {
+    let html = '';
+    safariTabs.forEach(tab => {
+      const isActive = tab.id === activeSafariTabId ? 'active' : '';
+      const favicon = tab.isNewTab ? '🧭' : `<img src="https://www.google.com/s2/favicons?domain=${tab.url}" class="favicon" onerror="this.style.display='none'">`;
+      html += `
+        <div class="safari-tab ${isActive}" data-id="${tab.id}">
+          ${tab.isNewTab ? '<span style="margin-right:6px">🧭</span>' : favicon}
+          <span class="title">${tab.title}</span>
+          <div class="close-btn" data-id="${tab.id}">×</div>
+        </div>
+      `;
+    });
+    html += `<div class="safari-add-tab" id="safari-add-tab">+</div>`;
+    safariTabsContainer.innerHTML = html;
+
+    // Attach events
+    document.querySelectorAll('.safari-tab').forEach(el => {
+      el.addEventListener('click', (e) => {
+        if (e.target.classList.contains('close-btn')) return;
+        switchSafariTab(parseInt(el.getAttribute('data-id')));
+      });
+    });
+    document.querySelectorAll('.safari-tab .close-btn').forEach(el => {
+      el.addEventListener('click', (e) => {
+        e.stopPropagation();
+        closeSafariTab(parseInt(el.getAttribute('data-id')));
+      });
+    });
+    document.getElementById('safari-add-tab').addEventListener('click', () => {
+      openSafariNewTab();
+    });
+  }
+
+  function updateSafariUI() {
+    const tab = getActiveTab();
+    if (!tab) return;
+    
+    safariBtnBack.classList.toggle('disabled', tab.historyIdx <= 0);
+    safariBtnForward.classList.toggle('disabled', tab.historyIdx >= tab.history.length - 1);
+    
+    if (tab.isNewTab) {
+      safariAddressInput.value = '';
+      safariAddressIcon.textContent = '🔍';
+      safariAddressIcon.classList.remove('spinner-anim');
+      safariNewTabOverlay.classList.add('show');
+      safariErrorOverlay.classList.remove('show');
+      safariIframe.style.opacity = 0;
+      setTimeout(() => document.getElementById('safari-nt-search-input').focus(), 100);
+    } else {
+      safariAddressInput.value = tab.url;
+      safariAddressIcon.textContent = tab.url.startsWith('https') ? '🔒' : '🌐';
+      safariAddressIcon.classList.remove('spinner-anim');
+      safariNewTabOverlay.classList.remove('show');
+      safariErrorOverlay.classList.remove('show');
+      safariIframe.style.opacity = 1;
+      if (safariIframe.src !== tab.url) {
+        loadSafariUrl(tab.url);
+      }
+    }
+    renderSafariTabs();
+  }
+
+  function loadSafariUrl(url) {
+    safariAddressIcon.textContent = '↻';
+    safariAddressIcon.classList.add('spinner-anim');
+    safariErrorOverlay.classList.remove('show');
+    safariIframe.src = url;
+    
+    // Fallback error detection (since cross-origin onerror is unreliable)
+    // We clear any previous timeout
+    if (safariIframe.loadTimeout) clearTimeout(safariIframe.loadTimeout);
+    safariIframe.loadTimeout = setTimeout(() => {
+      safariAddressIcon.classList.remove('spinner-anim');
+      safariAddressIcon.textContent = url.startsWith('https') ? '🔒' : '🌐';
+    }, 2000);
+  }
+
+  safariIframe.onload = () => {
+    const tab = getActiveTab();
+    if (tab && !tab.isNewTab) {
+      safariAddressIcon.classList.remove('spinner-anim');
+      safariAddressIcon.textContent = tab.url.startsWith('https') ? '🔒' : '🌐';
+      try {
+        // Try to read title if same-origin (unlikely but good practice)
+        if (safariIframe.contentDocument && safariIframe.contentDocument.title) {
+          tab.title = safariIframe.contentDocument.title;
+          renderSafariTabs();
+        }
+      } catch(e) { /* cross-origin expected */ }
+    }
+  };
+
+  safariIframe.onerror = () => {
+    safariErrorOverlay.classList.add('show');
+  };
+
+  function navigateSafari(url) {
+    const tab = getActiveTab();
+    if (!tab) return;
+    
+    let finalUrl = url;
+    if (!url.includes('.') && !url.startsWith('http')) {
+      finalUrl = `https://www.google.com/search?q=${encodeURIComponent(url)}`;
+    } else if (!url.startsWith('http')) {
+      finalUrl = `https://${url}`;
+    }
+
+    tab.isNewTab = false;
+    tab.history = tab.history.slice(0, tab.historyIdx + 1);
+    tab.history.push(finalUrl);
+    tab.historyIdx++;
+    tab.url = finalUrl;
+    try { tab.title = new URL(finalUrl).hostname; } catch(e) { tab.title = finalUrl; }
+    
+    updateSafariUI();
+  }
+
+  function switchSafariTab(id) {
+    activeSafariTabId = id;
+    safariIframe.style.transition = 'opacity 0.1s';
+    safariIframe.style.opacity = 0;
+    setTimeout(() => {
+      updateSafariUI();
+    }, 100);
+  }
+
+  function closeSafariTab(id) {
+    safariTabs = safariTabs.filter(t => t.id !== id);
+    if (safariTabs.length === 0) {
+      openSafariNewTab();
+    } else if (activeSafariTabId === id) {
+      activeSafariTabId = safariTabs[safariTabs.length - 1].id;
+      updateSafariUI();
+    } else {
+      renderSafariTabs();
+    }
+  }
+
+  function openSafariNewTab() {
+    safariTabCounter++;
+    const newTab = { id: safariTabCounter, url: '', history: [], historyIdx: -1, title: 'Start Page', isNewTab: true };
+    safariTabs.push(newTab);
+    activeSafariTabId = safariTabCounter;
+    updateSafariUI();
+  }
+
+  // Address bar events
+  safariAddressInput.addEventListener('focus', () => safariAddressInput.select());
+  safariAddressInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      safariAddressInput.blur();
+      navigateSafari(safariAddressInput.value);
+    }
+  });
+  document.getElementById('safari-nt-search-input').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      navigateSafari(e.target.value);
+    }
+  });
+
+  // Nav buttons
+  safariBtnBack.addEventListener('click', () => {
+    const tab = getActiveTab();
+    if (tab && tab.historyIdx > 0) {
+      tab.historyIdx--;
+      tab.url = tab.history[tab.historyIdx];
+      try { tab.title = new URL(tab.url).hostname; } catch(e) { tab.title = tab.url; }
+      updateSafariUI();
+    }
+  });
+  safariBtnForward.addEventListener('click', () => {
+    const tab = getActiveTab();
+    if (tab && tab.historyIdx < tab.history.length - 1) {
+      tab.historyIdx++;
+      tab.url = tab.history[tab.historyIdx];
+      try { tab.title = new URL(tab.url).hostname; } catch(e) { tab.title = tab.url; }
+      updateSafariUI();
+    }
+  });
+  document.getElementById('safari-btn-reload').addEventListener('click', () => {
+    const tab = getActiveTab();
+    if (tab && !tab.isNewTab) loadSafariUrl(tab.url);
+  });
+
+  // Favorites
+  document.querySelectorAll('.safari-nt-fav').forEach(fav => {
+    fav.addEventListener('click', () => {
+      navigateSafari(fav.getAttribute('data-url'));
+    });
+  });
+
+  // Error page button
+  safariErrorBtn.addEventListener('click', () => {
+    const tab = getActiveTab();
+    if (tab) window.open(tab.url, '_blank');
+  });
+
+  // Safari Window Controls
+  document.getElementById('safari-btn-close').addEventListener('click', () => {
+    safariState.targetScaleX = 0.85; safariState.targetScaleY = 0.85;
+    safariState.targetOpacity = 0; safariState.isOpen = false;
+  });
+  document.getElementById('safari-btn-minimize').addEventListener('click', () => {
+    if (!safariState.isMinimized) {
+      safariState.targetScaleX = 0.2; safariState.targetScaleY = 0.04;
+      safariState.targetTranslateY = 350; safariState.targetOpacity = 0;
+      safariState.isMinimized = true;
+    } else {
+      safariState.targetScaleX = 1; safariState.targetScaleY = 1;
+      safariState.targetTranslateY = 0; safariState.targetOpacity = 1;
+      safariState.isMinimized = false;
+    }
+  });
+  document.getElementById('safari-btn-maximize').addEventListener('click', () => {
+    if (!safariState.isMaximized) {
+      safariState.preMaxDragX = safariState.targetDragX;
+      safariState.preMaxDragY = safariState.targetDragY;
+      safariState.targetDragX = 0; safariState.targetDragY = 0;
+      safariState.targetWidth = window.innerWidth;
+      safariState.targetHeight = window.innerHeight - 76; // leave room for dock
+      safariState.targetTranslateY = -38; safariState.isMaximized = true;
+    } else {
+      safariState.targetDragX = safariState.preMaxDragX;
+      safariState.targetDragY = safariState.preMaxDragY;
+      safariState.targetWidth = 1000; safariState.targetHeight = 650;
+      safariState.targetTranslateY = 0; safariState.isMaximized = false;
+    }
+  });
+
+  const safariIcon = document.querySelector('.dock-icon[data-name="Safari"]');
+  if(safariIcon) {
+    safariIcon.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (!safariState.isOpen || safariState.isMinimized) {
+        safariState.targetScaleX = 1; safariState.targetScaleY = 1;
+        safariState.targetWidth = safariState.isMaximized ? window.innerWidth : 1000;
+        safariState.targetHeight = safariState.isMaximized ? window.innerHeight - 76 : 650;
+        safariState.targetOpacity = 1; 
+        safariState.targetTranslateY = safariState.isMaximized ? -38 : 0;
+        safariState.isOpen = true; safariState.isMinimized = false;
+        
+        // Bring to front
+        safariWindow.style.zIndex = 51;
+        finderWindow.style.zIndex = 50;
+      }
+    });
+  }
+
+  // Safari Drag Logic
+  const safariTitlebar = document.getElementById('safari-titlebar');
+  let isDraggingSafari = false;
+  let sDragStartX = 0, sDragStartY = 0, sInitialDragX = 0, sInitialDragY = 0;
+
+  safariTitlebar.addEventListener('mousedown', (e) => {
+    if (e.target.closest('.traffic-lights') || e.target.closest('.safari-nav-btns') || e.target.closest('.safari-address-container') || e.target.closest('.safari-toolbar-right')) return;
+    if (safariState.isMaximized) return;
+    isDraggingSafari = true;
+    sDragStartX = e.clientX;
+    sDragStartY = e.clientY;
+    sInitialDragX = safariState.dragX;
+    sInitialDragY = safariState.dragY;
+    
+    safariIframe.style.pointerEvents = 'none';
+    
+    // Bring to front
+    safariWindow.style.zIndex = 51;
+    finderWindow.style.zIndex = 50;
+  });
+
+  window.addEventListener('mousemove', (e) => {
+    if (isDraggingSafari) {
+      safariState.targetDragX = sInitialDragX + (e.clientX - sDragStartX);
+      safariState.targetDragY = sInitialDragY + (e.clientY - sDragStartY);
+    }
+  });
+
+  window.addEventListener('mouseup', () => {
+    isDraggingSafari = false;
+    safariIframe.style.pointerEvents = 'auto';
+  });
+
+  // Bring finder to front on click
+  finderWindow.addEventListener('mousedown', () => {
+    finderWindow.style.zIndex = 51;
+    safariWindow.style.zIndex = 50;
+  });
+
+  document.body.addEventListener('click', (e) => {
+    // Background click logic removed so apps don't open automatically
+  });
+
+  // Initialize Safari
+  updateSafariUI();
+
+  // --- End Safari Logic ---
+
+  function animate() {
+    iconStates.forEach(state => {
+      if (isHovering && mouseX !== null) {
+        const rect = state.element.getBoundingClientRect();
+        const iconCenterX = rect.left + rect.width / 2;
+        const distance = Math.abs(mouseX - iconCenterX);
+        
+        state.targetScale = interpolate(distance, inputDistances, outputScales);
+      } else {
+        state.targetScale = 1;
+      }
+
+      // Spring physics step
+      const force = (state.targetScale - state.currentScale) * stiffness;
+      state.velocity += force;
+      state.velocity *= damping;
+      state.currentScale += state.velocity;
+
+      // Apply width and height
+      const currentSize = baseSize * state.currentScale;
+      state.element.style.width = `${currentSize}px`;
+      state.element.style.height = `${currentSize}px`;
+      
+      // Vertical lift: As an icon scales up, it also translates upward proportionally
+      const lift = (state.currentScale - 1) * -10; // negative translateY moves it up
+      state.element.style.transform = `translateY(${lift}px)`;
+    });
+
+    if (hoveredIcon) {
+      const dockRect = dock.getBoundingClientRect();
+      const iconRect = hoveredIcon.getBoundingClientRect();
+      
+      const centerX = (iconRect.left - dockRect.left) + (iconRect.width / 2);
+      const topY = (iconRect.top - dockRect.top) - 35; 
+      
+      tooltip.style.transform = `translate(${centerX}px, ${topY}px) translateX(-50%)`;
+    }
+
+    // Window animation
+    const winForceScaleX = (winState.targetScaleX - winState.scaleX) * winStiffness;
+    winState.velScaleX += winForceScaleX;
+    winState.velScaleX *= winDamping;
+    winState.scaleX += winState.velScaleX;
+
+    const winForceScaleY = (winState.targetScaleY - winState.scaleY) * winStiffness;
+    winState.velScaleY += winForceScaleY;
+    winState.velScaleY *= winDamping;
+    winState.scaleY += winState.velScaleY;
+
+    const winForceOpacity = (winState.targetOpacity - winState.opacity) * winStiffness;
+    winState.velOpacity += winForceOpacity;
+    winState.velOpacity *= winDamping;
+    winState.opacity += winState.velOpacity;
+
+    const winForceTranslateY = (winState.targetTranslateY - winState.translateY) * winStiffness;
+    winState.velTranslateY += winForceTranslateY;
+    winState.velTranslateY *= winDamping;
+    winState.translateY += winState.velTranslateY;
+
+    const winForceDragX = (winState.targetDragX - winState.dragX) * winStiffness;
+    winState.velDragX += winForceDragX;
+    winState.velDragX *= winDamping;
+    winState.dragX += winState.velDragX;
+
+    const winForceDragY = (winState.targetDragY - winState.dragY) * winStiffness;
+    winState.velDragY += winForceDragY;
+    winState.velDragY *= winDamping;
+    winState.dragY += winState.velDragY;
+
+    const winForceWidth = (winState.targetWidth - winState.width) * winStiffness;
+    winState.velWidth += winForceWidth;
+    winState.velWidth *= winDamping;
+    winState.width += winState.velWidth;
+
+    const winForceHeight = (winState.targetHeight - winState.height) * winStiffness;
+    winState.velHeight += winForceHeight;
+    winState.velHeight *= winDamping;
+    winState.height += winState.velHeight;
+
+    finderWindow.style.transform = `translate(${winState.dragX}px, ${winState.translateY + winState.dragY}px) scale(${winState.scaleX}, ${winState.scaleY})`;
+    finderWindow.style.opacity = winState.opacity;
+    finderWindow.style.width = `${winState.width}px`;
+    finderWindow.style.height = `${winState.height}px`;
+    finderWindow.style.marginLeft = `-${winState.width / 2}px`;
+    finderWindow.style.marginTop = `-${winState.height / 2}px`;
+
+    if (winState.isOpen) {
+      finderWindow.classList.add('interactive');
+      finderIcon && finderIcon.classList.add('active');
+      finderWindow.style.display = 'flex';
+    } else {
+      finderWindow.classList.remove('interactive');
+      finderIcon && finderIcon.classList.remove('active');
+      if (winState.opacity < 0.01) finderWindow.style.display = 'none';
+      else finderWindow.style.display = 'flex';
+    }
+
+    // Safari Window animation
+    const safForceScaleX = (safariState.targetScaleX - safariState.scaleX) * winStiffness;
+    safariState.velScaleX += safForceScaleX; safariState.velScaleX *= winDamping; safariState.scaleX += safariState.velScaleX;
+
+    const safForceScaleY = (safariState.targetScaleY - safariState.scaleY) * winStiffness;
+    safariState.velScaleY += safForceScaleY; safariState.velScaleY *= winDamping; safariState.scaleY += safariState.velScaleY;
+
+    const safForceOpacity = (safariState.targetOpacity - safariState.opacity) * winStiffness;
+    safariState.velOpacity += safForceOpacity; safariState.velOpacity *= winDamping; safariState.opacity += safariState.velOpacity;
+
+    const safForceTranslateY = (safariState.targetTranslateY - safariState.translateY) * winStiffness;
+    safariState.velTranslateY += safForceTranslateY; safariState.velTranslateY *= winDamping; safariState.translateY += safariState.velTranslateY;
+
+    const safForceDragX = (safariState.targetDragX - safariState.dragX) * winStiffness;
+    safariState.velDragX += safForceDragX; safariState.velDragX *= winDamping; safariState.dragX += safariState.velDragX;
+
+    const safForceDragY = (safariState.targetDragY - safariState.dragY) * winStiffness;
+    safariState.velDragY += safForceDragY; safariState.velDragY *= winDamping; safariState.dragY += safariState.velDragY;
+
+    const safForceWidth = (safariState.targetWidth - safariState.width) * winStiffness;
+    safariState.velWidth += safForceWidth; safariState.velWidth *= winDamping; safariState.width += safariState.velWidth;
+
+    const safForceHeight = (safariState.targetHeight - safariState.height) * winStiffness;
+    safariState.velHeight += safForceHeight; safariState.velHeight *= winDamping; safariState.height += safariState.velHeight;
+
+    safariWindow.style.transform = `translate(${safariState.dragX}px, ${safariState.translateY + safariState.dragY}px) scale(${safariState.scaleX}, ${safariState.scaleY})`;
+    safariWindow.style.opacity = safariState.opacity;
+    safariWindow.style.width = `${safariState.width}px`;
+    safariWindow.style.height = `${safariState.height}px`;
+    safariWindow.style.marginLeft = `-${safariState.width / 2}px`;
+    safariWindow.style.marginTop = `-${safariState.height / 2}px`;
+
+    if (safariState.isOpen) {
+      safariWindow.classList.add('interactive');
+      safariIcon && safariIcon.classList.add('active');
+      safariWindow.style.display = 'flex';
+    } else {
+      safariWindow.classList.remove('interactive');
+      safariIcon && safariIcon.classList.remove('active');
+      if (safariState.opacity < 0.01) safariWindow.style.display = 'none';
+      else safariWindow.style.display = 'flex';
+    }
+
+    // Terminal Window animation
+    const termForceScaleX = (terminalState.targetScaleX - terminalState.scaleX) * winStiffness;
+    terminalState.velScaleX += termForceScaleX; terminalState.velScaleX *= winDamping; terminalState.scaleX += terminalState.velScaleX;
+
+    const termForceScaleY = (terminalState.targetScaleY - terminalState.scaleY) * winStiffness;
+    terminalState.velScaleY += termForceScaleY; terminalState.velScaleY *= winDamping; terminalState.scaleY += terminalState.velScaleY;
+
+    const termForceOpacity = (terminalState.targetOpacity - terminalState.opacity) * winStiffness;
+    terminalState.velOpacity += termForceOpacity; terminalState.velOpacity *= winDamping; terminalState.opacity += terminalState.velOpacity;
+
+    const termForceTranslateY = (terminalState.targetTranslateY - terminalState.translateY) * winStiffness;
+    terminalState.velTranslateY += termForceTranslateY; terminalState.velTranslateY *= winDamping; terminalState.translateY += terminalState.velTranslateY;
+
+    const termForceDragX = (terminalState.targetDragX - terminalState.dragX) * winStiffness;
+    terminalState.velDragX += termForceDragX; terminalState.velDragX *= winDamping; terminalState.dragX += terminalState.velDragX;
+
+    const termForceDragY = (terminalState.targetDragY - terminalState.dragY) * winStiffness;
+    terminalState.velDragY += termForceDragY; terminalState.velDragY *= winDamping; terminalState.dragY += terminalState.velDragY;
+
+    const termForceWidth = (terminalState.targetWidth - terminalState.width) * winStiffness;
+    terminalState.velWidth += termForceWidth; terminalState.velWidth *= winDamping; terminalState.width += terminalState.velWidth;
+
+    const termForceHeight = (terminalState.targetHeight - terminalState.height) * winStiffness;
+    terminalState.velHeight += termForceHeight; terminalState.velHeight *= winDamping; terminalState.height += terminalState.velHeight;
+
+    terminalWindow.style.transform = `translate(${terminalState.dragX}px, ${terminalState.translateY + terminalState.dragY}px) scale(${terminalState.scaleX}, ${terminalState.scaleY})`;
+    terminalWindow.style.opacity = terminalState.opacity;
+    terminalWindow.style.width = `${terminalState.width}px`;
+    terminalWindow.style.height = `${terminalState.height}px`;
+    terminalWindow.style.marginLeft = `-${terminalState.width / 2}px`;
+    terminalWindow.style.marginTop = `-${terminalState.height / 2}px`;
+
+    if (terminalState.isOpen) {
+      terminalWindow.classList.add('interactive');
+      terminalIcon && terminalIcon.classList.add('active');
+      terminalWindow.style.display = 'flex';
+    } else {
+      terminalWindow.classList.remove('interactive');
+      terminalIcon && terminalIcon.classList.remove('active');
+      if (terminalState.opacity < 0.01) terminalWindow.style.display = 'none';
+      else terminalWindow.style.display = 'flex';
+    }
+
+    requestAnimationFrame(animate);
+  }
+
+  // Menu Bar Logic
+  const updateTime = () => {
+    const now = new Date();
+    const options = { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' };
+    document.getElementById('menubar-time').textContent = now.toLocaleString('en-US', options).replace(',', '');
+  };
+  setInterval(updateTime, 1000);
+  updateTime();
+
+  const appleMenuBtn = document.getElementById('apple-menu-btn');
+  const appleDropdown = document.getElementById('apple-dropdown');
+  
+  appleMenuBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    appleMenuBtn.classList.toggle('open');
+    appleDropdown.classList.toggle('show');
+  });
+
+  document.body.addEventListener('click', (e) => {
+    if (!appleDropdown.contains(e.target) && e.target !== appleMenuBtn && !appleMenuBtn.contains(e.target)) {
+      appleDropdown.classList.remove('show');
+      appleMenuBtn.classList.remove('open');
+    }
+  });
+
+  document.getElementById('about-mac').addEventListener('click', () => {
+    const aboutWindow = document.getElementById('about-window');
+    aboutWindow.classList.add('show');
+    appleDropdown.classList.remove('show');
+    appleMenuBtn.classList.remove('open');
+  });
+
+  document.getElementById('about-close').addEventListener('click', () => {
+    document.getElementById('about-window').classList.remove('show');
+  });
+
+  document.getElementById('sleep-mac').addEventListener('click', () => {
+    document.body.style.transition = "background 1s";
+    document.body.style.background = "#000";
+    document.querySelector('.dock-container').style.display = 'none';
+    document.querySelector('.menubar').style.display = 'none';
+    finderWindow.style.display = 'none';
+    safariWindow.style.display = 'none';
+    setTimeout(() => {
+      alert("System is sleeping. Refresh to wake up.");
+    }, 1000);
+  });
+
+  document.getElementById('restart-mac').addEventListener('click', () => {
+    location.reload();
+  });
+
+  document.getElementById('shutdown-mac').addEventListener('click', () => {
+    document.body.innerHTML = '<div style="width:100vw;height:100vh;background:#000;display:flex;align-items:center;justify-content:center;color:#fff;font-family:sans-serif;">System Shut Down</div>';
+  });
+
+  animate();
+</script>
+</body>
+</html>
