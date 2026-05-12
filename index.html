@@ -18,6 +18,22 @@
     src: url('https://github.com/samuelngs/apple-emoji-ttf/releases/download/macos-26-20260219-2aa12422/AppleColorEmoji-Windows.ttf') format('truetype');
   }
 
+  .bg-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -100;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+  }
+  .bg-layer.active {
+    opacity: 1;
+  }
   body {
     margin: 0;
     padding: 0;
@@ -25,7 +41,7 @@
     display: flex;
     justify-content: center;
     align-items: flex-end;
-    background: url('https://512pixels.net/wp-content/uploads/2025/06/26-Tahoe-Light-6K-thumb.jpeg') center/cover no-repeat;
+    background: #000;
     overflow: hidden;
     font-family: 'SF Pro Display', 'Apple Color Emoji Custom', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   }
@@ -315,6 +331,99 @@
     display: flex;
     align-items: center;
     justify-content: center;
+  }
+
+  /* Settings Window Styles */
+  #settings-window {
+    width: 600px;
+    height: 480px;
+    background: rgba(30, 30, 30, 0.85); /* macOS Tahoe dark mode feel */
+    border-radius: 12px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    color: #fff;
+    z-index: 50;
+  }
+  #settings-window .titlebar {
+    background: transparent;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    height: 52px;
+  }
+  #settings-window .window-title {
+    color: #d1d1d1;
+    font-size: 13px;
+    font-weight: 500;
+  }
+  .settings-container {
+    display: flex;
+    flex: 1;
+    background: transparent;
+  }
+  .settings-sidebar {
+    width: 200px;
+    background: rgba(0, 0, 0, 0.2);
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 12px 10px;
+    overflow-y: auto;
+  }
+  .settings-sidebar-item {
+    padding: 6px 12px;
+    border-radius: 6px;
+    margin-bottom: 4px;
+    cursor: pointer;
+    font-size: 13px;
+    color: #ddd;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.1s;
+  }
+  .settings-sidebar-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+  .settings-sidebar-item.active {
+    background: #007aff;
+    color: #fff;
+    font-weight: 500;
+  }
+  .settings-content {
+    flex: 1;
+    padding: 24px;
+    overflow-y: auto;
+    background: transparent;
+  }
+  .wallpaper-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 16px;
+  }
+  .wallpaper-item {
+    cursor: pointer;
+    text-align: center;
+  }
+  .wallpaper-thumb {
+    width: 100%;
+    aspect-ratio: 16/10;
+    border-radius: 6px;
+    background-size: cover;
+    background-position: center;
+    border: 2px solid transparent;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
+  .wallpaper-item:hover .wallpaper-thumb {
+    transform: scale(1.02);
+  }
+  .wallpaper-item.active .wallpaper-thumb {
+    border-color: #007aff;
+    border-width: 3px;
+  }
+  .wallpaper-name {
+    margin-top: 8px;
+    font-size: 12px;
+    color: #ddd;
   }
 
   /* Terminal Styles */
@@ -822,6 +931,8 @@
 </style>
 </head>
 <body>
+<div class="bg-layer active" id="bg-layer-1" style="background-image: url('https://512pixels.net/wp-content/uploads/2025/06/26-Tahoe-Light-6K-thumb.jpeg')"></div>
+<div class="bg-layer" id="bg-layer-2"></div>
 
 <div class="desktop-icons" id="desktop-icons"></div>
 
@@ -1039,6 +1150,45 @@
     <div class="terminal-input-line">
       <span class="terminal-prompt">user@MacBook-Pro ~ %</span>
       <input type="text" class="terminal-input" id="terminal-input" autocomplete="off" spellcheck="false" autofocus>
+    </div>
+  </div>
+</div>
+
+<div class="window" id="settings-window">
+  <div class="titlebar" id="settings-titlebar">
+    <div class="traffic-lights">
+      <div class="btn close" id="settings-btn-close"></div>
+      <div class="btn minimize" id="settings-btn-minimize"></div>
+      <div class="btn maximize" id="settings-btn-maximize"></div>
+    </div>
+    <div class="window-title">System Settings</div>
+  </div>
+  <div class="settings-container">
+    <div class="settings-sidebar">
+      <div class="settings-sidebar-item">General</div>
+      <div class="settings-sidebar-item">Appearance</div>
+      <div class="settings-sidebar-item">Accessibility</div>
+      <div class="settings-sidebar-item">Control Center</div>
+      <div class="settings-sidebar-item">Desktop & Dock</div>
+      <div class="settings-sidebar-item">Displays</div>
+      <div class="settings-sidebar-item active">Wallpaper</div>
+    </div>
+    <div class="settings-content">
+      <h2 style="margin: 0 0 20px 0; font-weight: 600; font-size: 22px;">Wallpaper</h2>
+      <div class="wallpaper-grid" id="wallpaper-grid">
+        <div class="wallpaper-item active" data-bg="https://512pixels.net/wp-content/uploads/2025/06/26-Tahoe-Light-6K-thumb.jpeg">
+          <div class="wallpaper-thumb" style="background-image: url('https://512pixels.net/wp-content/uploads/2025/06/26-Tahoe-Light-6K-thumb.jpeg');"></div>
+          <div class="wallpaper-name">Tahoe default</div>
+        </div>
+        <div class="wallpaper-item" data-bg="https://512pixels.net/wp-content/uploads/2025/08/26-Tahoe-Beach-Day-thumb.jpeg">
+          <div class="wallpaper-thumb" style="background-image: url('https://512pixels.net/wp-content/uploads/2025/08/26-Tahoe-Beach-Day-thumb.jpeg');"></div>
+          <div class="wallpaper-name">Tahoe beach</div>
+        </div>
+        <div class="wallpaper-item" data-bg="https://512pixels.net/wp-content/uploads/2025/06/15-Sequoia-Light-thumbnail.jpg">
+          <div class="wallpaper-thumb" style="background-image: url('https://512pixels.net/wp-content/uploads/2025/06/15-Sequoia-Light-thumbnail.jpg');"></div>
+          <div class="wallpaper-name">Sequoia light</div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -1390,6 +1540,130 @@
   });
   renderDesktop();
   renderContent();
+
+  // --- Settings Logic ---
+  const settingsWindow = document.getElementById('settings-window');
+  const settingsTitlebar = document.getElementById('settings-titlebar');
+  const settingsState = {
+    scaleX: 0.85, targetScaleX: 0.85, velScaleX: 0,
+    scaleY: 0.85, targetScaleY: 0.85, velScaleY: 0,
+    opacity: 0, targetOpacity: 0, velOpacity: 0,
+    translateY: 0, targetTranslateY: 0, velTranslateY: 0,
+    dragX: 0, targetDragX: 0, velDragX: 0,
+    dragY: 0, targetDragY: 0, velDragY: 0,
+    width: 600, targetWidth: 600, velWidth: 0,
+    height: 480, targetHeight: 480, velHeight: 0,
+    isOpen: false, isMinimized: false, isMaximized: false,
+    preMaxDragX: 0, preMaxDragY: 0
+  };
+
+  document.getElementById('settings-btn-close').addEventListener('click', () => {
+    settingsState.targetScaleX = 0.85; settingsState.targetScaleY = 0.85;
+    settingsState.targetOpacity = 0; settingsState.isOpen = false;
+  });
+  document.getElementById('settings-btn-minimize').addEventListener('click', () => {
+    if (!settingsState.isMinimized) {
+      settingsState.targetScaleX = 0.2; settingsState.targetScaleY = 0.05;
+      settingsState.targetTranslateY = 300; settingsState.targetOpacity = 0;
+      settingsState.isOpen = true; settingsState.isMinimized = true;
+    }
+  });
+  document.getElementById('settings-btn-maximize').addEventListener('click', () => {
+    if (!settingsState.isMaximized) {
+      settingsState.preMaxDragX = settingsState.targetDragX;
+      settingsState.preMaxDragY = settingsState.targetDragY;
+      settingsState.targetDragX = 0; settingsState.targetDragY = 0;
+      settingsState.targetWidth = window.innerWidth - 40;
+      settingsState.targetHeight = window.innerHeight - 120;
+      settingsState.targetTranslateY = -30;
+      settingsState.isMaximized = true;
+    } else {
+      settingsState.targetDragX = settingsState.preMaxDragX;
+      settingsState.targetDragY = settingsState.preMaxDragY;
+      settingsState.targetWidth = 600; settingsState.targetHeight = 480;
+      settingsState.targetTranslateY = 0;
+      settingsState.isMaximized = false;
+    }
+  });
+
+  const settingsIcon = icons.find(icon => icon.getAttribute('data-name') === 'System Settings');
+  if (settingsIcon) {
+    settingsIcon.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (!settingsState.isOpen || settingsState.isMinimized) {
+        settingsState.targetScaleX = 1; settingsState.targetScaleY = 1;
+        settingsState.targetWidth = settingsState.isMaximized ? window.innerWidth - 40 : 600;
+        settingsState.targetHeight = settingsState.isMaximized ? window.innerHeight - 120 : 480;
+        settingsState.targetOpacity = 1; 
+        settingsState.targetTranslateY = settingsState.isMaximized ? -30 : 0;
+        settingsState.isOpen = true; settingsState.isMinimized = false;
+        
+        settingsWindow.style.zIndex = 53;
+      } else {
+        settingsState.targetScaleX = 0.2; settingsState.targetScaleY = 0.05;
+        settingsState.targetTranslateY = 300; settingsState.targetOpacity = 0;
+        settingsState.isMinimized = true;
+      }
+    });
+  }
+
+  let isSettingsDragging = false;
+  let settingsStartX, settingsStartY, settingsInitialDragX, settingsInitialDragY;
+
+  settingsTitlebar.addEventListener('mousedown', (e) => {
+    if (e.target.closest('.traffic-lights')) return;
+    settingsWindow.style.zIndex = Array.from(document.querySelectorAll('.window')).reduce((max, w) => Math.max(max, parseInt(w.style.zIndex || 10)), 0) + 1;
+    isSettingsDragging = true;
+    settingsStartX = e.clientX;
+    settingsStartY = e.clientY;
+    settingsInitialDragX = settingsState.targetDragX;
+    settingsInitialDragY = settingsState.targetDragY;
+    document.body.style.userSelect = 'none';
+  });
+
+  document.addEventListener('mousemove', (e) => {
+    // Keep existing dragging logic for Terminal & Safari & Finder...
+    // Add Settings dragging logic
+    if (isSettingsDragging) {
+      if (settingsState.isMaximized) {
+        settingsState.isMaximized = false;
+        settingsState.targetWidth = 600;
+        settingsState.targetHeight = 480;
+        settingsState.targetTranslateY = 0;
+      }
+      settingsState.targetDragX = settingsInitialDragX + (e.clientX - settingsStartX);
+      settingsState.targetDragY = settingsInitialDragY + (e.clientY - settingsStartY);
+    }
+  });
+
+  document.addEventListener('mouseup', () => {
+    isSettingsDragging = false;
+  });
+  
+  const wallpaperItems = document.querySelectorAll('.wallpaper-item');
+  const bgLayer1 = document.getElementById('bg-layer-1');
+  const bgLayer2 = document.getElementById('bg-layer-2');
+  let currentBgLayer = 1;
+
+  wallpaperItems.forEach(item => {
+    item.addEventListener('click', () => {
+      wallpaperItems.forEach(w => w.classList.remove('active'));
+      item.classList.add('active');
+      const newUrl = item.getAttribute('data-bg');
+      
+      if (currentBgLayer === 1) {
+        bgLayer2.style.backgroundImage = `url('${newUrl}')`;
+        bgLayer2.classList.add('active');
+        bgLayer1.classList.remove('active');
+        currentBgLayer = 2;
+      } else {
+        bgLayer1.style.backgroundImage = `url('${newUrl}')`;
+        bgLayer1.classList.add('active');
+        bgLayer2.classList.remove('active');
+        currentBgLayer = 1;
+      }
+    });
+  });
 
   // --- Terminal Logic ---
   const terminalWindow = document.getElementById('terminal-window');
@@ -2065,6 +2339,49 @@
       else terminalWindow.style.display = 'flex';
     }
 
+    // Settings Window animation
+    const setForceScaleX = (settingsState.targetScaleX - settingsState.scaleX) * winStiffness;
+    settingsState.velScaleX += setForceScaleX; settingsState.velScaleX *= winDamping; settingsState.scaleX += settingsState.velScaleX;
+
+    const setForceScaleY = (settingsState.targetScaleY - settingsState.scaleY) * winStiffness;
+    settingsState.velScaleY += setForceScaleY; settingsState.velScaleY *= winDamping; settingsState.scaleY += settingsState.velScaleY;
+
+    const setForceOpacity = (settingsState.targetOpacity - settingsState.opacity) * winStiffness;
+    settingsState.velOpacity += setForceOpacity; settingsState.velOpacity *= winDamping; settingsState.opacity += settingsState.velOpacity;
+
+    const setForceTranslateY = (settingsState.targetTranslateY - settingsState.translateY) * winStiffness;
+    settingsState.velTranslateY += setForceTranslateY; settingsState.velTranslateY *= winDamping; settingsState.translateY += settingsState.velTranslateY;
+
+    const setForceDragX = (settingsState.targetDragX - settingsState.dragX) * winStiffness;
+    settingsState.velDragX += setForceDragX; settingsState.velDragX *= winDamping; settingsState.dragX += settingsState.velDragX;
+
+    const setForceDragY = (settingsState.targetDragY - settingsState.dragY) * winStiffness;
+    settingsState.velDragY += setForceDragY; settingsState.velDragY *= winDamping; settingsState.dragY += settingsState.velDragY;
+
+    const setForceWidth = (settingsState.targetWidth - settingsState.width) * winStiffness;
+    settingsState.velWidth += setForceWidth; settingsState.velWidth *= winDamping; settingsState.width += settingsState.velWidth;
+
+    const setForceHeight = (settingsState.targetHeight - settingsState.height) * winStiffness;
+    settingsState.velHeight += setForceHeight; settingsState.velHeight *= winDamping; settingsState.height += settingsState.velHeight;
+
+    settingsWindow.style.transform = `translate(${settingsState.dragX}px, ${settingsState.translateY + settingsState.dragY}px) scale(${settingsState.scaleX}, ${settingsState.scaleY})`;
+    settingsWindow.style.opacity = settingsState.opacity;
+    settingsWindow.style.width = `${settingsState.width}px`;
+    settingsWindow.style.height = `${settingsState.height}px`;
+    settingsWindow.style.marginLeft = `-${settingsState.width / 2}px`;
+    settingsWindow.style.marginTop = `-${settingsState.height / 2}px`;
+
+    if (settingsState.isOpen) {
+      settingsWindow.classList.add('interactive');
+      settingsIcon && settingsIcon.classList.add('active');
+      settingsWindow.style.display = 'flex';
+    } else {
+      settingsWindow.classList.remove('interactive');
+      settingsIcon && settingsIcon.classList.remove('active');
+      if (settingsState.opacity < 0.01) settingsWindow.style.display = 'none';
+      else settingsWindow.style.display = 'flex';
+    }
+
     requestAnimationFrame(animate);
   }
 
@@ -2107,6 +2424,7 @@
   document.getElementById('sleep-mac').addEventListener('click', () => {
     document.body.style.transition = "background 1s";
     document.body.style.background = "#000";
+    document.querySelectorAll('.bg-layer').forEach(l => l.style.opacity = '0');
     document.querySelector('.dock-container').style.display = 'none';
     document.querySelector('.menubar').style.display = 'none';
     finderWindow.style.display = 'none';
@@ -2258,6 +2576,7 @@
   
   createLiquidGlassForElement('.dock-container', 'dock-liquid-glass', 24, 2);
   createLiquidGlassForElement('#terminal-window', 'terminal-liquid-glass', 10, 3);
+  createLiquidGlassForElement('#settings-window', 'settings-liquid-glass', 12, 10);
   createLiquidGlassForElement('#about-window', 'about-liquid-glass', 10, 6);
 
   animate();
