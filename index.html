@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="referrer" content="no-referrer">
-<meta name="google-site-verification" content="Ipn_wsdXTS0qF4hwlxABRtyWFhmXGICmU2naZtSrUcI" />
 <title>macOS Dock</title>
 <style>
   @font-face {
@@ -36,8 +35,6 @@
     padding: 10px;
     border-radius: 24px;
     background: rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.3);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
     display: flex;
@@ -325,8 +322,6 @@
     width: 600px;
     height: 400px;
     background: rgba(30, 30, 30, 0.85);
-    backdrop-filter: blur(25px);
-    -webkit-backdrop-filter: blur(25px);
     border-radius: 10px;
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
     display: none;
@@ -2112,6 +2107,141 @@
   document.getElementById('shutdown-mac').addEventListener('click', () => {
     document.body.innerHTML = '<div style="width:100vw;height:100vh;background:#000;display:flex;align-items:center;justify-content:center;color:#fff;font-family:sans-serif;">System Shut Down</div>';
   });
+
+  // Liquid Glass Effect
+  function createLiquidGlassForElement(elementSelector, idPrefix, elementRadius) {
+    const el = document.querySelector(elementSelector);
+    if (!el) return;
+
+    const id = idPrefix;
+    let svg = document.getElementById(id + '-svg');
+    if (svg) svg.remove();
+
+    svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.id = id + '-svg';
+    svg.style.cssText = 'position: fixed; top: 0; left: 0; width: 0; height: 0; pointer-events: none; z-index: -1;';
+    
+    const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+    const filter = document.createElementNS('http://www.w3.org/2000/svg', 'filter');
+    filter.setAttribute('id', `${id}_filter`);
+    filter.setAttribute('filterUnits', 'userSpaceOnUse');
+    filter.setAttribute('primitiveUnits', 'userSpaceOnUse');
+    filter.setAttribute('colorInterpolationFilters', 'sRGB');
+    filter.setAttribute('x', '0');
+    filter.setAttribute('y', '0');
+
+    const feImage = document.createElementNS('http://www.w3.org/2000/svg', 'feImage');
+    feImage.setAttribute('id', `${id}_map`);
+    feImage.setAttribute('result', 'map');
+    feImage.setAttribute('preserveAspectRatio', 'none');
+    feImage.setAttribute('x', '0');
+    feImage.setAttribute('y', '0');
+
+    const feDisplacementMap = document.createElementNS('http://www.w3.org/2000/svg', 'feDisplacementMap');
+    feDisplacementMap.setAttribute('in', 'SourceGraphic');
+    feDisplacementMap.setAttribute('in2', 'map');
+    feDisplacementMap.setAttribute('xChannelSelector', 'R');
+    feDisplacementMap.setAttribute('yChannelSelector', 'G');
+    
+    filter.appendChild(feImage);
+    filter.appendChild(feDisplacementMap);
+    defs.appendChild(filter);
+    svg.appendChild(defs);
+    document.body.appendChild(svg);
+
+    function smoothStep(a, b, t) {
+      t = Math.max(0, Math.min(1, (t - a) / (b - a)));
+      return t * t * (3 - 2 * t);
+    }
+
+    function length(x, y) { return Math.sqrt(x * x + y * y); }
+
+    function roundedRectSDF(x, y, width, height, radius) {
+      const qx = Math.abs(x) - width + radius;
+      const qy = Math.abs(y) - height + radius;
+      return Math.min(Math.max(qx, qy), 0) + length(Math.max(qx, 0), Math.max(qy, 0)) - radius;
+    }
+
+    let lastW = 0, lastH = 0;
+    let frameId = null;
+
+    function updateMap() {
+      const w = Math.max(10, el.offsetWidth);
+      const h = Math.max(10, el.offsetHeight);
+
+      // Recreate only if size changed by at least 2px
+      if (Math.abs(w - lastW) < 2 && Math.abs(h - lastH) < 2) return;
+      lastW = w; lastH = h;
+
+      const canvas = document.createElement('canvas');
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      const data = new Uint8ClampedArray(w * h * 4);
+
+      filter.setAttribute('width', w.toString());
+      filter.setAttribute('height', h.toString());
+      feImage.setAttribute('width', w.toString());
+      feImage.setAttribute('height', h.toString());
+
+      let maxScale = 0;
+      const rawValues = [];
+
+      for (let i = 0; i < data.length; i += 4) {
+        const x = (i / 4) % w;
+        const y = Math.floor((i / 4) / w);
+
+        const px = x - w/2;
+        const py = y - h/2;
+
+        const dist = roundedRectSDF(px, py, w/2, h/2, elementRadius);
+        const d = -dist; // positive inside
+        
+        let scaled = 1.0;
+        if (dist <= 0) {
+           // Inside - smoothly transition scale from 1.0 at edge to 0.90 inside over 30px
+           const t = Math.max(0, Math.min(1, d / 30));
+           const smoothT = t * t * (3 - 2 * t);
+           scaled = 1.0 - 0.10 * smoothT;
+        }
+
+        const dx = px * scaled - px;
+        const dy = py * scaled - py;
+
+        maxScale = Math.max(maxScale, Math.abs(dx), Math.abs(dy));
+        rawValues.push(dx, dy);
+      }
+
+      if(maxScale === 0) maxScale = 1;
+      maxScale *= 2.0;
+
+      let index = 0;
+      for (let i = 0; i < data.length; i += 4) {
+        const r = rawValues[index++] / maxScale + 0.5;
+        const g = rawValues[index++] / maxScale + 0.5;
+        data[i] = r * 255;
+        data[i + 1] = g * 255;
+        data[i + 2] = 0;
+        data[i + 3] = 255;
+      }
+
+      ctx.putImageData(new ImageData(data, w, h), 0, 0);
+      feImage.setAttributeNS('http://www.w3.org/1999/xlink', 'href', canvas.toDataURL('image/png'));
+      feDisplacementMap.setAttribute('scale', maxScale.toString());
+    }
+
+    const observer = new ResizeObserver(() => {
+      if (frameId) cancelAnimationFrame(frameId);
+      frameId = requestAnimationFrame(updateMap);
+    });
+    observer.observe(el);
+
+    el.style.backdropFilter = `url(#${id}_filter) blur(3px) contrast(1.1) brightness(1.05) saturate(1.1)`;
+    el.style.webkitBackdropFilter = `url(#${id}_filter) blur(3px) contrast(1.1) brightness(1.05) saturate(1.1)`;
+  }
+  
+  createLiquidGlassForElement('.dock-container', 'dock-liquid-glass', 24);
+  createLiquidGlassForElement('#terminal-window', 'terminal-liquid-glass', 10);
 
   animate();
 </script>
