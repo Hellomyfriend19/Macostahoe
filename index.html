@@ -739,9 +739,7 @@
     height: auto;
     margin-left: -150px;
     margin-top: -200px;
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(40px);
-    -webkit-backdrop-filter: blur(40px);
+    background: rgba(255, 255, 255, 0.15); /* More transparent, not dark color */
     z-index: 10000;
     opacity: 0;
     pointer-events: none;
@@ -753,10 +751,15 @@
     pointer-events: auto;
     transform: scale(1);
   }
+  #about-window .titlebar {
+    background: transparent;
+    border-bottom: none;
+  }
   .about-content {
     padding: 20px;
     text-align: center;
-    color: #333;
+    color: #fff;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.4);
   }
   .about-logo {
     width: 60px;
@@ -768,15 +771,16 @@
     font-weight: 700;
     margin: 0 0 5px 0;
     letter-spacing: -0.5px;
+    color: #fff;
   }
   .about-version {
     font-size: 12px;
-    color: #666;
+    color: #aaa;
     margin: 0 0 15px 0;
   }
   .about-divider {
     height: 1px;
-    background: #ddd;
+    background: rgba(255, 255, 255, 0.1);
     margin: 15px 0;
   }
   .about-specs {
@@ -785,19 +789,30 @@
     margin: 4px 0;
     line-height: 1.4;
   }
+  .about-specs strong {
+    color: #fff;
+    font-weight: 700;
+  }
+  .about-specs span.spec-value {
+    color: #aaa;
+    font-weight: normal;
+  }
   .about-footer {
     margin-top: 20px;
   }
   .about-btn {
-    background: #fff;
-    border: 1px solid #ccc;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
     border-radius: 4px;
     padding: 4px 12px;
     font-size: 12px;
     cursor: pointer;
   }
   .about-btn:hover {
-    background: #f0f0f0;
+    background: rgba(255, 255, 255, 0.2);
   }
   .btn.disabled {
     background: #ddd !important;
@@ -844,10 +859,10 @@
     <div class="menu-item">Help</div>
   </div>
   <div class="menubar-right">
-    <div class="menu-item">🔋 100%</div>
-    <div class="menu-item">📶</div>
-    <div class="menu-item">🔍</div>
-    <div class="menu-item">🎛</div>
+    <div class="menu-item"><img src="https://github.com/Hellomyfriend19/Macostahoe/blob/main/battery.png?raw=true" style="height: 22px; filter: brightness(0) invert(1) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.15));" alt="Battery"></div>
+    <div class="menu-item"><img src="https://github.com/Hellomyfriend19/Macostahoe/blob/main/wifi.png?raw=true" style="height: 22px; filter: brightness(0) invert(1) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.15));" alt="WiFi"></div>
+    <div class="menu-item"><img src="https://github.com/Hellomyfriend19/Macostahoe/blob/main/language.png?raw=true" style="height: 22px; filter: brightness(0) invert(1) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.15));" alt="Search"></div>
+    <div class="menu-item"><img src="https://github.com/Hellomyfriend19/Macostahoe/blob/main/settings.png?raw=true" style="height: 22px; filter: brightness(0) invert(1) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.15));" alt="Control Center"></div>
     <div class="menu-item" id="menubar-time">Tue Mar 17 2:21 PM</div>
   </div>
   
@@ -880,14 +895,15 @@
     </div>
   </div>
   <div class="about-content">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" class="about-logo" alt="Apple">
-    <h2 class="about-title">macOS <span style="font-weight:300">Tahoe</span></h2>
-    <p class="about-version">Version 15.0</p>
-    <div class="about-divider"></div>
-    <p class="about-specs"><strong>Emulator:</strong> Bubu</p>
-    <p class="about-specs"><strong>Processor:</strong> Apple M4 Max</p>
-    <p class="about-specs"><strong>Memory:</strong> 128 GB</p>
-    <p class="about-specs"><strong>Startup Disk:</strong> Macintosh HD</p>
+    <img src="https://github.com/Hellomyfriend19/Macostahoe/blob/main/image%20(12).png?raw=true" class="about-logo" alt="MacBook Pro" style="width: 120px; height: auto; margin-bottom: 10px;">
+    <h2 class="about-title" style="font-weight: 500; font-size: 20px; letter-spacing: 0.5px;">MacBook Pro</h2>
+    <div class="about-divider" style="margin-top: 15px;"></div>
+    <p class="about-specs"><strong>Emulator:</strong> <span class="spec-value">Bubu</span></p>
+    <p class="about-specs"><strong>Processor:</strong> <span class="spec-value">Apple M4 Max</span></p>
+    <p class="about-specs"><strong>Memory:</strong> <span class="spec-value">128 GB</span></p>
+    <p class="about-specs"><strong>Startup Disk:</strong> <span class="spec-value">Macintosh HD</span></p>
+    <p class="about-specs"><strong>Serial Number:</strong> <span class="spec-value">ZNKQ5JKRLO</span></p>
+    <p class="about-specs"><strong>macOS:</strong> <span class="spec-value">26.0</span></p>
     <div class="about-footer">
       <button class="about-btn">More Info...</button>
     </div>
@@ -2109,7 +2125,7 @@
   });
 
   // Liquid Glass Effect
-  function createLiquidGlassForElement(elementSelector, idPrefix, elementRadius) {
+  function createLiquidGlassForElement(elementSelector, idPrefix, elementRadius, blurRadius = 3) {
     const el = document.querySelector(elementSelector);
     if (!el) return;
 
@@ -2236,12 +2252,13 @@
     });
     observer.observe(el);
 
-    el.style.backdropFilter = `url(#${id}_filter) blur(3px) contrast(1.1) brightness(1.05) saturate(1.1)`;
-    el.style.webkitBackdropFilter = `url(#${id}_filter) blur(3px) contrast(1.1) brightness(1.05) saturate(1.1)`;
+    el.style.backdropFilter = `url(#${id}_filter) blur(${blurRadius}px) contrast(1.1) brightness(1.05) saturate(1.1)`;
+    el.style.webkitBackdropFilter = `url(#${id}_filter) blur(${blurRadius}px) contrast(1.1) brightness(1.05) saturate(1.1)`;
   }
   
-  createLiquidGlassForElement('.dock-container', 'dock-liquid-glass', 24);
-  createLiquidGlassForElement('#terminal-window', 'terminal-liquid-glass', 10);
+  createLiquidGlassForElement('.dock-container', 'dock-liquid-glass', 24, 2);
+  createLiquidGlassForElement('#terminal-window', 'terminal-liquid-glass', 10, 3);
+  createLiquidGlassForElement('#about-window', 'about-liquid-glass', 10, 6);
 
   animate();
 </script>
