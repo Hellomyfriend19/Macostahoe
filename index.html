@@ -124,7 +124,7 @@
     margin-left: -400px;
     margin-top: -250px;
     background: #fff;
-    border-radius: 18px;
+    border-radius: 24px;
     box-shadow: 0 20px 60px rgba(0,0,0,0.3), 0 0 0 1px rgba(0,0,0,0.1);
     display: flex;
     flex-direction: column;
@@ -338,7 +338,7 @@
     width: 600px;
     height: 480px;
     background: rgba(30, 30, 30, 0.85); /* macOS Tahoe dark mode feel */
-    border-radius: 12px;
+    border-radius: 24px;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
     display: none;
     flex-direction: column;
@@ -426,12 +426,79 @@
     color: #ddd;
   }
 
+  /* Launchpad Styles */
+  #launchpad-window {
+    width: 500px;
+    height: 500px;
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: 26px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    z-index: 100;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-top: -250px;
+    margin-left: -250px;
+  }
+  .launchpad-titlebar {
+    height: 52px;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #666;
+    user-select: none;
+  }
+  .launchpad-titlebar img {
+    width: 30px;
+    height: 30px;
+    margin-right: 8px;
+  }
+  .launchpad-content {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-auto-rows: max-content;
+    gap: 30px 10px;
+    padding: 30px;
+    overflow-y: auto;
+  }
+  .launchpad-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+  }
+  .launchpad-item:hover .launchpad-icon {
+    transform: scale(1.05);
+  }
+  .launchpad-icon {
+    width: 64px;
+    height: 64px;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    margin-bottom: 8px;
+    transition: transform 0.2s ease;
+  }
+  .launchpad-name {
+    font-size: 13px;
+    color: #000;
+    font-weight: 500;
+    text-shadow: 0 1px 2px rgba(255,255,255,0.3);
+    text-align: center;
+  }
+
   /* Terminal Styles */
   #terminal-window {
     width: 600px;
     height: 400px;
     background: rgba(30, 30, 30, 0.85);
-    border-radius: 10px;
+    border-radius: 24px;
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
     display: none;
     flex-direction: column;
@@ -801,10 +868,10 @@
     position: absolute;
     top: 28px;
     left: 10px;
-    background: rgba(30, 30, 30, 0.85);
+    background: rgba(255, 255, 255, 0.15); /* Match about window transparency */
     backdrop-filter: blur(40px);
     -webkit-backdrop-filter: blur(40px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 8px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
     padding: 6px;
@@ -961,7 +1028,7 @@
     <div class="menu-item apple-icon" id="apple-menu-btn">
       <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" alt="Apple">
     </div>
-    <div class="menu-item active">Finder</div>
+    <div class="menu-item active" id="active-app-name">Finder</div>
     <div class="menu-item">File</div>
     <div class="menu-item">Edit</div>
     <div class="menu-item">View</div>
@@ -1174,28 +1241,57 @@
       <div class="settings-sidebar-item active">Wallpaper</div>
     </div>
     <div class="settings-content">
-      <h2 style="margin: 0 0 20px 0; font-weight: 600; font-size: 22px;">Wallpaper</h2>
-      <div class="wallpaper-grid" id="wallpaper-grid">
-        <div class="wallpaper-item active" data-bg="https://512pixels.net/wp-content/uploads/2025/06/26-Tahoe-Light-6K-thumb.jpeg">
-          <div class="wallpaper-thumb" style="background-image: url('https://512pixels.net/wp-content/uploads/2025/06/26-Tahoe-Light-6K-thumb.jpeg');"></div>
-          <div class="wallpaper-name">Tahoe default</div>
+      <div id="settings-view-wallpaper">
+        <h2 style="margin: 0 0 20px 0; font-weight: 600; font-size: 22px;">Wallpaper</h2>
+        <div class="wallpaper-grid" id="wallpaper-grid">
+          <div class="wallpaper-item active" data-bg="https://512pixels.net/wp-content/uploads/2025/06/26-Tahoe-Light-6K-thumb.jpeg">
+            <div class="wallpaper-thumb" style="background-image: url('https://512pixels.net/wp-content/uploads/2025/06/26-Tahoe-Light-6K-thumb.jpeg');"></div>
+            <div class="wallpaper-name">Tahoe default</div>
+          </div>
+          <div class="wallpaper-item" data-bg="https://512pixels.net/wp-content/uploads/2025/08/26-Tahoe-Beach-Day-thumb.jpeg">
+            <div class="wallpaper-thumb" style="background-image: url('https://512pixels.net/wp-content/uploads/2025/08/26-Tahoe-Beach-Day-thumb.jpeg');"></div>
+            <div class="wallpaper-name">Tahoe beach</div>
+          </div>
+          <div class="wallpaper-item" data-bg="https://512pixels.net/wp-content/uploads/2025/06/15-Sequoia-Light-thumbnail.jpg">
+            <div class="wallpaper-thumb" style="background-image: url('https://512pixels.net/wp-content/uploads/2025/06/15-Sequoia-Light-thumbnail.jpg');"></div>
+            <div class="wallpaper-name">Sequoia light</div>
+          </div>
         </div>
-        <div class="wallpaper-item" data-bg="https://512pixels.net/wp-content/uploads/2025/08/26-Tahoe-Beach-Day-thumb.jpeg">
-          <div class="wallpaper-thumb" style="background-image: url('https://512pixels.net/wp-content/uploads/2025/08/26-Tahoe-Beach-Day-thumb.jpeg');"></div>
-          <div class="wallpaper-name">Tahoe beach</div>
-        </div>
-        <div class="wallpaper-item" data-bg="https://512pixels.net/wp-content/uploads/2025/06/15-Sequoia-Light-thumbnail.jpg">
-          <div class="wallpaper-thumb" style="background-image: url('https://512pixels.net/wp-content/uploads/2025/06/15-Sequoia-Light-thumbnail.jpg');"></div>
-          <div class="wallpaper-name">Sequoia light</div>
+      </div>
+      
+      <div id="settings-view-dock" style="display: none;">
+        <h2 style="margin: 0 0 20px 0; font-weight: 600; font-size: 22px;">Desktop & Dock</h2>
+        <div style="background: rgba(0, 0, 0, 0.2); padding: 20px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.1);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <span style="font-weight: 500; font-size: 14px;">Size</span>
+            <span id="dock-size-value" style="font-size: 13px; color: #ccc;">Medium</span>
+          </div>
+          <div style="position: relative; display: flex; align-items: center; gap: 10px;">
+            <span style="font-size: 12px; color: #888;">Small</span>
+            <div style="position: relative; flex: 1; display: flex; align-items: center;">
+              <div style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 2px; height: 12px; background: #666; pointer-events: none; z-index: 0;"></div>
+              <input type="range" id="dock-size-slider" min="0" max="4" value="2" step="1" style="flex: 1; accent-color: #007aff; position: relative; z-index: 1;">
+            </div>
+            <span style="font-size: 12px; color: #888;">Large</span>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </div>
 
+<div class="window" id="launchpad-window">
+  <div class="launchpad-titlebar">
+    <img src="https://github.com/Hellomyfriend19/Macostahoe/blob/main/app%20store%20icon.png?raw=true" alt="Launchpad">
+    <span>Apps</span>
+  </div>
+  <div class="launchpad-content" id="launchpad-content"></div>
+</div>
+
 <div class="dock-container" id="dock">
   <div class="dock-tooltip" id="tooltip"></div>
   <div class="dock-icon" data-name="Finder" style="background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Finder_Icon_macOS_Big_Sur.png/500px-Finder_Icon_macOS_Big_Sur.png')"></div>
+  <div class="dock-icon" data-name="Launchpad" style="background-image: url('https://i0.wp.com/www.appletips.nl/wp-content/uploads/2021/02/apps-launchpad-glass-icon-appbibliotheek.webp'); background-size: 85%;"></div>
   <div class="dock-icon" data-name="Safari" style="background-image: url('https://images.icon-icons.com/3053/PNG/512/safari_macos_bigsur_icon_189770.png')"></div>
   <div class="dock-icon" data-name="Calendar" style="background-image: url('https://upload.wikimedia.org/wikipedia/commons/1/1c/MacOSCalendar.png')"></div>
   <div class="dock-icon" data-name="Terminal" style="background-image: url('https://upload.wikimedia.org/wikipedia/commons/b/b3/Terminalicon2.png')"></div>
@@ -1210,7 +1306,7 @@
   const icons = Array.from(document.querySelectorAll('.dock-icon'));
   const tooltip = document.getElementById('tooltip');
 
-  const baseSize = 56;
+  let baseSize = 56;
   const distanceLimit = 120;
   
   // Spring physics parameters
@@ -1288,6 +1384,42 @@
   const winStiffness = 0.12;
   const winDamping = 0.75;
 
+  const activeAppNameBar = document.getElementById('active-app-name');
+  function setActiveApp(name) {
+    if (activeAppNameBar) activeAppNameBar.textContent = name;
+  }
+
+  function bringWindowToFront(winId, appName) {
+    const win = document.getElementById(winId);
+    if (!win) return;
+    const maxZ = Array.from(document.querySelectorAll('.window')).reduce((max, w) => Math.max(max, parseInt(w.style.zIndex || 10)), 0);
+    win.style.zIndex = maxZ + 1;
+    setActiveApp(appName);
+  }
+
+  document.addEventListener('mousedown', (e) => {
+    if (e.target.closest('.menubar')) return;
+    if (e.target.closest('.dock-container')) return;
+    
+    // close launchpad anywhere else
+    if (typeof launchpadState !== 'undefined' && launchpadState.isOpen && !e.target.closest('#launchpad-window') && !e.target.closest('.dock-icon[data-name="Launchpad"]')) {
+      launchpadState.targetScaleX = 0.85; launchpadState.targetScaleY = 0.85;
+      launchpadState.targetOpacity = 0; launchpadState.isOpen = false;
+    }
+    
+    const win = e.target.closest('.window');
+    if (win) {
+      const id = win.id;
+      if (id === 'finder-window') bringWindowToFront('finder-window', 'Finder');
+      else if (id === 'safari-window') bringWindowToFront('safari-window', 'Safari');
+      else if (id === 'terminal-window') bringWindowToFront('terminal-window', 'Terminal');
+      else if (id === 'settings-window') bringWindowToFront('settings-window', 'System Settings');
+      else if (id === 'launchpad-window') bringWindowToFront('launchpad-window', 'Launchpad');
+    } else {
+      setActiveApp('Finder');
+    }
+  });
+
   document.getElementById('btn-close').addEventListener('click', () => {
     winState.targetScaleX = 0.85; winState.targetScaleY = 0.85;
     winState.targetOpacity = 0; winState.isOpen = false;
@@ -1323,6 +1455,7 @@
   if(finderIcon) {
     finderIcon.addEventListener('click', (e) => {
       e.stopPropagation();
+      bringWindowToFront('finder-window', 'Finder');
       if (!winState.isOpen || winState.isMinimized) {
         winState.targetScaleX = 1; 
         winState.targetScaleY = 1;
@@ -1541,6 +1674,66 @@
   renderDesktop();
   renderContent();
 
+  // --- Launchpad Logic ---
+  const launchpadWindow = document.getElementById('launchpad-window');
+  const launchpadContent = document.getElementById('launchpad-content');
+  const launchpadState = {
+    scaleX: 0.85, targetScaleX: 0.85, velScaleX: 0,
+    scaleY: 0.85, targetScaleY: 0.85, velScaleY: 0,
+    opacity: 0, targetOpacity: 0, velOpacity: 0,
+    isOpen: false
+  };
+
+  icons.forEach(icon => {
+    const name = icon.getAttribute('data-name');
+    if (name === 'Launchpad') return;
+    
+    let bg = icon.style.backgroundImage;
+    const match = icon.getAttribute('style')?.match(/url\(['"]?(.*?)['"]?\)/i);
+    if (match) {
+      bg = `url('${match[1]}')`;
+    }
+    
+    const lpItem = document.createElement('div');
+    lpItem.className = 'launchpad-item';
+    
+    const lpIcon = document.createElement('div');
+    lpIcon.className = 'launchpad-icon';
+    if (bg) lpIcon.style.backgroundImage = bg;
+    if (name === "Instagram") lpIcon.style.backgroundSize = "85%";
+    
+    const lpName = document.createElement('div');
+    lpName.className = 'launchpad-name';
+    lpName.textContent = name;
+    
+    lpItem.appendChild(lpIcon);
+    lpItem.appendChild(lpName);
+    
+    lpItem.addEventListener('click', (e) => {
+      e.stopPropagation();
+      icon.click();
+      launchpadState.targetScaleX = 0.85; launchpadState.targetScaleY = 0.85;
+      launchpadState.targetOpacity = 0; launchpadState.isOpen = false;
+    });
+    launchpadContent.appendChild(lpItem);
+  });
+
+  const launchpadIcon = icons.find(icon => icon.getAttribute('data-name') === 'Launchpad');
+  if (launchpadIcon) {
+    launchpadIcon.addEventListener('click', (e) => {
+      e.stopPropagation();
+      bringWindowToFront('launchpad-window', 'Launchpad');
+      if (!launchpadState.isOpen) {
+        launchpadState.targetScaleX = 1; launchpadState.targetScaleY = 1;
+        launchpadState.targetOpacity = 1; 
+        launchpadState.isOpen = true;
+      } else {
+        launchpadState.targetScaleX = 0.85; launchpadState.targetScaleY = 0.85;
+        launchpadState.targetOpacity = 0; launchpadState.isOpen = false;
+      }
+    });
+  }
+
   // --- Settings Logic ---
   const settingsWindow = document.getElementById('settings-window');
   const settingsTitlebar = document.getElementById('settings-titlebar');
@@ -1590,6 +1783,7 @@
   if (settingsIcon) {
     settingsIcon.addEventListener('click', (e) => {
       e.stopPropagation();
+      bringWindowToFront('settings-window', 'System Settings');
       if (!settingsState.isOpen || settingsState.isMinimized) {
         settingsState.targetScaleX = 1; settingsState.targetScaleY = 1;
         settingsState.targetWidth = settingsState.isMaximized ? window.innerWidth - 40 : 600;
@@ -1612,7 +1806,6 @@
 
   settingsTitlebar.addEventListener('mousedown', (e) => {
     if (e.target.closest('.traffic-lights')) return;
-    settingsWindow.style.zIndex = Array.from(document.querySelectorAll('.window')).reduce((max, w) => Math.max(max, parseInt(w.style.zIndex || 10)), 0) + 1;
     isSettingsDragging = true;
     settingsStartX = e.clientX;
     settingsStartY = e.clientY;
@@ -1639,7 +1832,49 @@
   document.addEventListener('mouseup', () => {
     isSettingsDragging = false;
   });
+
+  const settingsSidebarItems = document.querySelectorAll('.settings-sidebar-item');
+  const settingsViewWallpaper = document.getElementById('settings-view-wallpaper');
+  const settingsViewDock = document.getElementById('settings-view-dock');
+
+  settingsSidebarItems.forEach(item => {
+    item.addEventListener('click', () => {
+      settingsSidebarItems.forEach(i => i.classList.remove('active'));
+      item.classList.add('active');
+      
+      const text = item.textContent.trim();
+      settingsViewWallpaper.style.display = 'none';
+      settingsViewDock.style.display = 'none';
+      
+      if (text === 'Wallpaper') {
+        settingsViewWallpaper.style.display = 'block';
+      } else if (text === 'Desktop & Dock') {
+        settingsViewDock.style.display = 'block';
+      }
+    });
+  });
+
+  const dockSizeSlider = document.getElementById('dock-size-slider');
+  const dockSizeValue = document.getElementById('dock-size-value');
   
+  const snapSizes = [30, 42, 56, 68, 80];
+  const snapLabels = ['Very Small', 'Small', 'Medium', 'Large', 'Extra Large'];
+  
+  if (dockSizeSlider) {
+    dockSizeSlider.addEventListener('input', (e) => {
+      const idx = parseInt(e.target.value);
+      baseSize = snapSizes[idx];
+      dockSizeValue.textContent = snapLabels[idx];
+      
+      // Update sizes immediately
+      document.querySelectorAll('.dock-icon').forEach(icon => {
+        icon.style.width = `${baseSize}px`;
+        icon.style.height = `${baseSize}px`;
+      });
+      document.getElementById('dock').style.height = `${baseSize + 20}px`;
+    });
+  }
+
   const wallpaperItems = document.querySelectorAll('.wallpaper-item');
   const bgLayer1 = document.getElementById('bg-layer-1');
   const bgLayer2 = document.getElementById('bg-layer-2');
@@ -1763,6 +1998,7 @@
   if(terminalIcon) {
     terminalIcon.addEventListener('click', (e) => {
       e.stopPropagation();
+      bringWindowToFront('terminal-window', 'Terminal');
       if (!terminalState.isOpen || terminalState.isMinimized) {
         terminalState.targetScaleX = 1; terminalState.targetScaleY = 1;
         terminalState.targetWidth = terminalState.isMaximized ? window.innerWidth - 40 : 600;
@@ -1771,9 +2007,6 @@
         terminalState.targetTranslateY = terminalState.isMaximized ? -30 : 0;
         terminalState.isOpen = true; terminalState.isMinimized = false;
         
-        terminalWindow.style.zIndex = 52;
-        safariWindow.style.zIndex = 51;
-        finderWindow.style.zIndex = 50;
         setTimeout(() => terminalInput.focus(), 100);
       }
     });
@@ -1799,10 +2032,6 @@
     terminalStartY = e.clientY;
     terminalInitialDragX = terminalState.targetDragX;
     terminalInitialDragY = terminalState.targetDragY;
-    
-    terminalWindow.style.zIndex = 52;
-    safariWindow.style.zIndex = 51;
-    finderWindow.style.zIndex = 50;
   });
 
   document.addEventListener('mousemove', (e) => {
@@ -1814,12 +2043,6 @@
 
   document.addEventListener('mouseup', () => {
     isTerminalDragging = false;
-  });
-
-  terminalWindow.addEventListener('mousedown', () => {
-    terminalWindow.style.zIndex = 52;
-    safariWindow.style.zIndex = 51;
-    finderWindow.style.zIndex = 50;
   });
 
   // --- End Terminal Logic ---
@@ -2093,6 +2316,7 @@
   if(safariIcon) {
     safariIcon.addEventListener('click', (e) => {
       e.stopPropagation();
+      bringWindowToFront('safari-window', 'Safari');
       if (!safariState.isOpen || safariState.isMinimized) {
         safariState.targetScaleX = 1; safariState.targetScaleY = 1;
         safariState.targetWidth = safariState.isMaximized ? window.innerWidth : 1000;
@@ -2100,10 +2324,6 @@
         safariState.targetOpacity = 1; 
         safariState.targetTranslateY = safariState.isMaximized ? -38 : 0;
         safariState.isOpen = true; safariState.isMinimized = false;
-        
-        // Bring to front
-        safariWindow.style.zIndex = 51;
-        finderWindow.style.zIndex = 50;
       }
     });
   }
@@ -2123,10 +2343,6 @@
     sInitialDragY = safariState.dragY;
     
     safariIframe.style.pointerEvents = 'none';
-    
-    // Bring to front
-    safariWindow.style.zIndex = 51;
-    finderWindow.style.zIndex = 50;
   });
 
   window.addEventListener('mousemove', (e) => {
@@ -2139,12 +2355,6 @@
   window.addEventListener('mouseup', () => {
     isDraggingSafari = false;
     safariIframe.style.pointerEvents = 'auto';
-  });
-
-  // Bring finder to front on click
-  finderWindow.addEventListener('mousedown', () => {
-    finderWindow.style.zIndex = 51;
-    safariWindow.style.zIndex = 50;
   });
 
   document.body.addEventListener('click', (e) => {
@@ -2294,6 +2504,30 @@
       safariIcon && safariIcon.classList.remove('active');
       if (safariState.opacity < 0.01) safariWindow.style.display = 'none';
       else safariWindow.style.display = 'flex';
+    }
+
+    // Launchpad Window animation
+    const lpForceScaleX = (launchpadState.targetScaleX - launchpadState.scaleX) * winStiffness;
+    launchpadState.velScaleX += lpForceScaleX; launchpadState.velScaleX *= winDamping; launchpadState.scaleX += launchpadState.velScaleX;
+
+    const lpForceScaleY = (launchpadState.targetScaleY - launchpadState.scaleY) * winStiffness;
+    launchpadState.velScaleY += lpForceScaleY; launchpadState.velScaleY *= winDamping; launchpadState.scaleY += launchpadState.velScaleY;
+
+    const lpForceOpacity = (launchpadState.targetOpacity - launchpadState.opacity) * winStiffness;
+    launchpadState.velOpacity += lpForceOpacity; launchpadState.velOpacity *= winDamping; launchpadState.opacity += launchpadState.velOpacity;
+
+    launchpadWindow.style.transform = `scale(${launchpadState.scaleX}, ${launchpadState.scaleY})`;
+    launchpadWindow.style.opacity = launchpadState.opacity;
+
+    if (launchpadState.isOpen) {
+      launchpadWindow.classList.add('interactive');
+      launchpadIcon && launchpadIcon.classList.add('active');
+      launchpadWindow.style.display = 'flex';
+    } else {
+      launchpadWindow.classList.remove('interactive');
+      launchpadIcon && launchpadIcon.classList.remove('active');
+      if (launchpadState.opacity < 0.01) launchpadWindow.style.display = 'none';
+      else launchpadWindow.style.display = 'flex';
     }
 
     // Terminal Window animation
@@ -2575,9 +2809,11 @@
   }
   
   createLiquidGlassForElement('.dock-container', 'dock-liquid-glass', 24, 2);
+  createLiquidGlassForElement('#launchpad-window', 'launchpad-liquid-glass', 20, 6);
   createLiquidGlassForElement('#terminal-window', 'terminal-liquid-glass', 10, 3);
   createLiquidGlassForElement('#settings-window', 'settings-liquid-glass', 12, 10);
   createLiquidGlassForElement('#about-window', 'about-liquid-glass', 10, 6);
+  createLiquidGlassForElement('.menu-dropdown', 'menu-dropdown-liquid-glass', 8, 8);
 
   animate();
 </script>
