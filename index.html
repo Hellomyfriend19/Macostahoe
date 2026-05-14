@@ -18,7 +18,6 @@
 <meta name="description" content="A macOS Tahoe-inspired desktop UI built with HTML">
 <meta name="keywords" content="macOS, macOS clone, macOS Tahoe, web desktop, HTML CSS JavaScript UI, macos in html, tahoe in html, macostahoe,">
 <meta name="author" content="Hellomyfriend19">
-
 <style>
   @font-face {
     font-family: 'SF Pro Display';
@@ -47,6 +46,80 @@
   }
   .bg-layer.active {
     opacity: 1;
+  }
+  .lock-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 9999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.8s ease-in-out;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: #000;
+  }
+  .lock-screen.active {
+    opacity: 1;
+    pointer-events: all;
+  }
+  .lock-screen-video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -1;
+  }
+  .lock-screen-content {
+    margin-top: 80px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .lock-screen-date {
+    font-size: 28px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    margin-bottom: -5px;
+    color: rgba(255, 255, 255, 0.3);
+    -webkit-text-stroke: 0.004px rgba(255, 255, 255, 0.3);
+  }
+  .lock-screen-time {
+    font-size: 120px;
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: 2px;
+    color: rgba(255, 255, 255, 0.3);
+    -webkit-text-stroke: 0.008px rgba(255, 255, 255, 0.3);
+  }
+  .lock-screen-bottom {
+    margin-bottom: 80px;
+  }
+  .lock-screen-btn {
+    padding: 10px 24px;
+    font-size: 16px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    color: white;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    transition: transform 0.1s, background 0.2s;
+  }
+  .lock-screen-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
+  .lock-screen-btn:active {
+    transform: scale(0.95);
   }
   body {
     margin: 0;
@@ -351,22 +424,22 @@
   #settings-window {
     width: 600px;
     height: 480px;
-    background: rgba(30, 30, 30, 0.85); /* macOS Tahoe dark mode feel */
+    background: rgba(255, 255, 255, 0.85); /* macOS Tahoe light mode feel */
     border-radius: 24px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
     display: none;
     flex-direction: column;
     overflow: hidden;
-    color: #fff;
+    color: #333;
     z-index: 50;
   }
   #settings-window .titlebar {
     background: transparent;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
     height: 52px;
   }
   #settings-window .window-title {
-    color: #d1d1d1;
+    color: #333;
     font-size: 13px;
     font-weight: 500;
   }
@@ -377,8 +450,8 @@
   }
   .settings-sidebar {
     width: 200px;
-    background: rgba(0, 0, 0, 0.2);
-    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.05);
+    border-right: 1px solid rgba(0, 0, 0, 0.1);
     padding: 12px 10px;
     overflow-y: auto;
   }
@@ -388,14 +461,14 @@
     margin-bottom: 4px;
     cursor: pointer;
     font-size: 13px;
-    color: #ddd;
+    color: #333;
     display: flex;
     align-items: center;
     gap: 8px;
     transition: background 0.1s;
   }
   .settings-sidebar-item:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.08);
   }
   .settings-sidebar-item.active {
     background: #007aff;
@@ -437,7 +510,7 @@
   .wallpaper-name {
     margin-top: 8px;
     font-size: 12px;
-    color: #ddd;
+    color: #555;
   }
 
   /* Launchpad Styles */
@@ -461,6 +534,7 @@
     height: 52px;
     display: flex;
     align-items: center;
+    justify-content: space-between;
     padding: 0 20px;
     font-size: 14px;
     font-weight: 600;
@@ -471,6 +545,20 @@
     width: 30px;
     height: 30px;
     margin-right: 8px;
+  }
+  .launchpad-search-input {
+    margin-left: 20px;
+    padding: 6px 14px;
+    border-radius: 14px;
+    border: 1px solid rgba(0,0,0,0.1);
+    background: rgba(255, 255, 255, 0.4);
+    color: #333;
+    outline: none;
+    font-size: 13px;
+    width: 150px;
+  }
+  .launchpad-search-input::placeholder {
+    color: rgba(0,0,0,0.5);
   }
   .launchpad-content {
     flex: 1;
@@ -1012,6 +1100,19 @@
 </style>
 </head>
 <body>
+<div class="lock-screen" id="lock-screen">
+  <video class="lock-screen-video" autoplay loop muted playsinline>
+    <source src="https://raw.githubusercontent.com/Hellomyfriend19/Macostahoe/main/Macos%20Tahoe%20Wallpaper%20Screensaver%20Collection%20%20Tahoe%20Day.mp4" type="video/mp4">
+  </video>
+  <div class="lock-screen-content">
+    <div class="lock-screen-date" id="lock-screen-date">wed may 13</div>
+    <div class="lock-screen-time" id="lock-screen-time">12:00</div>
+  </div>
+  <div class="lock-screen-bottom">
+    <div class="lock-screen-btn" id="lock-screen-signin-btn">Sign In</div>
+  </div>
+</div>
+
 <div class="bg-layer active" id="bg-layer-1" style="background-image: url('https://512pixels.net/wp-content/uploads/2025/06/26-Tahoe-Light-6K-thumb.jpeg')"></div>
 <div class="bg-layer" id="bg-layer-2"></div>
 
@@ -1073,7 +1174,7 @@
     <div class="menu-dropdown-item" id="restart-mac">Restart...</div>
     <div class="menu-dropdown-item" id="shutdown-mac">Shut Down...</div>
     <div class="menu-dropdown-divider"></div>
-    <div class="menu-dropdown-item">Lock Screen</div>
+    <div class="menu-dropdown-item" id="lock-screen-btn">Lock Screen</div>
     <div class="menu-dropdown-item">Log Out...</div>
   </div>
 </div>
@@ -1296,8 +1397,11 @@
 
 <div class="window" id="launchpad-window">
   <div class="launchpad-titlebar">
-    <img src="https://github.com/Hellomyfriend19/Macostahoe/blob/main/app%20store%20icon.png?raw=true" alt="Launchpad">
-    <span>Apps</span>
+    <div style="display: flex; align-items: center;">
+      <img src="https://github.com/Hellomyfriend19/Macostahoe/blob/main/app%20store%20icon.png?raw=true" alt="Launchpad">
+      <span>Apps</span>
+    </div>
+    <input type="text" id="launchpad-search" class="launchpad-search-input" placeholder="Search" autocomplete="off">
   </div>
   <div class="launchpad-content" id="launchpad-content"></div>
 </div>
@@ -1731,6 +1835,20 @@
     });
     launchpadContent.appendChild(lpItem);
   });
+  
+  const launchpadSearch = document.getElementById('launchpad-search');
+  launchpadSearch.addEventListener('input', (e) => {
+    const term = e.target.value.toLowerCase();
+    const items = launchpadContent.querySelectorAll('.launchpad-item');
+    items.forEach(item => {
+      const name = item.querySelector('.launchpad-name').textContent.toLowerCase();
+      if (name.includes(term)) {
+        item.style.display = 'flex';
+      } else {
+        item.style.display = 'none';
+      }
+    });
+  });
 
   const launchpadIcon = icons.find(icon => icon.getAttribute('data-name') === 'Launchpad');
   if (launchpadIcon) {
@@ -1741,6 +1859,12 @@
         launchpadState.targetScaleX = 1; launchpadState.targetScaleY = 1;
         launchpadState.targetOpacity = 1; 
         launchpadState.isOpen = true;
+        // Reset search
+        const searchInput = document.getElementById('launchpad-search');
+        if (searchInput) {
+          searchInput.value = '';
+          searchInput.dispatchEvent(new Event('input'));
+        }
       } else {
         launchpadState.targetScaleX = 0.85; launchpadState.targetScaleY = 0.85;
         launchpadState.targetOpacity = 0; launchpadState.isOpen = false;
@@ -2690,6 +2814,78 @@
     document.body.innerHTML = '<div style="width:100vw;height:100vh;background:#000;display:flex;align-items:center;justify-content:center;color:#fff;font-family:sans-serif;">System Shut Down</div>';
   });
 
+  const lockScreenBtn = document.getElementById('lock-screen-btn');
+  const lockScreen = document.getElementById('lock-screen');
+  const lockScreenSigninBtn = document.getElementById('lock-screen-signin-btn');
+  const lockScreenDate = document.getElementById('lock-screen-date');
+  const lockScreenTime = document.getElementById('lock-screen-time');
+
+  let lockScreenInterval;
+
+  function updateLockScreenTime() {
+    const now = new Date();
+    const days = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+    const months = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
+    
+    const dayName = days[now.getDay()];
+    const monthName = months[now.getMonth()];
+    const dateNum = now.getDate();
+    
+    lockScreenDate.textContent = `${dayName} ${monthName} ${dateNum}`;
+    
+    let hours = now.getHours();
+    const mins = now.getMinutes().toString().padStart(2, '0');
+    // Using 24 hour format for this or 12 hour format? I will use 24 hr so it's always valid or standard format
+    // the system clock below uses 12 hr format, let me check it first later
+    // Let's use 24h as per requested "12:00" in example
+    lockScreenTime.textContent = `${hours.toString().padStart(2, '0')}:${mins}`;
+  }
+
+  lockScreenBtn.addEventListener('click', () => {
+    lockScreen.classList.add('active');
+    updateLockScreenTime();
+    lockScreenInterval = setInterval(updateLockScreenTime, 1000);
+    // hide the menu dropdown
+    document.getElementById('context-menu').classList.remove('show');
+    document.querySelector('.menu-dropdown').classList.remove('active');
+    
+    // Fade out dock and menubar
+    const dockContainer = document.querySelector('.dock-container');
+    const menubar = document.querySelector('.menubar');
+    dockContainer.style.transition = 'opacity 0.8s ease-in-out';
+    menubar.style.transition = 'opacity 0.8s ease-in-out';
+    dockContainer.style.opacity = '0';
+    dockContainer.style.pointerEvents = 'none';
+    menubar.style.opacity = '0';
+    menubar.style.pointerEvents = 'none';
+
+    const desktopIcons = document.getElementById('desktop-icons');
+    if (desktopIcons) {
+      desktopIcons.style.transition = 'opacity 0.8s ease-in-out';
+      desktopIcons.style.opacity = '0';
+      desktopIcons.style.pointerEvents = 'none';
+    }
+  });
+
+  lockScreenSigninBtn.addEventListener('click', () => {
+    lockScreen.classList.remove('active');
+    clearInterval(lockScreenInterval);
+    
+    // Fade in dock and menubar
+    const dockContainer = document.querySelector('.dock-container');
+    const menubar = document.querySelector('.menubar');
+    dockContainer.style.opacity = '';
+    dockContainer.style.pointerEvents = '';
+    menubar.style.opacity = '';
+    menubar.style.pointerEvents = '';
+    
+    const desktopIcons = document.getElementById('desktop-icons');
+    if (desktopIcons) {
+      desktopIcons.style.opacity = '';
+      desktopIcons.style.pointerEvents = '';
+    }
+  });
+
   // Liquid Glass Effect
   function createLiquidGlassForElement(elementSelector, idPrefix, elementRadius, blurRadius = 3) {
     const el = document.querySelector(elementSelector);
@@ -2779,12 +2975,16 @@
         const dist = roundedRectSDF(px, py, w/2, h/2, elementRadius);
         const d = -dist; // positive inside
         
+        // Boost distortion for smaller elements like buttons
+        let distortionStrength = (w < 100 || h < 60) ? 6.0 : 1.0;
+        
         let scaled = 1.0;
         if (dist <= 0) {
-           // Inside - smoothly transition scale from 1.0 at edge to 0.90 inside over 30px
-           const t = Math.max(0, Math.min(1, d / 30));
+           // Inside - smoothly transition scale
+           const transitionDist = Math.max(10, Math.min(30, Math.min(w, h)/3));
+           const t = Math.max(0, Math.min(1, d / transitionDist));
            const smoothT = t * t * (3 - 2 * t);
-           scaled = 1.0 - 0.10 * smoothT;
+           scaled = 1.0 - (0.10 * distortionStrength) * smoothT;
         }
 
         const dx = px * scaled - px;
@@ -2795,7 +2995,7 @@
       }
 
       if(maxScale === 0) maxScale = 1;
-      maxScale *= 2.0;
+      maxScale *= (w < 100 || h < 60) ? 8.0 : 2.0;
 
       let index = 0;
       for (let i = 0; i < data.length; i += 4) {
@@ -2818,16 +3018,19 @@
     });
     observer.observe(el);
 
-    el.style.backdropFilter = `url(#${id}_filter) blur(${blurRadius}px) contrast(1.1) brightness(1.05) saturate(1.1)`;
-    el.style.webkitBackdropFilter = `url(#${id}_filter) blur(${blurRadius}px) contrast(1.1) brightness(1.05) saturate(1.1)`;
+    const blurStr = blurRadius > 0 ? `blur(${blurRadius}px) ` : '';
+    el.style.backdropFilter = `url(#${id}_filter) ${blurStr}contrast(1.1) brightness(1.05) saturate(1.1)`;
+    el.style.webkitBackdropFilter = `url(#${id}_filter) ${blurStr}contrast(1.1) brightness(1.05) saturate(1.1)`;
   }
   
-  createLiquidGlassForElement('.dock-container', 'dock-liquid-glass', 24, 2);
+  createLiquidGlassForElement('.dock-container', 'dock-liquid-glass', 24, 1);
   createLiquidGlassForElement('#launchpad-window', 'launchpad-liquid-glass', 20, 6);
+  createLiquidGlassForElement('#launchpad-search', 'launchpad-search-liquid-glass', 14, 6);
   createLiquidGlassForElement('#terminal-window', 'terminal-liquid-glass', 10, 3);
   createLiquidGlassForElement('#settings-window', 'settings-liquid-glass', 12, 10);
   createLiquidGlassForElement('#about-window', 'about-liquid-glass', 10, 6);
   createLiquidGlassForElement('.menu-dropdown', 'menu-dropdown-liquid-glass', 8, 8);
+  createLiquidGlassForElement('#lock-screen-signin-btn', 'lock-screen-signin-liquid-glass', 18, 0);
 
   animate();
 </script>
