@@ -89,7 +89,7 @@
     letter-spacing: 1px;
     margin-bottom: -5px;
     color: rgba(255, 255, 255, 0.3);
-    -webkit-text-stroke: 0.004px rgba(255, 255, 255, 0.3);
+    filter: url(#text-bevel-filter);
   }
   .lock-screen-time {
     font-size: 120px;
@@ -97,7 +97,7 @@
     line-height: 1.1;
     letter-spacing: 2px;
     color: rgba(255, 255, 255, 0.3);
-    -webkit-text-stroke: 0.008px rgba(255, 255, 255, 0.3);
+    filter: url(#text-bevel-filter);
   }
   .lock-screen-bottom {
     margin-bottom: 80px;
@@ -138,7 +138,6 @@
     padding: 10px;
     border-radius: 24px;
     background: rgba(255, 255, 255, 0.2);
-    border: 1px solid rgba(255, 255, 255, 0.15);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
     display: flex;
     align-items: flex-end;
@@ -147,6 +146,17 @@
     box-sizing: border-box;
     position: relative;
     z-index: 9999;
+  }
+  
+  .dock-container::after {
+    content: "";
+    position: absolute;
+    inset: 1px;
+    border-radius: 23px;
+    background: #000;
+    filter: url(#bevel-only-filter);
+    pointer-events: none;
+    z-index: 1000;
   }
 
   .dock-tooltip {
@@ -184,6 +194,7 @@
     background-position: center;
     filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3));
     position: relative;
+    z-index: 1001;
     flex-shrink: 0;
     transform-origin: bottom center;
     /* No CSS transitions for width/height/transform, handled by JS spring physics */
@@ -202,6 +213,20 @@
     box-shadow: 0 0 2px rgba(0,0,0,0.5);
   }
 
+  /* Icon Appearance Options */
+  .icon-image-layer {
+    position: absolute;
+    inset: 0;
+    transition: filter 0.3s;
+    background-repeat: no-repeat;
+    background-position: center;
+    transform: translateZ(0);
+  }
+  
+  body.icons-transparent .icon-image-layer {
+    filter: url(#icon-transparent-filter);
+  }
+
   .window {
     position: absolute;
     top: 50%;
@@ -212,7 +237,7 @@
     margin-top: -250px;
     background: #fff;
     border-radius: 24px;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.3), 0 0 0 1px rgba(0,0,0,0.1);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -220,6 +245,17 @@
     transform-origin: center;
     opacity: 0;
     pointer-events: none;
+  }
+  
+  .window::after {
+    content: "";
+    position: absolute;
+    inset: 1px;
+    border-radius: 23px;
+    background: #000;
+    filter: url(#bevel-only-filter);
+    pointer-events: none;
+    z-index: 1000;
   }
   .window.interactive { pointer-events: auto; }
   .titlebar {
@@ -581,11 +617,11 @@
   .launchpad-icon {
     width: 64px;
     height: 64px;
-    background-size: contain;
-    background-position: center;
-    background-repeat: no-repeat;
     margin-bottom: 8px;
+    position: relative;
     transition: transform 0.2s ease;
+    z-index: 10;
+    transform: translateZ(0);
   }
   .launchpad-name {
     font-size: 13px;
@@ -1092,6 +1128,48 @@
   .about-btn:hover {
     background: rgba(255, 255, 255, 0.2);
   }
+  
+  .toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 36px;
+    height: 20px;
+  }
+  .toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  .toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .3s;
+    border-radius: 20px;
+  }
+  .toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 2px;
+    bottom: 2px;
+    background-color: white;
+    transition: .3s;
+    border-radius: 50%;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  }
+  input:checked + .toggle-slider {
+    background-color: #007aff;
+  }
+  input:checked + .toggle-slider:before {
+    transform: translateX(16px);
+  }
+
   .btn.disabled {
     background: #ddd !important;
     border-color: #ccc !important;
@@ -1376,10 +1454,10 @@
       
       <div id="settings-view-dock" style="display: none;">
         <h2 style="margin: 0 0 20px 0; font-weight: 600; font-size: 22px;">Desktop & Dock</h2>
-        <div style="background: rgba(0, 0, 0, 0.2); padding: 20px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.1);">
+        <div style="background: rgba(0, 0, 0, 0.05); padding: 20px; border-radius: 12px; border: 1px solid rgba(0, 0, 0, 0.1);">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
             <span style="font-weight: 500; font-size: 14px;">Size</span>
-            <span id="dock-size-value" style="font-size: 13px; color: #ccc;">Medium</span>
+            <span id="dock-size-value" style="font-size: 13px; color: #555;">Medium</span>
           </div>
           <div style="position: relative; display: flex; align-items: center; gap: 10px;">
             <span style="font-size: 12px; color: #888;">Small</span>
@@ -1388,6 +1466,19 @@
               <input type="range" id="dock-size-slider" min="0" max="4" value="2" step="1" style="flex: 1; accent-color: #007aff; position: relative; z-index: 1;">
             </div>
             <span style="font-size: 12px; color: #888;">Large</span>
+          </div>
+        </div>
+      </div>
+      
+      <div id="settings-view-appearance" style="display: none;">
+        <h2 style="margin: 0 0 20px 0; font-weight: 600; font-size: 22px;">Appearance</h2>
+        <div style="background: rgba(0, 0, 0, 0.05); padding: 20px; border-radius: 12px; border: 1px solid rgba(0, 0, 0, 0.1); margin-bottom: 20px;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-weight: 500; font-size: 14px;">Icon transparency</span>
+            <label class="toggle-switch">
+              <input type="checkbox" id="icon-transparency-toggle">
+              <span class="toggle-slider"></span>
+            </label>
           </div>
         </div>
       </div>
@@ -1419,8 +1510,87 @@
   <div class="dock-icon" data-name="Trash" style="background-image: url('https://icons.iconarchive.com/icons/wwalczyszyn/iwindows/256/Recycle-Bin-icon.png')"></div>
 </div>
 
+<svg style="position: absolute; width: 0; height: 0; pointer-events: none;">
+  <filter id="icon-transparent-filter" color-interpolation-filters="sRGB">
+    
+    <!-- 1. Grayscale and Luma-to-Alpha -->
+    <feColorMatrix in="SourceGraphic" result="luma" type="matrix" values="
+      0.333 0.333 0.333 0 0
+      0.333 0.333 0.333 0 0
+      0.333 0.333 0.333 0 0
+      0.333 0.333 0.333 0 0
+    "/>
+    
+    <!-- Curve the Alpha to make gray more transparent (white visible, gray nearly invisible) -->
+    <feComponentTransfer in="luma" result="curvedAlpha">
+      <feFuncA type="gamma" exponent="1.5"/>
+    </feComponentTransfer>
+
+    <!-- Restrict to Original Alpha -->
+    <feComposite in="curvedAlpha" in2="SourceGraphic" operator="in" result="transparentIcon"/>
+
+    <!-- 2. Actual Bevel and Light Reflection Effect -->
+    <!-- Blur the alpha for bevel geometry -->
+    <feGaussianBlur in="SourceAlpha" stdDeviation="0.8" result="blurAlpha" id="ibf-blur"/>
+
+    <!-- Specular Lighting for glossy reflection -->
+    <feSpecularLighting in="blurAlpha" surfaceScale="0.5" specularConstant="1.5" specularExponent="32" lighting-color="#ffffff" result="specularLight" id="ibf-specular">
+      <feDistantLight azimuth="233" elevation="36" id="ibf-light"/>
+    </feSpecularLighting>
+
+    <!-- Crop specular light within icon bounds -->
+    <feComposite in="specularLight" in2="SourceAlpha" operator="in" result="specularHighlight"/>
+
+    <!-- 3. Final Merge -->
+    <feMerge>
+      <feMergeNode in="transparentIcon"/>
+      <feMergeNode in="specularHighlight"/>
+    </feMerge>
+
+  </filter>
+
+  <filter id="text-bevel-filter">
+    <feGaussianBlur in="SourceAlpha" stdDeviation="0.8" result="blurAlpha" id="tbf-blur"/>
+    <feSpecularLighting in="blurAlpha" surfaceScale="0.5" specularConstant="1.5" specularExponent="32" lighting-color="#ffffff" result="specularLight" id="tbf-specular">
+      <feDistantLight azimuth="233" elevation="36" id="tbf-light"/>
+    </feSpecularLighting>
+    <feComposite in="specularLight" in2="SourceAlpha" operator="in" result="specularHighlight"/>
+    <feMerge>
+      <feMergeNode in="SourceGraphic"/>
+      <feMergeNode in="specularHighlight"/>
+    </feMerge>
+  </filter>
+
+  <filter id="bevel-only-filter" x="-20%" y="-20%" width="140%" height="140%">
+    <feGaussianBlur in="SourceAlpha" stdDeviation="0.8" result="blurAlpha" id="bof-blur"/>
+    <feSpecularLighting in="blurAlpha" surfaceScale="0.5" specularConstant="1.5" specularExponent="32" lighting-color="#ffffff" result="specularLight" id="bof-specular">
+      <feDistantLight azimuth="233" elevation="36" id="bof-light"/>
+    </feSpecularLighting>
+    <feComposite in="specularLight" in2="SourceAlpha" operator="in" result="specularHighlight"/>
+  </filter>
+</svg>
+
 <script>
   const dock = document.getElementById('dock');
+  // Restructure icons to support transparency
+  const rawIcons = Array.from(document.querySelectorAll('.dock-icon'));
+  rawIcons.forEach(icon => {
+    const bg = icon.style.backgroundImage;
+    const bgSize = icon.style.backgroundSize;
+    icon.style.backgroundImage = 'none';
+    
+    const img = document.createElement('div');
+    img.className = 'icon-image-layer';
+    img.style.backgroundImage = bg;
+    if(bgSize) {
+      img.style.backgroundSize = bgSize;
+    } else {
+      img.style.backgroundSize = 'contain';
+    }
+    
+    icon.appendChild(img);
+  });
+  
   const icons = Array.from(document.querySelectorAll('.dock-icon'));
   const tooltip = document.getElementById('tooltip');
 
@@ -1806,8 +1976,9 @@
     const name = icon.getAttribute('data-name');
     if (name === 'Launchpad') return;
     
-    let bg = icon.style.backgroundImage;
-    const match = icon.getAttribute('style')?.match(/url\(['"]?(.*?)['"]?\)/i);
+    const imgLayer = icon.querySelector('.icon-image-layer');
+    let bg = imgLayer ? imgLayer.style.backgroundImage : icon.style.backgroundImage;
+    const match = bg?.match(/url\(['"]?(.*?)['"]?\)/i);
     if (match) {
       bg = `url('${match[1]}')`;
     }
@@ -1817,8 +1988,17 @@
     
     const lpIcon = document.createElement('div');
     lpIcon.className = 'launchpad-icon';
-    if (bg) lpIcon.style.backgroundImage = bg;
-    if (name === "Instagram") lpIcon.style.backgroundSize = "85%";
+    
+    const img = document.createElement('div');
+    img.className = 'icon-image-layer';
+    if (bg) img.style.backgroundImage = bg;
+    if (name === "Instagram") {
+      img.style.backgroundSize = "85%";
+    } else {
+      img.style.backgroundSize = "contain";
+    }
+
+    lpIcon.appendChild(img);
     
     const lpName = document.createElement('div');
     lpName.className = 'launchpad-name';
@@ -1974,6 +2154,7 @@
   const settingsSidebarItems = document.querySelectorAll('.settings-sidebar-item');
   const settingsViewWallpaper = document.getElementById('settings-view-wallpaper');
   const settingsViewDock = document.getElementById('settings-view-dock');
+  const settingsViewAppearance = document.getElementById('settings-view-appearance');
 
   settingsSidebarItems.forEach(item => {
     item.addEventListener('click', () => {
@@ -1983,14 +2164,28 @@
       const text = item.textContent.trim();
       settingsViewWallpaper.style.display = 'none';
       settingsViewDock.style.display = 'none';
+      if (settingsViewAppearance) settingsViewAppearance.style.display = 'none';
       
       if (text === 'Wallpaper') {
         settingsViewWallpaper.style.display = 'block';
       } else if (text === 'Desktop & Dock') {
         settingsViewDock.style.display = 'block';
+      } else if (text === 'Appearance' && settingsViewAppearance) {
+        settingsViewAppearance.style.display = 'block';
       }
     });
   });
+
+  const iconTransparencyToggle = document.getElementById('icon-transparency-toggle');
+  if (iconTransparencyToggle) {
+    iconTransparencyToggle.addEventListener('change', (e) => {
+      if (e.target.checked) {
+        document.body.classList.add('icons-transparent');
+      } else {
+        document.body.classList.remove('icons-transparent');
+      }
+    });
+  }
 
   const dockSizeSlider = document.getElementById('dock-size-slider');
   const dockSizeValue = document.getElementById('dock-size-value');
