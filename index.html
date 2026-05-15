@@ -154,12 +154,12 @@
     top: 0;
     left: 0;
     padding: 4px 10px;
-    background: rgba(0, 0, 0, 0.4);
+    background: rgba(255, 255, 255, 0.7);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(0, 0, 0, 0.15);
     border-radius: 6px;
-    color: #fff;
+    color: #222;
     font-size: 13px;
     font-weight: 400;
     letter-spacing: 0.2px;
@@ -3019,11 +3019,11 @@
     observer.observe(el);
 
     const blurStr = blurRadius > 0 ? `blur(${blurRadius}px) ` : '';
-    el.style.backdropFilter = `url(#${id}_filter) ${blurStr}contrast(1.1) brightness(1.05) saturate(1.1)`;
-    el.style.webkitBackdropFilter = `url(#${id}_filter) ${blurStr}contrast(1.1) brightness(1.05) saturate(1.1)`;
+    el.style.backdropFilter = `${blurStr}url(#${id}_filter) contrast(1.1) brightness(1.05) saturate(1.1)`;
+    el.style.webkitBackdropFilter = `${blurStr}url(#${id}_filter) contrast(1.1) brightness(1.05) saturate(1.1)`;
   }
   
-  createLiquidGlassForElement('.dock-container', 'dock-liquid-glass', 24, 1);
+  createLiquidGlassForElement('.dock-container', 'dock-liquid-glass', 24, 2);
   createLiquidGlassForElement('#launchpad-window', 'launchpad-liquid-glass', 20, 6);
   createLiquidGlassForElement('#launchpad-search', 'launchpad-search-liquid-glass', 14, 6);
   createLiquidGlassForElement('#terminal-window', 'terminal-liquid-glass', 10, 3);
