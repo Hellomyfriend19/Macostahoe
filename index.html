@@ -1691,7 +1691,7 @@
     
     // close launchpad anywhere else
     if (typeof launchpadState !== 'undefined' && launchpadState.isOpen && !e.target.closest('#launchpad-window') && !e.target.closest('.dock-icon[data-name="Launchpad"]')) {
-      launchpadState.targetScaleX = 0.85; launchpadState.targetScaleY = 0.85;
+      launchpadState.targetScaleX = 1.15; launchpadState.targetScaleY = 1.15;
       launchpadState.targetOpacity = 0; launchpadState.isOpen = false;
     }
     
@@ -1966,8 +1966,8 @@
   const launchpadWindow = document.getElementById('launchpad-window');
   const launchpadContent = document.getElementById('launchpad-content');
   const launchpadState = {
-    scaleX: 0.85, targetScaleX: 0.85, velScaleX: 0,
-    scaleY: 0.85, targetScaleY: 0.85, velScaleY: 0,
+    scaleX: 1.15, targetScaleX: 1.15, velScaleX: 0,
+    scaleY: 1.15, targetScaleY: 1.15, velScaleY: 0,
     opacity: 0, targetOpacity: 0, velOpacity: 0,
     isOpen: false
   };
@@ -2010,7 +2010,7 @@
     lpItem.addEventListener('click', (e) => {
       e.stopPropagation();
       icon.click();
-      launchpadState.targetScaleX = 0.85; launchpadState.targetScaleY = 0.85;
+      launchpadState.targetScaleX = 1.15; launchpadState.targetScaleY = 1.15;
       launchpadState.targetOpacity = 0; launchpadState.isOpen = false;
     });
     launchpadContent.appendChild(lpItem);
@@ -2046,7 +2046,7 @@
           searchInput.dispatchEvent(new Event('input'));
         }
       } else {
-        launchpadState.targetScaleX = 0.85; launchpadState.targetScaleY = 0.85;
+        launchpadState.targetScaleX = 1.15; launchpadState.targetScaleY = 1.15;
         launchpadState.targetOpacity = 0; launchpadState.isOpen = false;
       }
     });
