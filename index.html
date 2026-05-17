@@ -277,22 +277,80 @@
   .toolbar-icons { display: flex; gap: 12px; color: #555; font-size: 14px; cursor: pointer; }
   .toolbar-icons .view-btn { padding: 2px 6px; }
   .toolbar-icons .view-btn.active { background: #e0e0e0; border-radius: 4px; }
-  .window-body { display: flex; flex: 1; height: calc(100% - 52px); }
-  .sidebar { width: 220px; background: #f5f5f5; border-right: 1px solid #e0e0e0; padding: 10px; overflow-y: auto; }
+  #finder-window {
+    width: 800px;
+    height: 500px;
+    background: rgba(246, 246, 246, 0.95);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+    border-radius: 24px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2), inset 0 0 0 1px rgba(255, 255, 255, 0.3);
+    display: none;
+    flex-direction: row;
+  }
+  
+  #finder-window.active-app {
+    display: flex;
+  }
+  
+  .finder-container {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+  }
+  
+  .finder-sidebar-wrapper {
+    width: 270px;
+    background: rgba(255, 255, 255, 0.5); /* The rectangle inside */
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: flex;
+    flex-direction: column;
+    padding: 18px 14px;
+    overflow-y: auto;
+    margin: 15px 0 15px 15px;
+    border-radius: 16px;
+    height: calc(100% - 30px);
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05), 0 2px 10px rgba(0,0,0,0.02);
+  }
+  
+  .finder-right-area {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    background: transparent;
+    height: 100%;
+    overflow: hidden;
+  }
+  
+  .finder-right-toolbar {
+    height: 52px;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    color: #333;
+  }
+  
   .sidebar-section { font-size: 11px; text-transform: uppercase; color: #888; font-weight: 600; margin-bottom: 6px; padding-left: 8px; }
-  .sidebar-item { font-size: 12px; padding: 6px 8px; border-radius: 6px; cursor: pointer; color: #333; display: flex; align-items: center; gap: 8px; }
-  .sidebar-item.active { background: #007aff; color: #fff; }
+  .sidebar-item { font-size: 12px; padding: 6px 8px; border-radius: 6px; cursor: pointer; color: #333; display: flex; align-items: center; gap: 8px; margin-bottom: 2px; }
+  .sidebar-item.active { background: rgba(0, 0, 0, 0.1); font-weight: 500; }
+  .sidebar-item.tag { gap: 6px; }
   .sidebar-item .dot { width: 10px; height: 10px; border-radius: 50%; }
-  .content-area { flex: 1; background: #fff; overflow-y: auto; padding: 20px; position: relative; transition: opacity 0.12s ease; }
+  
+  .content-area { flex: 1; overflow-y: auto; padding: 20px; position: relative; transition: opacity 0.12s ease; }
   .empty-state { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: #999; }
   .empty-state .icon { font-size: 48px; margin-bottom: 10px; }
   .grid-view { display: flex; flex-wrap: wrap; gap: 20px; }
   .grid-item { width: 80px; text-align: center; }
   .grid-item .icon { font-size: 40px; margin-bottom: 4px; }
-  .grid-item .name { font-size: 11px; word-wrap: break-word; }
+  .grid-item .name { font-size: 11px; word-wrap: break-word; color: #333; }
   .list-view { width: 100%; border-collapse: collapse; }
-  .list-view th { text-align: left; font-size: 11px; color: #888; padding: 4px 8px; border-bottom: 1px solid #eee; }
-  .list-view td { font-size: 11px; padding: 4px 8px; border-bottom: 1px solid #f9f9f9; }
+  .list-view th { text-align: left; font-size: 11px; color: #888; padding: 4px 8px; border-bottom: 1px solid rgba(0, 0, 0, 0.05); }
+  .list-view td { font-size: 11px; padding: 4px 8px; border-bottom: 1px solid rgba(0, 0, 0, 0.02); color: #333; }
+
   ::-webkit-scrollbar { width: 3px; height: 3px; }
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.2); border-radius: 3px; }
@@ -458,13 +516,15 @@
 
   /* Settings Window Styles */
   #settings-window {
-    width: 600px;
-    height: 480px;
-    background: rgba(255, 255, 255, 0.85); /* macOS Tahoe light mode feel */
+    width: 760px;
+    height: 540px;
+    background: rgba(246, 246, 246, 0.95); /* less background visibility (more opaque) */
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
     border-radius: 24px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2), inset 0 0 0 1px rgba(255, 255, 255, 0.3);
     display: none;
-    flex-direction: column;
+    flex-direction: row;
     overflow: hidden;
     color: #333;
     z-index: 50;
@@ -481,15 +541,92 @@
   }
   .settings-container {
     display: flex;
-    flex: 1;
+    flex-direction: row;
+    width: 100%;
+    height: 100%;
     background: transparent;
   }
   .settings-sidebar {
-    width: 200px;
-    background: rgba(0, 0, 0, 0.05);
-    border-right: 1px solid rgba(0, 0, 0, 0.1);
-    padding: 12px 10px;
+    width: 270px;
+    background: rgba(255, 255, 255, 0.5); /* The rectangle inside */
+    backdrop-filter: blur(8px); /* A little background blur for the rectangle */
+    -webkit-backdrop-filter: blur(8px);
+    display: flex;
+    flex-direction: column;
+    padding: 18px 14px;
     overflow-y: auto;
+    margin: 15px 0 15px 15px;
+    border-radius: 16px;
+    height: calc(100% - 30px);
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05), 0 2px 10px rgba(0,0,0,0.02);
+  }
+  .settings-search {
+    display: flex;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.08);
+    border-radius: 12px;
+    padding: 6px 10px;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    font-size: 13px;
+    color: #444;
+  }
+  .settings-search input {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #444;
+    font-size: 13px;
+    width: 100%;
+    font-family: inherit;
+  }
+  .settings-search input::placeholder {
+    color: #666;
+  }
+  .settings-search svg {
+    margin-right: 6px;
+    stroke: #666;
+  }
+  .settings-profile-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    cursor: pointer;
+    border-radius: 8px;
+    padding: 8px;
+    transition: background 0.1s;
+  }
+  .settings-profile-card:hover {
+    background: rgba(0, 0, 0, 0.05);
+  }
+  .settings-profile-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #a0a0a0, #666666);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+  .settings-profile-info {
+    display: flex;
+    flex-direction: column;
+  }
+  .settings-profile-name {
+    font-weight: 600;
+    font-size: 13px;
+    color: #000;
+  }
+  .settings-profile-desc {
+    font-size: 11px;
+    color: #666;
+  }
+  .settings-sidebar-section {
+    margin-bottom: 15px;
   }
   .settings-sidebar-item {
     padding: 6px 12px;
@@ -500,22 +637,69 @@
     color: #333;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
     transition: background 0.1s;
+  }
+  .settings-sidebar-item img {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+    border-radius: 4px;
   }
   .settings-sidebar-item:hover {
     background: rgba(0, 0, 0, 0.08);
   }
   .settings-sidebar-item.active {
-    background: #007aff;
-    color: #fff;
+    background: rgba(0, 0, 0, 0.1);
     font-weight: 500;
   }
   .settings-content {
     flex: 1;
-    padding: 24px;
+    padding: 40px 30px;
     overflow-y: auto;
     background: transparent;
+  }
+  
+  /* About Settings View */
+  .settings-about-view {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 450px;
+    margin: 0 auto;
+  }
+  .settings-about-view .about-logo {
+    width: 140px;
+    height: auto;
+    margin-bottom: 10px;
+  }
+  .settings-about-view .about-title {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 30px;
+    color: #333;
+  }
+  .settings-about-property {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+    font-size: 13px;
+  }
+  .settings-about-property:last-child {
+    border-bottom: none;
+  }
+  .settings-about-property-label {
+    font-weight: 600;
+    color: #333;
+    width: 120px;
+  }
+  .settings-about-property-value {
+    color: #555;
+    flex: 1;
+    text-align: left;
   }
   .wallpaper-grid {
     display: grid;
@@ -1282,31 +1466,13 @@
 </div>
 
 <div class="window" id="finder-window">
-  <div class="titlebar">
-    <div class="traffic-lights">
-      <div class="btn close" id="btn-close"></div>
-      <div class="btn minimize" id="btn-minimize"></div>
-      <div class="btn maximize" id="btn-maximize"></div>
-    </div>
-    <div class="nav-arrows">
-      <span id="nav-back">⟨</span>
-      <span id="nav-forward">⟩</span>
-    </div>
-    <div class="window-title" id="window-title">Bubuvar</div>
-    <div class="toolbar-icons">
-      <span class="view-btn active" data-view="grid">⊞</span>
-      <span class="view-btn" data-view="list">☰</span>
-      <span class="view-btn" data-view="column">◫</span>
-      <span class="view-btn" data-view="gallery">🖼</span>
-      <span style="margin:0 4px;color:#ccc">|</span>
-      <span>⍗</span>
-      <span>🏷</span>
-      <span>⋯</span>
-      <span>🔍</span>
-    </div>
-  </div>
-  <div class="window-body">
-    <div class="sidebar">
+  <div class="finder-container">
+    <div class="finder-sidebar-wrapper" id="finder-titlebar">
+      <div class="traffic-lights" style="padding-left: 4px; margin-bottom: 25px;">
+        <div class="btn close" id="btn-close"></div>
+        <div class="btn minimize" id="btn-minimize"></div>
+        <div class="btn maximize" id="btn-maximize"></div>
+      </div>
       <div class="sidebar-section">Favorites</div>
       <div class="sidebar-item" data-folder="Setapp">📄 Setapp</div>
       <div class="sidebar-item" data-folder="Applications">📱 Applications</div>
@@ -1326,7 +1492,28 @@
       <div class="sidebar-item tag"><span class="dot" style="background:#ff9500"></span>Orange</div>
       <div class="sidebar-item tag"><span class="dot" style="background:#ffcc00"></span>Yellow</div>
     </div>
-    <div class="content-area" id="content-area"></div>
+    
+    <div class="finder-right-area">
+      <div class="finder-right-toolbar">
+        <div class="nav-arrows" style="margin-left: 0; margin-right: 16px;">
+          <span id="nav-back">⟨</span>
+          <span id="nav-forward">⟩</span>
+        </div>
+        <div class="window-title" id="window-title">Bubuvar</div>
+        <div class="toolbar-icons">
+          <span class="view-btn active" data-view="grid">⊞</span>
+          <span class="view-btn" data-view="list">☰</span>
+          <span class="view-btn" data-view="column">◫</span>
+          <span class="view-btn" data-view="gallery">🖼</span>
+          <span style="margin:0 4px;color:#ccc">|</span>
+          <span>⍗</span>
+          <span>🏷</span>
+          <span>⋯</span>
+          <span>🔍</span>
+        </div>
+      </div>
+      <div class="content-area" id="content-area"></div>
+    </div>
   </div>
 </div>
 
@@ -1415,26 +1602,72 @@
 </div>
 
 <div class="window" id="settings-window">
-  <div class="titlebar" id="settings-titlebar">
-    <div class="traffic-lights">
-      <div class="btn close" id="settings-btn-close"></div>
-      <div class="btn minimize" id="settings-btn-minimize"></div>
-      <div class="btn maximize" id="settings-btn-maximize"></div>
-    </div>
-    <div class="window-title">System Settings</div>
-  </div>
   <div class="settings-container">
-    <div class="settings-sidebar">
-      <div class="settings-sidebar-item">General</div>
-      <div class="settings-sidebar-item">Appearance</div>
-      <div class="settings-sidebar-item">Accessibility</div>
-      <div class="settings-sidebar-item">Control Center</div>
-      <div class="settings-sidebar-item">Desktop & Dock</div>
-      <div class="settings-sidebar-item">Displays</div>
-      <div class="settings-sidebar-item active">Wallpaper</div>
+    <div class="settings-sidebar" id="settings-titlebar">
+      <div class="traffic-lights" style="padding-left: 4px; margin-bottom: 25px;">
+        <div class="btn close" id="settings-btn-close"></div>
+        <div class="btn minimize" id="settings-btn-minimize"></div>
+        <div class="btn maximize" id="settings-btn-maximize"></div>
+      </div>
+      
+      <div class="settings-search">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        <input type="text" placeholder="Search">
+      </div>
+      
+      <div class="settings-profile-card">
+        <div class="settings-profile-avatar">B</div>
+        <div class="settings-profile-info">
+          <div class="settings-profile-name">Bubuvar</div>
+          <div class="settings-profile-desc">Apple Account</div>
+        </div>
+      </div>
+      
+      <div class="settings-sidebar-section">
+        <div class="settings-sidebar-item"><img src="https://github.com/Hellomyfriend19/Nice/blob/main/Wifi.png?raw=true"> Wi-Fi</div>
+        <div class="settings-sidebar-item"><img src="https://developer.apple.com/bluetooth/images/bluetooth.svg"> Bluetooth</div>
+      </div>
+      
+      <div class="settings-sidebar-section">
+        <div class="settings-sidebar-item active" data-view="general"><img src="https://www.tonymacx86.com/attachments/systemsettings-tahoe-png.595625/"> General</div>
+        <div class="settings-sidebar-item" data-view="accessibility"><img src="https://www.apple.com/v/accessibility/q/images/vision/accessibility_shortcuts__f8j0izxyuxym_large_2x.png"> Accessibility</div>
+        <div class="settings-sidebar-item" data-view="appearance"><img src="https://alfred.app/workflows/alfredapp/switch-appearance/icon.png"> Appearance</div>
+        <div class="settings-sidebar-item" data-view="siri"><img src="https://github.com/Hellomyfriend19/Nice/blob/main/SIRI.png?raw=true"> Siri</div>
+        <div class="settings-sidebar-item" data-view="spotlight"><img src="https://github.com/Hellomyfriend19/Nice/blob/main/21sa.png?raw=true"> Spotlight</div>
+        <div class="settings-sidebar-item" data-view="wallpaper"><img src="https://github.com/Hellomyfriend19/Nice/blob/main/wallpapers.png?raw=true"> Wallpaper</div>
+      </div>
     </div>
+    
     <div class="settings-content">
-      <div id="settings-view-wallpaper">
+      <div id="settings-view-general">
+        <div class="settings-about-view">
+          <img src="https://github.com/Hellomyfriend19/Macostahoe/blob/main/image%20(12).png?raw=true" class="about-logo" alt="MacBook Pro">
+          <div class="about-title">MacBook Pro</div>
+          
+          <div class="settings-about-property">
+            <span class="settings-about-property-label">Name</span>
+            <span class="settings-about-property-value">MacBook Pro</span>
+          </div>
+          <div class="settings-about-property">
+            <span class="settings-about-property-label">Chip</span>
+            <span class="settings-about-property-value">Apple M4 Max</span>
+          </div>
+          <div class="settings-about-property">
+            <span class="settings-about-property-label">Memory</span>
+            <span class="settings-about-property-value">128 GB</span>
+          </div>
+          <div class="settings-about-property">
+            <span class="settings-about-property-label">Serial Number</span>
+            <span class="settings-about-property-value">ZNKQ5JKRLO</span>
+          </div>
+          <div class="settings-about-property">
+            <span class="settings-about-property-label">macOS</span>
+            <span class="settings-about-property-value">26.0</span>
+          </div>
+        </div>
+      </div>
+      
+      <div id="settings-view-wallpaper" style="display: none;">
         <h2 style="margin: 0 0 20px 0; font-weight: 600; font-size: 22px;">Wallpaper</h2>
         <div class="wallpaper-grid" id="wallpaper-grid">
           <div class="wallpaper-item active" data-bg="https://512pixels.net/wp-content/uploads/2025/06/26-Tahoe-Light-6K-thumb.jpeg">
@@ -1452,22 +1685,8 @@
         </div>
       </div>
       
-      <div id="settings-view-dock" style="display: none;">
-        <h2 style="margin: 0 0 20px 0; font-weight: 600; font-size: 22px;">Desktop & Dock</h2>
-        <div style="background: rgba(0, 0, 0, 0.05); padding: 20px; border-radius: 12px; border: 1px solid rgba(0, 0, 0, 0.1);">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-            <span style="font-weight: 500; font-size: 14px;">Size</span>
-            <span id="dock-size-value" style="font-size: 13px; color: #555;">Medium</span>
-          </div>
-          <div style="position: relative; display: flex; align-items: center; gap: 10px;">
-            <span style="font-size: 12px; color: #888;">Small</span>
-            <div style="position: relative; flex: 1; display: flex; align-items: center;">
-              <div style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 2px; height: 12px; background: #666; pointer-events: none; z-index: 0;"></div>
-              <input type="range" id="dock-size-slider" min="0" max="4" value="2" step="1" style="flex: 1; accent-color: #007aff; position: relative; z-index: 1;">
-            </div>
-            <span style="font-size: 12px; color: #888;">Large</span>
-          </div>
-        </div>
+      <div id="settings-view-accessibility" style="display: none;">
+        <h2 style="margin: 0 0 20px 0; font-weight: 600; font-size: 22px;">Accessibility</h2>
       </div>
       
       <div id="settings-view-appearance" style="display: none;">
@@ -1482,6 +1701,7 @@
           </div>
         </div>
       </div>
+
     </div>
   </div>
 </div>
@@ -1550,9 +1770,9 @@
   </filter>
 
   <filter id="text-bevel-filter">
-    <feGaussianBlur in="SourceAlpha" stdDeviation="0.8" result="blurAlpha" id="tbf-blur"/>
-    <feSpecularLighting in="blurAlpha" surfaceScale="0.5" specularConstant="1.5" specularExponent="32" lighting-color="#ffffff" result="specularLight" id="tbf-specular">
-      <feDistantLight azimuth="233" elevation="36" id="tbf-light"/>
+    <feGaussianBlur in="SourceAlpha" stdDeviation="0.6" result="blurAlpha" id="tbf-blur"/>
+    <feSpecularLighting in="blurAlpha" surfaceScale="5" specularConstant="1.2" specularExponent="30" lighting-color="#ffffff" result="specularLight" id="tbf-specular">
+      <feDistantLight azimuth="225" elevation="25" id="tbf-light"/>
     </feSpecularLighting>
     <feComposite in="specularLight" in2="SourceAlpha" operator="in" result="specularHighlight"/>
     <feMerge>
@@ -1691,7 +1911,7 @@
     
     // close launchpad anywhere else
     if (typeof launchpadState !== 'undefined' && launchpadState.isOpen && !e.target.closest('#launchpad-window') && !e.target.closest('.dock-icon[data-name="Launchpad"]')) {
-      launchpadState.targetScaleX = 1.15; launchpadState.targetScaleY = 1.15;
+      launchpadState.targetScaleX = 0.85; launchpadState.targetScaleY = 0.85;
       launchpadState.targetOpacity = 0; launchpadState.isOpen = false;
     }
     
@@ -1756,14 +1976,15 @@
     });
   }
 
-  const titlebar = document.querySelector('.titlebar');
+  const titlebar = document.getElementById('finder-titlebar');
+  const rightToolbar = document.querySelector('.finder-right-toolbar');
   let isDraggingWindow = false;
   let dragStartX = 0;
   let dragStartY = 0;
   let initialDragX = 0;
   let initialDragY = 0;
 
-  titlebar.addEventListener('mousedown', (e) => {
+  const startDrag = (e) => {
     if (e.target.closest('.traffic-lights') || e.target.closest('.toolbar-icons') || e.target.closest('.nav-arrows')) return;
     if (winState.isMaximized) return;
     isDraggingWindow = true;
@@ -1771,7 +1992,10 @@
     dragStartY = e.clientY;
     initialDragX = winState.dragX;
     initialDragY = winState.dragY;
-  });
+  };
+
+  if (titlebar) titlebar.addEventListener('mousedown', startDrag);
+  if (rightToolbar) rightToolbar.addEventListener('mousedown', startDrag);
 
   window.addEventListener('mousemove', (e) => {
     if (!isDraggingWindow) return;
@@ -1966,8 +2190,8 @@
   const launchpadWindow = document.getElementById('launchpad-window');
   const launchpadContent = document.getElementById('launchpad-content');
   const launchpadState = {
-    scaleX: 1.15, targetScaleX: 1.15, velScaleX: 0,
-    scaleY: 1.15, targetScaleY: 1.15, velScaleY: 0,
+    scaleX: 0.85, targetScaleX: 0.85, velScaleX: 0,
+    scaleY: 0.85, targetScaleY: 0.85, velScaleY: 0,
     opacity: 0, targetOpacity: 0, velOpacity: 0,
     isOpen: false
   };
@@ -2010,7 +2234,7 @@
     lpItem.addEventListener('click', (e) => {
       e.stopPropagation();
       icon.click();
-      launchpadState.targetScaleX = 1.15; launchpadState.targetScaleY = 1.15;
+      launchpadState.targetScaleX = 0.85; launchpadState.targetScaleY = 0.85;
       launchpadState.targetOpacity = 0; launchpadState.isOpen = false;
     });
     launchpadContent.appendChild(lpItem);
@@ -2046,7 +2270,7 @@
           searchInput.dispatchEvent(new Event('input'));
         }
       } else {
-        launchpadState.targetScaleX = 1.15; launchpadState.targetScaleY = 1.15;
+        launchpadState.targetScaleX = 0.85; launchpadState.targetScaleY = 0.85;
         launchpadState.targetOpacity = 0; launchpadState.isOpen = false;
       }
     });
@@ -2077,6 +2301,10 @@
       settingsState.targetScaleX = 0.2; settingsState.targetScaleY = 0.05;
       settingsState.targetTranslateY = 300; settingsState.targetOpacity = 0;
       settingsState.isOpen = true; settingsState.isMinimized = true;
+    } else {
+      settingsState.targetScaleX = 1; settingsState.targetScaleY = 1;
+      settingsState.targetTranslateY = 0; settingsState.targetOpacity = 1;
+      settingsState.isMinimized = false;
     }
   });
   document.getElementById('settings-btn-maximize').addEventListener('click', () => {
@@ -2152,26 +2380,46 @@
   });
 
   const settingsSidebarItems = document.querySelectorAll('.settings-sidebar-item');
-  const settingsViewWallpaper = document.getElementById('settings-view-wallpaper');
-  const settingsViewDock = document.getElementById('settings-view-dock');
-  const settingsViewAppearance = document.getElementById('settings-view-appearance');
+  const settingsViews = {
+    'general': document.getElementById('settings-view-general'),
+    'wallpaper': document.getElementById('settings-view-wallpaper'),
+    'accessibility': document.getElementById('settings-view-accessibility'),
+    'appearance': document.getElementById('settings-view-appearance')
+  };
+
+  const settingsSearchInput = document.querySelector('.settings-search input');
+  if (settingsSearchInput) {
+    settingsSearchInput.addEventListener('input', (e) => {
+      const term = e.target.value.toLowerCase();
+      settingsSidebarItems.forEach(item => {
+        if (!item.hasAttribute('data-view')) return; // keep headers or other items visible? Let's just hide those that have data-view and don't match.
+        // Actually, some items might not have data-view but be in the same list. 
+        const text = item.textContent.toLowerCase();
+        if (text.includes(term)) {
+          item.style.display = 'flex';
+        } else {
+          item.style.display = 'none';
+        }
+      });
+    });
+  }
 
   settingsSidebarItems.forEach(item => {
     item.addEventListener('click', () => {
+      // Find items with data-view
+      if (!item.hasAttribute('data-view')) return;
       settingsSidebarItems.forEach(i => i.classList.remove('active'));
       item.classList.add('active');
       
-      const text = item.textContent.trim();
-      settingsViewWallpaper.style.display = 'none';
-      settingsViewDock.style.display = 'none';
-      if (settingsViewAppearance) settingsViewAppearance.style.display = 'none';
+      const viewKey = item.getAttribute('data-view');
+      Object.keys(settingsViews).forEach(key => {
+        if (settingsViews[key]) {
+          settingsViews[key].style.display = 'none';
+        }
+      });
       
-      if (text === 'Wallpaper') {
-        settingsViewWallpaper.style.display = 'block';
-      } else if (text === 'Desktop & Dock') {
-        settingsViewDock.style.display = 'block';
-      } else if (text === 'Appearance' && settingsViewAppearance) {
-        settingsViewAppearance.style.display = 'block';
+      if (settingsViews[viewKey]) {
+        settingsViews[viewKey].style.display = 'block';
       }
     });
   });
@@ -2308,6 +2556,10 @@
       terminalState.targetScaleX = 0.2; terminalState.targetScaleY = 0.05;
       terminalState.targetTranslateY = 300; terminalState.targetOpacity = 0;
       terminalState.isOpen = true; terminalState.isMinimized = true;
+    } else {
+      terminalState.targetScaleX = 1; terminalState.targetScaleY = 1;
+      terminalState.targetTranslateY = 0; terminalState.targetOpacity = 1;
+      terminalState.isMinimized = false;
     }
   });
   document.getElementById('terminal-btn-maximize').addEventListener('click', () => {
@@ -2341,6 +2593,10 @@
         terminalState.isOpen = true; terminalState.isMinimized = false;
         
         setTimeout(() => terminalInput.focus(), 100);
+      } else {
+        terminalState.targetScaleX = 0.2; terminalState.targetScaleY = 0.05;
+        terminalState.targetTranslateY = 300; terminalState.targetOpacity = 0;
+        terminalState.isMinimized = true;
       }
     });
   }
@@ -2657,6 +2913,10 @@
         safariState.targetOpacity = 1; 
         safariState.targetTranslateY = safariState.isMaximized ? -38 : 0;
         safariState.isOpen = true; safariState.isMinimized = false;
+      } else {
+        safariState.targetScaleX = 0.2; safariState.targetScaleY = 0.04;
+        safariState.targetTranslateY = 350; safariState.targetOpacity = 0;
+        safariState.isMinimized = true;
       }
     });
   }
@@ -3222,7 +3482,6 @@
   createLiquidGlassForElement('#launchpad-window', 'launchpad-liquid-glass', 20, 6);
   createLiquidGlassForElement('#launchpad-search', 'launchpad-search-liquid-glass', 14, 6);
   createLiquidGlassForElement('#terminal-window', 'terminal-liquid-glass', 10, 3);
-  createLiquidGlassForElement('#settings-window', 'settings-liquid-glass', 12, 10);
   createLiquidGlassForElement('#about-window', 'about-liquid-glass', 10, 6);
   createLiquidGlassForElement('.menu-dropdown', 'menu-dropdown-liquid-glass', 8, 8);
   createLiquidGlassForElement('#lock-screen-signin-btn', 'lock-screen-signin-liquid-glass', 18, 0);
