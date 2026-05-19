@@ -1728,12 +1728,12 @@
 
 <div class="dock-container" id="dock">
   <div class="dock-tooltip" id="tooltip"></div>
-  <div class="dock-icon" data-name="Finder" style="background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Finder_Icon_macOS_Big_Sur.png/500px-Finder_Icon_macOS_Big_Sur.png')"></div>
+  <div class="dock-icon" data-name="Finder" style="background-image: url('https://upload.wikimedia.org/wikipedia/commons/b/b9/Finder_Icon_macOS_Tahoe.png?_=20250922021914'); background-size: 85%;"></div>
   <div class="dock-icon" data-name="Launchpad" style="background-image: url('https://i0.wp.com/www.appletips.nl/wp-content/uploads/2021/02/apps-launchpad-glass-icon-appbibliotheek.webp'); background-size: 85%;"></div>
   <div class="dock-icon" data-name="Safari" style="background-image: url('https://images.icon-icons.com/3053/PNG/512/safari_macos_bigsur_icon_189770.png')"></div>
-  <div class="dock-icon" data-name="Calendar" style="background-image: url('https://upload.wikimedia.org/wikipedia/commons/1/1c/MacOSCalendar.png')"></div>
+  <div class="dock-icon" data-name="Calendar" style="background-image: url('https://github.com/Hellomyfriend19/Nice/blob/main/New%20Project%20(13).png?raw=true'); background-size: 85%;"></div>
   <div class="dock-icon" data-name="Terminal" style="background-image: url('https://upload.wikimedia.org/wikipedia/commons/b/b3/Terminalicon2.png')"></div>
-  <div class="dock-icon" data-name="Apple Music" style="background-image: url('https://upload.wikimedia.org/wikipedia/commons/6/6f/AppleMusicIcon_macOS%402x.png')"></div>
+  <div class="dock-icon" data-name="Apple Music" style="background-image: url('https://github.com/Hellomyfriend19/Nice/blob/main/apple%20music.png?raw=true'); background-size: 85%;"></div>
   <div class="dock-icon" data-name="Instagram" style="background-image: url('https://user-images.githubusercontent.com/24403355/33800842-566c09d8-dd17-11e7-88ff-be7f30481d67.png'); background-size: 85%;"></div>
   <div class="dock-icon" data-name="System Settings" style="background-image: url('https://www.tonymacx86.com/attachments/systemsettings-tahoe-png.595625/')"></div>
   <div class="dock-icon" data-name="Trash" style="background-image: url('https://icons.iconarchive.com/icons/wwalczyszyn/iwindows/256/Recycle-Bin-icon.png')"></div>
@@ -1911,6 +1911,12 @@
     if (!win) return;
     const maxZ = Array.from(document.querySelectorAll('.window')).reduce((max, w) => Math.max(max, parseInt(w.style.zIndex || 10)), 0);
     win.style.zIndex = maxZ + 1;
+    
+    // Dispatch to the window itself
+    win.dispatchEvent(new Event('force-liquid-glass'));
+    // And to any children that might have liquid glass (like launchpad-search)
+    win.querySelectorAll('*').forEach(child => child.dispatchEvent(new Event('force-liquid-glass')));
+    
     setActiveApp(appName);
   }
 
@@ -2211,9 +2217,13 @@
     
     const imgLayer = icon.querySelector('.icon-image-layer');
     let bg = imgLayer ? imgLayer.style.backgroundImage : icon.style.backgroundImage;
-    const match = bg?.match(/url\(['"]?(.*?)['"]?\)/i);
+    let bgSize = imgLayer ? imgLayer.style.backgroundSize : icon.style.backgroundSize;
+    if (!bgSize && icon.style.backgroundSize) bgSize = icon.style.backgroundSize;
+    
+    const match = bg?.match(/url\((.*)\)/i);
     if (match) {
-      bg = `url('${match[1]}')`;
+      let innerUrl = match[1].replace(/^['"]|['"]$/g, '');
+      bg = `url('${innerUrl}')`;
     }
     
     const lpItem = document.createElement('div');
@@ -2225,8 +2235,8 @@
     const img = document.createElement('div');
     img.className = 'icon-image-layer';
     if (bg) img.style.backgroundImage = bg;
-    if (name === "Instagram") {
-      img.style.backgroundSize = "85%";
+    if (bgSize) {
+      img.style.backgroundSize = bgSize;
     } else {
       img.style.backgroundSize = "contain";
     }
@@ -3237,6 +3247,9 @@
     e.stopPropagation();
     appleMenuBtn.classList.toggle('open');
     appleDropdown.classList.toggle('show');
+    if (appleDropdown.classList.contains('show')) {
+      appleDropdown.dispatchEvent(new Event('force-liquid-glass'));
+    }
   });
 
   document.body.addEventListener('click', (e) => {
@@ -3249,6 +3262,7 @@
   document.getElementById('about-mac').addEventListener('click', () => {
     const aboutWindow = document.getElementById('about-window');
     aboutWindow.classList.add('show');
+    aboutWindow.dispatchEvent(new Event('force-liquid-glass'));
     appleDropdown.classList.remove('show');
     appleMenuBtn.classList.remove('open');
   });
@@ -3473,7 +3487,8 @@
 
       ctx.putImageData(new ImageData(data, w, h), 0, 0);
       feImage.setAttributeNS('http://www.w3.org/1999/xlink', 'href', canvas.toDataURL('image/png'));
-      feDisplacementMap.setAttribute('scale', maxScale.toString());
+      const finalScale = maxScale + (Math.random() * 0.001);
+      feDisplacementMap.setAttribute('scale', finalScale.toString());
     }
 
     const observer = new ResizeObserver(() => {
@@ -3481,6 +3496,17 @@
       frameId = requestAnimationFrame(updateMap);
     });
     observer.observe(el);
+    
+    el.addEventListener('force-liquid-glass', () => {
+      const triggerUpdate = () => {
+        lastW = 0; lastH = 0;
+        if (frameId) cancelAnimationFrame(frameId);
+        frameId = requestAnimationFrame(updateMap);
+      };
+      triggerUpdate();
+      setTimeout(triggerUpdate, 50);
+      setTimeout(triggerUpdate, 300);
+    });
 
     const blurStr = blurRadius > 0 ? `blur(${blurRadius}px) ` : '';
     el.style.backdropFilter = `${blurStr}url(#${id}_filter) contrast(1.1) brightness(1.05) saturate(1.1)`;
