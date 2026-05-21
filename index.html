@@ -227,6 +227,142 @@
     filter: url(#icon-transparent-filter);
   }
 
+  body.dark-mode .window, 
+  body.dark-mode .safari-toolbar, 
+  body.dark-mode .safari-address-bar, 
+  body.dark-mode .apple-dropdown, 
+  body.dark-mode .context-menu {
+    background-color: rgba(30, 30, 30, 0.85); /* Slightly darker/transparent */
+    color: #e0e0e0;
+  }
+  
+  body.dark-mode #settings-window,
+  body.dark-mode #finder-window {
+    background-color: rgba(30, 30, 30, 0.6) !important; /* Window background dark for liquid glass */
+    color: #e0e0e0;
+  }
+  
+  body.dark-mode #safari-window {
+    background-color: #1e1e1e !important;
+  }
+
+  body.dark-mode .safari-toolbar {
+    background-color: #2c2c2c !important;
+  }
+  
+  body.dark-mode .settings-sidebar,
+  body.dark-mode .finder-sidebar-wrapper {
+    background-color: transparent !important;
+    color: #e0e0e0;
+  }
+
+  body.dark-mode .menubar {
+    color: #fff;
+    background: transparent !important;
+  }
+
+  body.dark-mode #launchpad-window {
+    background-color: rgba(0, 0, 0, 0.4) !important;
+  }
+  
+  body.dark-mode .dock-tooltip {
+    background: rgba(0, 0, 0, 0.9);
+    color: #e0e0e0;
+  }
+
+  body.dark-mode .sidebar-item:hover,
+  body.dark-mode .sidebar-item.active,
+  body.dark-mode .safari-bookmark:hover,
+  body.dark-mode .apple-dropdown-item:hover,
+  body.dark-mode .context-menu-item:hover,
+  body.dark-mode .settings-sidebar-item:hover,
+  body.dark-mode .settings-sidebar-item.active {
+    background: rgba(255, 255, 255, 0.15);
+  }
+
+  body.dark-mode .sidebar-item,
+  body.dark-mode .settings-sidebar-item {
+    color: #e0e0e0;
+  }
+  
+  body.dark-mode .sidebar-section,
+  body.dark-mode .settings-sidebar-section {
+    color: #999;
+  }
+
+  body.dark-mode .safari-address-bar {
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+  }
+  
+  body.dark-mode .safari-content-area,
+  body.dark-mode .content-area,
+  body.dark-mode .settings-content {
+    background: #1e1e1e !important;
+    color: #fff;
+  }
+  
+  body.dark-mode .safari-bookmark {
+    background: rgba(255, 255, 255, 0.1);
+    color: #e0e0e0;
+  }
+  
+  body.dark-mode #about-window {
+    background: rgba(30, 30, 30, 0.95);
+    color: #e0e0e0;
+  }
+  
+  body.dark-mode .about-footer {
+    background: rgba(0, 0, 0, 0.2);
+    border-top-color: rgba(255, 255, 255, 0.1);
+  }
+  
+  body.dark-mode .about-btn {
+    background: rgba(255, 255, 255, 0.1);
+    color: #e0e0e0;
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+
+  body.dark-mode .settings-container, 
+  body.dark-mode .app-window-content {
+    background: transparent;
+    color: #e0e0e0;
+  }
+  
+  body.dark-mode #settings-view-appearance > div {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+  }
+  
+  body.dark-mode .settings-search input {
+    background: rgba(0, 0, 0, 0.2);
+    color: #fff;
+  }
+  
+  body.dark-mode .settings-about-property-label,
+  body.dark-mode .settings-about-property-value,
+  body.dark-mode .wallpaper-name {
+    color: #aaa;
+  }
+  
+  body.dark-mode .settings-about-property-value {
+    color: #e0e0e0;
+  }
+
+  body.dark-mode .window-title,
+  body.dark-mode .settings-profile-name {
+    color: #e0e0e0;
+  }
+  
+  body.dark-mode .launchpad-search-input {
+    background: rgba(0, 0, 0, 0.5);
+    color: #fff;
+  }
+  
+  body.dark-mode .launchpad-titlebar {
+    color: #fff;
+  }
+
   .window {
     position: absolute;
     top: 50%;
@@ -708,7 +844,7 @@
   }
   .wallpaper-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
     gap: 16px;
   }
   .wallpaper-item {
@@ -814,9 +950,9 @@
   }
   .launchpad-name {
     font-size: 13px;
-    color: #000;
+    color: #fff;
     font-weight: 500;
-    text-shadow: 0 1px 2px rgba(255,255,255,0.3);
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
     text-align: center;
   }
 
@@ -1337,7 +1473,7 @@
     right: 0;
     bottom: 0;
     background-color: #ccc;
-    transition: .3s;
+    transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     border-radius: 20px;
   }
   .toggle-slider:before {
@@ -1348,7 +1484,7 @@
     left: 2px;
     bottom: 2px;
     background-color: white;
-    transition: .3s;
+    transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     border-radius: 50%;
     box-shadow: 0 1px 3px rgba(0,0,0,0.3);
   }
@@ -1382,6 +1518,8 @@
 
 <div class="bg-layer active" id="bg-layer-1" style="background-image: url('https://512pixels.net/wp-content/uploads/2025/06/26-Tahoe-Light-6K-thumb.jpeg')"></div>
 <div class="bg-layer" id="bg-layer-2"></div>
+<div class="top-gradient-overlay" style="position: absolute; top: 0; left: 0; width: 100vw; height: 160px; background: linear-gradient(to bottom, rgba(0,0,0,0.5), transparent); mix-blend-mode: overlay; pointer-events: none; z-index: 5;"></div>
+<div class="top-gradient-normal" style="position: absolute; top: 0; left: 0; width: 100vw; height: 160px; background: linear-gradient(to bottom, rgba(0,0,0,0.05), transparent); pointer-events: none; z-index: 6;"></div>
 
 <div class="desktop-icons" id="desktop-icons"></div>
 
@@ -1602,7 +1740,7 @@
   <div class="terminal-content" id="terminal-content">
     <div class="terminal-line">Last login: <span id="term-time"></span> on console</div>
     <div class="terminal-input-line">
-      <span class="terminal-prompt">user@MacBook-Pro ~ %</span>
+      <span class="terminal-prompt">user@Mac-Pro ~ %</span>
       <input type="text" class="terminal-input" id="terminal-input" autocomplete="off" spellcheck="false" autofocus>
     </div>
   </div>
@@ -1679,17 +1817,25 @@
       <div id="settings-view-wallpaper" style="display: none;">
         <h2 style="margin: 0 0 20px 0; font-weight: 600; font-size: 22px;">Wallpaper</h2>
         <div class="wallpaper-grid" id="wallpaper-grid">
-          <div class="wallpaper-item active" data-bg="https://512pixels.net/wp-content/uploads/2025/06/26-Tahoe-Light-6K-thumb.jpeg">
-            <div class="wallpaper-thumb" style="background-image: url('https://512pixels.net/wp-content/uploads/2025/06/26-Tahoe-Light-6K-thumb.jpeg');"></div>
+          <div class="wallpaper-item active" data-bg="https://512pixels.net/wp-content/uploads/2025/06/26-Tahoe-Light-6K-thumb.jpeg" data-bg-light="https://512pixels.net/wp-content/uploads/2025/06/26-Tahoe-Light-6K-thumb.jpeg" data-bg-dark="https://512pixels.net/wp-content/uploads/2025/06/26-Tahoe-Dark-6K-thumb.jpeg">
+            <div class="wallpaper-thumb" id="thumb-tahoe" style="background-image: url('https://512pixels.net/wp-content/uploads/2025/06/26-Tahoe-Light-6K-thumb.jpeg');"></div>
             <div class="wallpaper-name">Tahoe default</div>
           </div>
-          <div class="wallpaper-item" data-bg="https://512pixels.net/wp-content/uploads/2025/08/26-Tahoe-Beach-Day-thumb.jpeg">
-            <div class="wallpaper-thumb" style="background-image: url('https://512pixels.net/wp-content/uploads/2025/08/26-Tahoe-Beach-Day-thumb.jpeg');"></div>
+          <div class="wallpaper-item" data-bg="https://512pixels.net/wp-content/uploads/2025/08/26-Tahoe-Beach-Day-thumb.jpeg" data-bg-light="https://512pixels.net/wp-content/uploads/2025/08/26-Tahoe-Beach-Day-thumb.jpeg" data-bg-dark="https://512pixels.net/wp-content/uploads/2025/08/26-Tahoe-Beach-Night-thumb.jpeg">
+            <div class="wallpaper-thumb" id="thumb-beach" style="background-image: url('https://512pixels.net/wp-content/uploads/2025/08/26-Tahoe-Beach-Day-thumb.jpeg');"></div>
             <div class="wallpaper-name">Tahoe beach</div>
           </div>
-          <div class="wallpaper-item" data-bg="https://512pixels.net/wp-content/uploads/2025/06/15-Sequoia-Light-thumbnail.jpg">
-            <div class="wallpaper-thumb" style="background-image: url('https://512pixels.net/wp-content/uploads/2025/06/15-Sequoia-Light-thumbnail.jpg');"></div>
+          <div class="wallpaper-item" data-bg="https://512pixels.net/wp-content/uploads/2025/06/15-Sequoia-Light-thumbnail.jpg" data-bg-light="https://512pixels.net/wp-content/uploads/2025/06/15-Sequoia-Light-thumbnail.jpg" data-bg-dark="https://512pixels.net/wp-content/uploads/2025/06/15-Sequoia-Dark-thumbnail.jpg">
+            <div class="wallpaper-thumb" id="thumb-sequoia" style="background-image: url('https://512pixels.net/wp-content/uploads/2025/06/15-Sequoia-Light-thumbnail.jpg');"></div>
             <div class="wallpaper-name">Sequoia light</div>
+          </div>
+          <div class="wallpaper-item" data-bg="https://cdn.osxdaily.com/wp-content/uploads/2023/11/M3-iMac-MacBook-Pro-wallpaper-8.jpeg">
+            <div class="wallpaper-thumb" style="background-image: url('https://cdn.osxdaily.com/wp-content/uploads/2023/11/M3-iMac-MacBook-Pro-wallpaper-8.jpeg');"></div>
+            <div class="wallpaper-name">M3</div>
+          </div>
+          <div class="wallpaper-item" data-bg="https://512pixels.net/downloads/macos-wallpapers-6k/15-Sequoia-Sunrise.png">
+            <div class="wallpaper-thumb" style="background-image: url('https://512pixels.net/downloads/macos-wallpapers-6k/15-Sequoia-Sunrise.png');"></div>
+            <div class="wallpaper-name">Trees</div>
           </div>
         </div>
       </div>
@@ -1701,7 +1847,21 @@
       <div id="settings-view-appearance" style="display: none;">
         <h2 style="margin: 0 0 20px 0; font-weight: 600; font-size: 22px;">Appearance</h2>
         <div style="background: rgba(0, 0, 0, 0.05); padding: 20px; border-radius: 12px; border: 1px solid rgba(0, 0, 0, 0.1); margin-bottom: 20px;">
-          <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <span style="font-weight: 500; font-size: 14px;">Dark Mode</span>
+            <label class="toggle-switch">
+              <input type="checkbox" id="dark-mode-toggle">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <span style="font-weight: 500; font-size: 14px;">Dark Mode Icons</span>
+            <label class="toggle-switch">
+              <input type="checkbox" id="dark-mode-icons-toggle">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
             <span style="font-weight: 500; font-size: 14px;">Icon transparency</span>
             <label class="toggle-switch">
               <input type="checkbox" id="icon-transparency-toggle">
@@ -1800,6 +1960,7 @@
 </svg>
 
 <script>
+  window.liquidGlassStrength = 1.2;
   const dock = document.getElementById('dock');
   // Restructure icons to support transparency
   const rawIcons = Array.from(document.querySelectorAll('.dock-icon'));
@@ -1926,7 +2087,7 @@
     
     // close launchpad anywhere else
     if (typeof launchpadState !== 'undefined' && launchpadState.isOpen && !e.target.closest('#launchpad-window') && !e.target.closest('.dock-icon[data-name="Launchpad"]')) {
-      launchpadState.targetScaleX = 0.85; launchpadState.targetScaleY = 0.85;
+      launchpadState.targetScaleX = 1.15; launchpadState.targetScaleY = 1.15;
       launchpadState.targetOpacity = 0; launchpadState.isOpen = false;
     }
     
@@ -1946,6 +2107,7 @@
   document.getElementById('btn-close').addEventListener('click', () => {
     winState.targetScaleX = 0.85; winState.targetScaleY = 0.85;
     winState.targetOpacity = 0; winState.isOpen = false;
+    setActiveApp('Finder');
   });
   document.getElementById('btn-minimize').addEventListener('click', () => {
     if (!winState.isMinimized) {
@@ -2205,8 +2367,8 @@
   const launchpadWindow = document.getElementById('launchpad-window');
   const launchpadContent = document.getElementById('launchpad-content');
   const launchpadState = {
-    scaleX: 0.85, targetScaleX: 0.85, velScaleX: 0,
-    scaleY: 0.85, targetScaleY: 0.85, velScaleY: 0,
+    scaleX: 1.15, targetScaleX: 1.15, velScaleX: 0,
+    scaleY: 1.15, targetScaleY: 1.15, velScaleY: 0,
     opacity: 0, targetOpacity: 0, velOpacity: 0,
     isOpen: false
   };
@@ -2253,7 +2415,7 @@
     lpItem.addEventListener('click', (e) => {
       e.stopPropagation();
       icon.click();
-      launchpadState.targetScaleX = 0.85; launchpadState.targetScaleY = 0.85;
+      launchpadState.targetScaleX = 1.15; launchpadState.targetScaleY = 1.15;
       launchpadState.targetOpacity = 0; launchpadState.isOpen = false;
     });
     launchpadContent.appendChild(lpItem);
@@ -2289,8 +2451,9 @@
           searchInput.dispatchEvent(new Event('input'));
         }
       } else {
-        launchpadState.targetScaleX = 0.85; launchpadState.targetScaleY = 0.85;
+        launchpadState.targetScaleX = 1.15; launchpadState.targetScaleY = 1.15;
         launchpadState.targetOpacity = 0; launchpadState.isOpen = false;
+        setActiveApp('Finder');
       }
     });
   }
@@ -2314,6 +2477,7 @@
   document.getElementById('settings-btn-close').addEventListener('click', () => {
     settingsState.targetScaleX = 0.85; settingsState.targetScaleY = 0.85;
     settingsState.targetOpacity = 0; settingsState.isOpen = false;
+    setActiveApp('Finder');
   });
   document.getElementById('settings-btn-minimize').addEventListener('click', () => {
     if (!settingsState.isMinimized) {
@@ -2454,6 +2618,131 @@
     });
   }
 
+  const darkModeToggle = document.getElementById('dark-mode-toggle');
+  if (darkModeToggle) {
+    darkModeToggle.addEventListener('change', (e) => {
+      if (e.target.checked) {
+        document.body.classList.add('dark-mode');
+      } else {
+        document.body.classList.remove('dark-mode');
+      }
+
+      const darkModeIconsToggle = document.getElementById('dark-mode-icons-toggle');
+      if (darkModeIconsToggle && darkModeIconsToggle.checked !== e.target.checked) {
+        darkModeIconsToggle.checked = e.target.checked;
+        darkModeIconsToggle.dispatchEvent(new Event('change'));
+      }
+
+      // Update wallpaper
+      const activeWallpaper = document.querySelector('.wallpaper-item.active');
+      if (activeWallpaper) {
+        const lightUrl = activeWallpaper.getAttribute('data-bg-light');
+        const darkUrl = activeWallpaper.getAttribute('data-bg-dark');
+        const standardUrl = activeWallpaper.getAttribute('data-bg');
+        if (darkUrl || lightUrl) {
+           const newUrl = e.target.checked && darkUrl ? darkUrl : (lightUrl ? lightUrl : standardUrl);
+           const bgLayer1 = document.getElementById('bg-layer-1');
+           const bgLayer2 = document.getElementById('bg-layer-2');
+           const currentBgLayer = bgLayer1.classList.contains('active') ? 1 : 2;
+           if (currentBgLayer === 1) {
+             bgLayer2.style.backgroundImage = `url('${newUrl}')`;
+             bgLayer2.classList.add('active');
+             bgLayer1.classList.remove('active');
+           } else {
+             bgLayer1.style.backgroundImage = `url('${newUrl}')`;
+             bgLayer1.classList.add('active');
+             bgLayer2.classList.remove('active');
+           }
+        }
+      }
+    });
+  }
+
+  // Define light and dark mode app icons
+  const appIcons = {
+    'Finder': {
+      light: "url('https://upload.wikimedia.org/wikipedia/commons/b/b9/Finder_Icon_macOS_Tahoe.png?_=20250922021914')",
+      dark: "url('https://github.com/Hellomyfriend19/Nice/blob/main/Finderdark.png?raw=true')",
+      lightSize: "85%",
+      darkSize: "85%"
+    },
+    'Launchpad': {
+      light: "url('https://i0.wp.com/www.appletips.nl/wp-content/uploads/2021/02/apps-launchpad-glass-icon-appbibliotheek.webp')",
+      dark: "url('https://github.com/Hellomyfriend19/Nice/blob/main/launchpaddark.png?raw=true')",
+      lightSize: "85%",
+      darkSize: "85%"
+    },
+    'Safari': {
+      light: "url('https://images.icon-icons.com/3053/PNG/512/safari_macos_bigsur_icon_189770.png')",
+      dark: "url('https://github.com/Hellomyfriend19/Nice/blob/main/Safari_2025_29.webp?raw=true')",
+      darkSize: "85%"
+    },
+    'Calendar': {
+      light: "url('https://github.com/Hellomyfriend19/Nice/blob/main/New%20Project%20(13).png?raw=true')",
+      dark: "url('https://github.com/Hellomyfriend19/Nice/blob/main/calendardarkmode.png?raw=true')",
+      lightSize: "85%",
+      darkSize: "85%"
+    },
+    'Apple Music': {
+      light: "url('https://github.com/Hellomyfriend19/Nice/blob/main/apple%20music.png?raw=true')",
+      dark: "url('https://upload.wikimedia.org/wikipedia/commons/e/ed/Apple_Music_icon_iOS_26_%28Dark_Varient%29.svg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=original')",
+      lightSize: "85%",
+      darkSize: "85%"
+    },
+    'Instagram': {
+      light: "url('https://user-images.githubusercontent.com/24403355/33800842-566c09d8-dd17-11e7-88ff-be7f30481d67.png')",
+      dark: "url('https://github.com/Hellomyfriend19/Nice/blob/main/instagramdark.png?raw=true')",
+      lightSize: "85%",
+      darkSize: "85%"
+    },
+    'System Settings': {
+      light: "url('https://www.tonymacx86.com/attachments/systemsettings-tahoe-png.595625/')",
+      dark: "url('https://github.com/Hellomyfriend19/Nice/blob/main/Settings_2025_29.webp?raw=true')",
+      darkSize: "85%"
+    }
+  };
+
+  const darkModeIconsToggle = document.getElementById('dark-mode-icons-toggle');
+  if (darkModeIconsToggle) {
+    darkModeIconsToggle.addEventListener('change', (e) => {
+      const isDark = e.target.checked;
+      
+      // Update dock icons
+      document.querySelectorAll('.dock-icon').forEach(icon => {
+        const name = icon.getAttribute('data-name');
+        if (appIcons[name]) {
+          const newBg = isDark ? appIcons[name].dark : appIcons[name].light;
+          const targetSizeStr = isDark ? appIcons[name].darkSize : appIcons[name].lightSize;
+          const newSize = targetSizeStr ? targetSizeStr : 'contain';
+          const imgLayer = icon.querySelector('.icon-image-layer');
+          if (imgLayer) {
+            imgLayer.style.backgroundImage = newBg;
+            imgLayer.style.backgroundSize = newSize;
+          } else {
+            icon.style.backgroundImage = newBg;
+            icon.style.backgroundSize = newSize;
+          }
+        }
+      });
+      
+      // Also update launchpad items
+      const lpIcons = document.querySelectorAll('.launchpad-item');
+      lpIcons.forEach(lpItem => {
+         const lpName = lpItem.querySelector('.launchpad-name');
+         if (lpName && appIcons[lpName.textContent]) {
+           const newBg = isDark ? appIcons[lpName.textContent].dark : appIcons[lpName.textContent].light;
+           const targetSizeStr = isDark ? appIcons[lpName.textContent].darkSize : appIcons[lpName.textContent].lightSize;
+           const newSize = targetSizeStr ? targetSizeStr : 'contain';
+           const imgLayer = lpItem.querySelector('.icon-image-layer');
+           if (imgLayer) {
+             imgLayer.style.backgroundImage = newBg;
+             imgLayer.style.backgroundSize = newSize;
+           }
+         }
+      });
+    });
+  }
+
   const dockSizeSlider = document.getElementById('dock-size-slider');
   const dockSizeValue = document.getElementById('dock-size-value');
   
@@ -2484,18 +2773,21 @@
     item.addEventListener('click', () => {
       wallpaperItems.forEach(w => w.classList.remove('active'));
       item.classList.add('active');
-      const newUrl = item.getAttribute('data-bg');
+      const isDark = document.body.classList.contains('dark-mode');
+      const lightUrl = item.getAttribute('data-bg-light');
+      const darkUrl = item.getAttribute('data-bg-dark');
+      const standardUrl = item.getAttribute('data-bg');
+      const newUrl = isDark && darkUrl ? darkUrl : (lightUrl && !isDark ? lightUrl : standardUrl);
       
-      if (currentBgLayer === 1) {
+      const currentLayer = bgLayer1.classList.contains('active') ? 1 : 2;
+      if (currentLayer === 1) {
         bgLayer2.style.backgroundImage = `url('${newUrl}')`;
         bgLayer2.classList.add('active');
         bgLayer1.classList.remove('active');
-        currentBgLayer = 2;
       } else {
         bgLayer1.style.backgroundImage = `url('${newUrl}')`;
         bgLayer1.classList.add('active');
         bgLayer2.classList.remove('active');
-        currentBgLayer = 1;
       }
     });
   });
@@ -2528,7 +2820,7 @@
       
       const cmdWrapper = document.createElement('div');
       cmdWrapper.className = 'terminal-line';
-      cmdWrapper.innerHTML = `<span class="terminal-prompt">user@MacBook-Pro ~ %</span> ${val}`;
+      cmdWrapper.innerHTML = `<span class="terminal-prompt">user@Mac-Pro ~ %</span> ${val}`;
       
       const responseWrapper = document.createElement('div');
       responseWrapper.className = 'terminal-line';
@@ -2569,6 +2861,7 @@
   document.getElementById('terminal-btn-close').addEventListener('click', () => {
     terminalState.targetScaleX = 0.85; terminalState.targetScaleY = 0.85;
     terminalState.targetOpacity = 0; terminalState.isOpen = false;
+    setActiveApp('Finder');
   });
   document.getElementById('terminal-btn-minimize').addEventListener('click', () => {
     if (!terminalState.isMinimized) {
@@ -2892,6 +3185,7 @@
   document.getElementById('safari-btn-close').addEventListener('click', () => {
     safariState.targetScaleX = 0.85; safariState.targetScaleY = 0.85;
     safariState.targetOpacity = 0; safariState.isOpen = false;
+    setActiveApp('Finder');
   });
   document.getElementById('safari-btn-minimize').addEventListener('click', () => {
     if (!safariState.isMinimized) {
@@ -3487,7 +3781,7 @@
 
       ctx.putImageData(new ImageData(data, w, h), 0, 0);
       feImage.setAttributeNS('http://www.w3.org/1999/xlink', 'href', canvas.toDataURL('image/png'));
-      const finalScale = maxScale + (Math.random() * 0.001);
+      const finalScale = (maxScale + (Math.random() * 0.001)) * (window.liquidGlassStrength || 1.0);
       feDisplacementMap.setAttribute('scale', finalScale.toString());
     }
 
@@ -3509,8 +3803,8 @@
     });
 
     const blurStr = blurRadius > 0 ? `blur(${blurRadius}px) ` : '';
-    el.style.backdropFilter = `${blurStr}url(#${id}_filter) contrast(1.1) brightness(1.05) saturate(1.1)`;
-    el.style.webkitBackdropFilter = `${blurStr}url(#${id}_filter) contrast(1.1) brightness(1.05) saturate(1.1)`;
+    el.style.backdropFilter = `${blurStr}url(#${id}_filter) contrast(1.05) brightness(1.0) saturate(1.01)`;
+    el.style.webkitBackdropFilter = `${blurStr}url(#${id}_filter) contrast(1.05) brightness(1.0) saturate(1.01)`;
   }
   
   createLiquidGlassForElement('.dock-container', 'dock-liquid-glass', 24, 2);
