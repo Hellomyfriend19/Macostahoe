@@ -163,7 +163,7 @@
     position: absolute;
     top: 0;
     left: 0;
-    padding: 6px 14px;
+    padding: 5px 12px;
     background: rgba(255, 255, 255, 0.7);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
@@ -185,10 +185,10 @@
   .dock-tooltip::after {
     content: '';
     position: absolute;
-    bottom: -5px;
+    bottom: -8px;
     left: 50%;
     transform: translateX(-50%);
-    border-width: 5px 5px 0;
+    border-width: 8px 8px 0;
     border-style: solid;
     border-color: rgba(255, 255, 255, 0.7) transparent transparent transparent;
   }
@@ -1888,6 +1888,13 @@
               <span class="toggle-slider"></span>
             </label>
           </div>
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-weight: 500; font-size: 14px;">Dock Magnification</span>
+              <span id="dock-mag-value" style="font-size: 13px; color: #555;">2.0x</span>
+            </div>
+            <input type="range" id="dock-mag-slider" min="1.0" max="3.0" step="0.1" value="2.0" style="width: 100%;">
+          </div>
         </div>
       </div>
 
@@ -2005,7 +2012,7 @@
   const tooltip = document.getElementById('tooltip');
 
   let baseSize = 56;
-  const distanceLimit = 120;
+  const distanceLimit = 220;
   
   // Spring physics parameters
   let stiffness = 0.4;
@@ -2026,8 +2033,8 @@
   }
 
   // Keypoints for distance to scale mapping
-  const inputDistances = [0, 60, 100, distanceLimit];
-  const outputScales = [2.5, 1.6, 1.1, 1.0];
+  const inputDistances = [0, 110, 160, distanceLimit];
+  let outputScales = [2.0, 1.4, 1.06, 1.0];
 
   // State for each icon
   const iconStates = icons.map(icon => ({
@@ -2634,6 +2641,24 @@
         document.body.classList.add('icons-transparent');
       } else {
         document.body.classList.remove('icons-transparent');
+      }
+    });
+  }
+
+  const dockMagSlider = document.getElementById('dock-mag-slider');
+  const dockMagValue = document.getElementById('dock-mag-value');
+  if (dockMagSlider) {
+    dockMagSlider.addEventListener('input', (e) => {
+      const mag = parseFloat(e.target.value);
+      if (mag === 3.0) dockMagValue.textContent = 'Max';
+      else if (mag === 1.0) dockMagValue.textContent = 'Off';
+      else dockMagValue.textContent = mag.toFixed(1) + 'x';
+      
+      window.dockMagValue = mag;
+      if (typeof outputScales !== 'undefined') {
+        outputScales[0] = mag;
+        outputScales[1] = 1.0 + (mag - 1.0) * 0.4;
+        outputScales[2] = 1.0 + (mag - 1.0) * 0.0666;
       }
     });
   }
@@ -3337,8 +3362,9 @@
       const dockRect = dock.getBoundingClientRect();
       const iconRect = hoveredIcon.getBoundingClientRect();
       
+      const tooltipHeight = tooltip.offsetHeight;
       const centerX = (iconRect.left - dockRect.left) + (iconRect.width / 2);
-      const topY = (iconRect.top - dockRect.top) - 35; 
+      const topY = (iconRect.top - dockRect.top) - tooltipHeight - 12; 
       
       tooltip.style.transform = `translate(${centerX}px, ${topY}px) translateX(-50%)`;
     }
