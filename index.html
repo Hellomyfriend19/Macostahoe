@@ -163,25 +163,36 @@
     position: absolute;
     top: 0;
     left: 0;
-    padding: 4px 10px;
+    padding: 6px 14px;
     background: rgba(255, 255, 255, 0.7);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border: 1px solid rgba(0, 0, 0, 0.15);
-    border-radius: 6px;
+    border-radius: 20px;
     color: #222;
     font-size: 13px;
-    font-weight: 400;
+    font-weight: 500;
     letter-spacing: 0.2px;
     pointer-events: none;
     opacity: 0;
     transition: opacity 0.15s ease-out;
     white-space: nowrap;
     z-index: 10000;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     will-change: transform, opacity;
   }
   
+  .dock-tooltip::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 5px 5px 0;
+    border-style: solid;
+    border-color: rgba(255, 255, 255, 0.7) transparent transparent transparent;
+  }
+
   .dock-tooltip.show {
     opacity: 1;
   }
@@ -267,7 +278,16 @@
   
   body.dark-mode .dock-tooltip {
     background: rgba(0, 0, 0, 0.9);
+    border-color: rgba(255, 255, 255, 0.2);
     color: #e0e0e0;
+  }
+  
+  body.dark-mode .dock-tooltip::after {
+    border-color: rgba(0, 0, 0, 0.9) transparent transparent transparent;
+  }
+
+  body.dark-mode .launchpad-titlebar img {
+    filter: invert(1);
   }
 
   body.dark-mode .sidebar-item:hover,
@@ -1988,8 +2008,8 @@
   const distanceLimit = 120;
   
   // Spring physics parameters
-  const stiffness = 0.18;
-  const damping = 0.72;
+  let stiffness = 0.4;
+  let damping = 0.4;
 
   // Piecewise interpolation function
   function interpolate(x, input, output) {
@@ -2701,6 +2721,19 @@
       darkSize: "85%"
     }
   };
+
+  // Preload app icons for instant swapping
+  Object.values(appIcons).forEach(icon => {
+    [icon.light, icon.dark].forEach(urlStr => {
+      if (urlStr) {
+        const match = urlStr.match(/url\(['"]?(.*?)['"]?\)/);
+        if (match && match[1]) {
+          const img = new Image();
+          img.src = match[1];
+        }
+      }
+    });
+  });
 
   const darkModeIconsToggle = document.getElementById('dark-mode-icons-toggle');
   if (darkModeIconsToggle) {
