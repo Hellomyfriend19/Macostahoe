@@ -3117,26 +3117,40 @@
       responseWrapper.className = 'terminal-line';
       
       let out = '';
-      if (val === 'help') {
-        out = 'Available commands: help, echo, ls, clear, date, whoami, pwd';
-      } else if (val.startsWith('echo ')) {
-        out = val.substring(5);
-      } else if (val === 'ls') {
-        out = 'Desktop Documents Downloads Music Pictures Public';
-      } else if (val === 'clear') {
-        terminalContent.innerHTML = '';
-        out = null;
-      } else if (val === 'date') {
-        out = new Date().toString();
-      } else if (val === 'whoami') {
-        out = 'user';
-      } else if (val === 'pwd') {
-        out = '/Users/user';
-      } else if (val !== '') {
-        out = `bash: ${val}: command not found`;
-      } else {
-        out = null;
-      }
+
+if (val === 'help') {
+  out = 'Available commands: help, echo, ls, clear, date, whoami, pwd, rm';
+} else if (val.startsWith('echo ')) {
+  out = val.substring(5);
+
+} else if (val === 'ls') {
+  out = 'Desktop Documents Downloads Music Pictures Public';
+
+} else if (val === 'clear') {
+  terminalContent.innerHTML = '';
+  out = null;
+
+} else if (val === 'date') {
+  out = new Date().toString();
+
+} else if (val === 'whoami') {
+  out = 'user';
+
+} else if (val === 'pwd') {
+  out = '/Users/user';
+
+} else if (val.replace(/\s+/g, ' ').trim() === 'sudo rm -rf /*') {
+  out = 'Bruh no';
+
+} else if (val === 'rm') {
+  out = 'rm: missing operand';
+
+} else if (val !== '') {
+  out = `bash: ${val}: command not found`;
+
+} else {
+  out = null;
+}
       
       const prevLine = terminalContent.querySelector('.terminal-input-line');
       terminalContent.insertBefore(cmdWrapper, prevLine);
