@@ -163,34 +163,40 @@
     position: absolute;
     top: 0;
     left: 0;
-    padding: 5px 12px;
-    background: rgba(255, 255, 255, 0.7);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(0, 0, 0, 0.15);
-    border-radius: 20px;
-    color: #222;
-    font-size: 13px;
-    font-weight: 500;
-    letter-spacing: 0.2px;
     pointer-events: none;
     opacity: 0;
     transition: opacity 0.15s ease-out;
     white-space: nowrap;
     z-index: 10000;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     will-change: transform, opacity;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.2));
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+  .dock-tooltip-svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    overflow: visible;
+  }
+  .dock-tooltip-text {
+    position: relative;
+    z-index: 2;
+    padding: 6px 16px 14px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #222;
+    letter-spacing: 0.2px;
   }
   
-  .dock-tooltip::after {
-    content: '';
-    position: absolute;
-    bottom: -8px;
-    left: 50%;
-    transform: translateX(-50%);
-    border-width: 8px 8px 0;
-    border-style: solid;
-    border-color: rgba(255, 255, 255, 0.7) transparent transparent transparent;
+  body.dark-mode .dock-tooltip-text {
+    color: #e0e0e0;
   }
 
   .dock-tooltip.show {
@@ -276,15 +282,7 @@
     background-color: rgba(0, 0, 0, 0.4) !important;
   }
   
-  body.dark-mode .dock-tooltip {
-    background: rgba(0, 0, 0, 0.9);
-    border-color: rgba(255, 255, 255, 0.2);
-    color: #e0e0e0;
-  }
-  
-  body.dark-mode .dock-tooltip::after {
-    border-color: rgba(0, 0, 0, 0.9) transparent transparent transparent;
-  }
+
 
   body.dark-mode .launchpad-titlebar img {
     filter: invert(1);
@@ -393,7 +391,7 @@
     margin-top: -250px;
     background: #fff;
     border-radius: 24px;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    box-shadow: 0 30px 80px rgba(0,0,0,0.6), 0 0 1px rgba(0,0,0,0.5);
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -416,6 +414,8 @@
   .window.interactive { pointer-events: auto; }
   .titlebar {
     height: 52px;
+    min-height: 52px;
+    flex-shrink: 0;
     background: #f5f5f5;
     display: flex;
     align-items: center;
@@ -423,8 +423,8 @@
     border-bottom: 1px solid #e0e0e0;
     user-select: none;
   }
-  .traffic-lights { display: flex; gap: 8px; width: 60px; }
-  .traffic-lights .btn { width: 12px; height: 12px; border-radius: 50%; cursor: pointer; }
+  .traffic-lights { display: flex; gap: 8px; width: 60px; height: 12px; flex-shrink: 0; align-items: center; justify-content: flex-start; }
+  .traffic-lights .btn { min-width: 12px; min-height: 12px; width: 12px; height: 12px; border-radius: 50%; cursor: pointer; flex-shrink: 0; }
   .btn.close { background: #FF5F57; border: 1px solid #E0443E; }
   .btn.minimize { background: #FFBD2E; border: 1px solid #DEA123; }
   .btn.maximize { background: #28C840; border: 1px solid #1AAB29; }
@@ -440,7 +440,7 @@
     backdrop-filter: blur(2px);
     -webkit-backdrop-filter: blur(2px);
     border-radius: 24px;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.2), inset 0 0 0 1px rgba(255, 255, 255, 0.3);
+    box-shadow: 0 30px 80px rgba(0,0,0,0.6), inset 0 0 0 1px rgba(255, 255, 255, 0.3);
     display: none;
     flex-direction: row;
   }
@@ -565,25 +565,33 @@
   /* Context Menu */
   .context-menu {
     position: fixed;
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    border-radius: 6px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    padding: 4px 0;
+    background: rgba(255, 255, 255, 0.15); /* Match about window transparency */
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    padding: 6px;
     min-width: 200px;
     z-index: 100000;
-    display: none;
     font-size: 13px;
-    color: #333;
+    color: #fff;
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(0.95);
+    transform-origin: top left;
+    transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
   }
   .context-menu.show {
-    display: block;
+    opacity: 1;
+    pointer-events: auto;
+    transform: scale(1);
   }
   .context-menu-item {
-    padding: 4px 12px;
+    padding: 4px 10px;
     cursor: pointer;
+    border-radius: 4px;
+    color: #fff;
   }
   .context-menu-item:hover {
     background: #007aff;
@@ -591,7 +599,7 @@
   }
   .context-menu-divider {
     height: 1px;
-    background: rgba(0, 0, 0, 0.1);
+    background: rgba(255, 255, 255, 0.1);
     margin: 4px 0;
   }
 
@@ -600,28 +608,42 @@
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
     background: rgba(0, 0, 0, 0.2);
-    display: none;
+    opacity: 0;
+    pointer-events: none;
+    display: flex;
     justify-content: center;
     align-items: center;
     z-index: 200000;
+    transition: opacity 0.2s;
   }
   .modal-overlay.show {
-    display: flex;
+    opacity: 1;
+    pointer-events: auto;
   }
   .modal {
-    background: #ececec;
-    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.15); /* Match about window transparency */
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
     width: 300px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
     overflow: hidden;
+    color: #fff;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    transform: scale(0.95);
+    transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .modal-overlay.show .modal {
+    transform: scale(1);
   }
   .modal-title {
     font-weight: 600;
     font-size: 14px;
     text-align: center;
     padding: 12px;
-    border-bottom: 1px solid #dcdcdc;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
   }
   .modal-body {
     padding: 20px;
@@ -630,10 +652,12 @@
     width: 100%;
     box-sizing: border-box;
     padding: 6px 8px;
-    border: 1px solid #ccc;
+    border: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: 4px;
     font-size: 13px;
     outline: none;
+    background: rgba(0, 0, 0, 0.2);
+    color: #fff;
   }
   .modal-body input:focus {
     border-color: #007aff;
@@ -644,16 +668,19 @@
     justify-content: flex-end;
     gap: 10px;
     padding: 12px 20px;
-    background: #e5e5e5;
-    border-top: 1px solid #dcdcdc;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
   }
   .modal-btn {
     padding: 4px 12px;
     border-radius: 4px;
-    border: 1px solid #ccc;
-    background: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
     cursor: pointer;
     font-size: 13px;
+  }
+  .modal-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
   }
   .modal-btn.primary {
     background: #007aff;
@@ -683,7 +710,7 @@
     backdrop-filter: blur(2px);
     -webkit-backdrop-filter: blur(2px);
     border-radius: 24px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2), inset 0 0 0 1px rgba(255, 255, 255, 0.3);
+    box-shadow: 0 30px 80px rgba(0,0,0,0.6), inset 0 0 0 1px rgba(255, 255, 255, 0.3);
     display: none;
     flex-direction: row;
     overflow: hidden;
@@ -900,7 +927,7 @@
     height: 500px;
     background: rgba(255, 255, 255, 0.4);
     border-radius: 26px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 30px 80px rgba(0,0,0,0.6);
     display: none;
     flex-direction: column;
     overflow: hidden;
@@ -982,7 +1009,7 @@
     height: 400px;
     background: rgba(30, 30, 30, 0.85);
     border-radius: 24px;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 30px 80px rgba(0,0,0,0.6);
     display: none;
     flex-direction: column;
     overflow: hidden;
@@ -1521,6 +1548,7 @@
     cursor: default;
   }
 </style>
+<script src="https://unpkg.com/html-docx-js/dist/html-docx.js"></script>
 </head>
 <body>
 <div class="lock-screen" id="lock-screen">
@@ -1546,8 +1574,8 @@
 <div class="context-menu" id="context-menu">
   <div class="context-menu-item" id="ctx-new-folder">New Folder</div>
   <div class="context-menu-divider"></div>
-  <div class="context-menu-item">Get Info</div>
-  <div class="context-menu-item">Change Desktop Background...</div>
+  <div class="context-menu-item" id="ctx-get-info">Get Info</div>
+  <div class="context-menu-item" id="ctx-change-bg">Change Desktop Background...</div>
 </div>
 
 <div class="modal-overlay" id="new-folder-modal">
@@ -1563,13 +1591,26 @@
   </div>
 </div>
 
+<div class="modal-overlay" id="save-file-modal">
+  <div class="modal">
+    <div class="modal-title">Save As</div>
+    <div class="modal-body">
+      <input type="text" id="save-file-input" value="Document.docx" />
+    </div>
+    <div class="modal-footer">
+      <button class="modal-btn" id="save-file-cancel">Cancel</button>
+      <button class="modal-btn primary" id="save-file-confirm">Save</button>
+    </div>
+  </div>
+</div>
+
 <div class="menubar">
   <div class="menubar-left">
     <div class="menu-item apple-icon" id="apple-menu-btn">
       <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" alt="Apple">
     </div>
     <div class="menu-item active" id="active-app-name">Finder</div>
-    <div class="menu-item">File</div>
+    <div class="menu-item" id="menu-file-btn">File</div>
     <div class="menu-item">Edit</div>
     <div class="menu-item">View</div>
     <div class="menu-item">Go</div>
@@ -1601,6 +1642,13 @@
     <div class="menu-dropdown-divider"></div>
     <div class="menu-dropdown-item" id="lock-screen-btn">Lock Screen</div>
     <div class="menu-dropdown-item">Log Out...</div>
+  </div>
+  
+  <div class="menu-dropdown" id="file-dropdown" style="left: 80px;">
+    <div class="menu-dropdown-item" id="file-new">New Folder</div>
+    <div class="menu-dropdown-divider"></div>
+    <div class="menu-dropdown-item" id="file-save">Save</div>
+    <div class="menu-dropdown-item" id="file-download">Download to PC...</div>
   </div>
 </div>
 
@@ -1744,6 +1792,39 @@
       <div class="safari-error-title">Safari Can't Open the Page</div>
       <div class="safari-error-desc">The page you are trying to view cannot be shown because the site restricts embedding (X-Frame-Options or CSP).</div>
       <button class="safari-error-btn" id="safari-error-btn">Try in new tab</button>
+    </div>
+  </div>
+</div>
+
+<div class="window" id="word-window">
+  <div class="titlebar" id="word-titlebar">
+    <div class="traffic-lights">
+      <div class="btn close" id="word-btn-close"></div>
+      <div class="btn minimize" id="word-btn-minimize"></div>
+      <div class="btn maximize" id="word-btn-maximize"></div>
+    </div>
+    <div class="window-title">Microsoft Word</div>
+  </div>
+  <div style="flex: 1; background: #fff; position: relative; display: flex; flex-direction: column;">
+    <div style="background: #f3f4f6; border-bottom: 1px solid #ddd; padding: 8px 12px; display: flex; gap: 8px; align-items: center; justify-content: center; flex-wrap: wrap;">
+      <select id="word-font" style="padding: 4px 8px; border: 1px solid #ccc; border-radius: 4px; background: white; outline: none; font-size: 13px;">
+        <option value="Arial">Arial</option>
+        <option value="Times New Roman">Times New Roman</option>
+        <option value="Courier New">Courier New</option>
+        <option value="Georgia">Georgia</option>
+        <option value="Trebuchet MS">Trebuchet MS</option>
+      </select>
+      <div style="width: 1px; height: 20px; background: #ccc; margin: 0 4px;"></div>
+      <button class="word-tool-btn" data-cmd="bold" style="font-weight: bold; width: 28px; height: 28px; background: transparent; border: 1px solid transparent; border-radius: 4px; cursor: pointer;">B</button>
+      <button class="word-tool-btn" data-cmd="italic" style="font-style: italic; width: 28px; height: 28px; background: transparent; border: 1px solid transparent; border-radius: 4px; cursor: pointer; font-family: serif;">I</button>
+      <button class="word-tool-btn" data-cmd="underline" style="text-decoration: underline; width: 28px; height: 28px; background: transparent; border: 1px solid transparent; border-radius: 4px; cursor: pointer;">U</button>
+      <button class="word-tool-btn" id="btn-overline" style="text-decoration: overline; width: 28px; height: 28px; background: transparent; border: 1px solid transparent; border-radius: 4px; cursor: pointer;">O</button>
+      <div style="width: 1px; height: 20px; background: #ccc; margin: 0 4px;"></div>
+      <button class="word-tool-btn" data-cmd="subscript" style="width: 28px; height: 28px; background: transparent; border: 1px solid transparent; border-radius: 4px; cursor: pointer; font-size: 11px;">X<sub>2</sub></button>
+      <button class="word-tool-btn" data-cmd="superscript" style="width: 28px; height: 28px; background: transparent; border: 1px solid transparent; border-radius: 4px; cursor: pointer; font-size: 11px;">X<sup>2</sup></button>
+    </div>
+    <div style="flex: 1; padding: 20px; overflow: auto; background: #f0f0f0; display: flex; justify-content: center;">
+      <div id="word-editor" contenteditable="true" style="background: white; width: 100%; max-width: 600px; min-height: 800px; padding: 40px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); outline: none; font-family: Arial; font-size: 14px; line-height: 1.6;"></div>
     </div>
   </div>
 </div>
@@ -1895,6 +1976,22 @@
             </div>
             <input type="range" id="dock-mag-slider" min="1.0" max="3.0" step="0.1" value="2.0" style="width: 100%;">
           </div>
+          
+          <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-weight: 500; font-size: 14px;">Dock Liquid Glass Distortion</span>
+              <span id="dock-glass-distortion-value" style="font-size: 13px; color: #555;">1.0</span>
+            </div>
+            <input type="range" id="dock-glass-distortion-slider" min="0" max="3.0" step="0.1" value="1.0" style="width: 100%;">
+          </div>
+          
+          <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-weight: 500; font-size: 14px;">Dock Liquid Glass Blur</span>
+              <span id="dock-glass-blur-value" style="font-size: 13px; color: #555;">4px</span>
+            </div>
+            <input type="range" id="dock-glass-blur-slider" min="0" max="20" step="1" value="4" style="width: 100%;">
+          </div>
         </div>
       </div>
 
@@ -1914,13 +2011,17 @@
 </div>
 
 <div class="dock-container" id="dock">
-  <div class="dock-tooltip" id="tooltip"></div>
+  <div class="dock-tooltip" id="tooltip">
+    <svg class="dock-tooltip-svg" id="tooltip-svg" style="pointer-events: none;"></svg>
+    <span class="dock-tooltip-text" id="tooltip-text"></span>
+  </div>
   <div class="dock-icon" data-name="Finder" style="background-image: url('https://upload.wikimedia.org/wikipedia/commons/b/b9/Finder_Icon_macOS_Tahoe.png?_=20250922021914'); background-size: 85%;"></div>
   <div class="dock-icon" data-name="Launchpad" style="background-image: url('https://i0.wp.com/www.appletips.nl/wp-content/uploads/2021/02/apps-launchpad-glass-icon-appbibliotheek.webp'); background-size: 85%;"></div>
   <div class="dock-icon" data-name="Safari" style="background-image: url('https://images.icon-icons.com/3053/PNG/512/safari_macos_bigsur_icon_189770.png')"></div>
   <div class="dock-icon" data-name="Calendar" style="background-image: url('https://github.com/Hellomyfriend19/Nice/blob/main/New%20Project%20(13).png?raw=true'); background-size: 85%;"></div>
   <div class="dock-icon" data-name="Terminal" style="background-image: url('https://upload.wikimedia.org/wikipedia/commons/b/b3/Terminalicon2.png')"></div>
   <div class="dock-icon" data-name="Apple Music" style="background-image: url('https://github.com/Hellomyfriend19/Nice/blob/main/apple%20music.png?raw=true'); background-size: 85%;"></div>
+  <div class="dock-icon" data-name="Word" style="background-image: url('https://cdn.jim-nielsen.com/macos/512/microsoft-word-2025-11-20.png?rf=1024'); background-size: 100%;"></div>
   <div class="dock-icon" data-name="Instagram" style="background-image: url('https://user-images.githubusercontent.com/24403355/33800842-566c09d8-dd17-11e7-88ff-be7f30481d67.png'); background-size: 85%;"></div>
   <div class="dock-icon" data-name="System Settings" style="background-image: url('https://www.tonymacx86.com/attachments/systemsettings-tahoe-png.595625/')"></div>
   <div class="dock-icon" data-name="Trash" style="background-image: url('https://icons.iconarchive.com/icons/wwalczyszyn/iwindows/256/Recycle-Bin-icon.png')"></div>
@@ -1978,7 +2079,7 @@
   </filter>
 
   <filter id="bevel-only-filter" x="-20%" y="-20%" width="140%" height="140%">
-    <feGaussianBlur in="SourceAlpha" stdDeviation="0.8" result="blurAlpha" id="bof-blur"/>
+    <feGaussianBlur in="SourceAlpha" stdDeviation="0.2" result="blurAlpha" id="bof-blur"/>
     <feSpecularLighting in="blurAlpha" surfaceScale="0.5" specularConstant="1.5" specularExponent="32" lighting-color="#ffffff" result="specularLight" id="bof-specular">
       <feDistantLight azimuth="233" elevation="36" id="bof-light"/>
     </feSpecularLighting>
@@ -1987,7 +2088,8 @@
 </svg>
 
 <script>
-  window.liquidGlassStrength = 1.2;
+  window.liquidGlassStrength = 1.0;
+  window.dockLiquidGlassBlur = 4;
   const dock = document.getElementById('dock');
   // Restructure icons to support transparency
   const rawIcons = Array.from(document.querySelectorAll('.dock-icon'));
@@ -2015,8 +2117,8 @@
   const distanceLimit = 220;
   
   // Spring physics parameters
-  let stiffness = 0.4;
-  let damping = 0.4;
+  let stiffness = 0.9;
+  let damping = 0.3;
 
   // Piecewise interpolation function
   function interpolate(x, input, output) {
@@ -2057,13 +2159,46 @@
     mouseX = null;
   });
 
+  const tooltipSvg = document.getElementById('tooltip-svg');
+  const tooltipText = document.getElementById('tooltip-text');
   let hoveredIcon = null;
 
   icons.forEach(icon => {
     icon.addEventListener('mouseenter', () => {
       hoveredIcon = icon;
-      tooltip.textContent = icon.getAttribute('data-name');
+      tooltipText.textContent = icon.getAttribute('data-name');
       tooltip.classList.add('show');
+      
+      // Compute SVG sizes
+      const w = tooltipText.offsetWidth;
+      const h = tooltipText.offsetHeight;
+      const rad = 14; 
+      const aw = 14; 
+      const ah = 8;
+      
+      const vW = w;
+      const vH = h;
+      
+      const tailBaseR = 4;
+      const tailTipR = 2;
+
+      const pathD = `M ${rad} 0 L ${w-rad} 0 Q ${w} 0 ${w} ${rad} L ${w} ${h-ah-rad} Q ${w} ${h-ah} ${w-rad} ${h-ah} L ${w/2 + aw/2 + tailBaseR} ${h-ah} Q ${w/2 + aw/2} ${h-ah} ${w/2 + aw/2 - tailBaseR/2} ${h-ah + tailBaseR/2} L ${w/2 + tailTipR} ${h - tailTipR} Q ${w/2} ${h} ${w/2 - tailTipR} ${h - tailTipR} L ${w/2 - aw/2 + tailBaseR/2} ${h-ah + tailBaseR/2} Q ${w/2 - aw/2} ${h-ah} ${w/2 - aw/2 - tailBaseR} ${h-ah} L ${rad} ${h-ah} Q 0 ${h-ah} 0 ${h-ah-rad} L 0 ${rad} Q 0 0 ${rad} 0 Z`;
+
+      const isDarkMode = document.body.classList.contains('dark-mode');
+      const fill = isDarkMode ? "rgba(0,0,0,0.7)" : "rgba(255,255,255,0.7)";
+      const stroke = isDarkMode ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.15)";
+      
+      tooltipSvg.innerHTML = `
+        <clipPath id="tooltip-clip"><path d="${pathD}"/></clipPath>
+        <path d="${pathD}" fill="${fill}" stroke="${stroke}" stroke-width="2"/>
+      `;
+      tooltip.style.clipPath = 'url(#tooltip-clip)';
+      tooltip.style.webkitClipPath = 'url(#tooltip-clip)';
+      tooltipSvg.style.width = w + 'px';
+      tooltipSvg.style.height = h + 'px';
+      tooltip.style.width = w + 'px';
+      tooltip.style.height = h + 'px';
+      tooltip.dispatchEvent(new Event('force-liquid-glass'));
     });
     icon.addEventListener('mouseleave', () => {
       if (hoveredIcon === icon) {
@@ -2090,7 +2225,9 @@
   const winDamping = 0.75;
 
   const activeAppNameBar = document.getElementById('active-app-name');
+  let activeAppName = 'Finder';
   function setActiveApp(name) {
+    activeAppName = name;
     if (activeAppNameBar) activeAppNameBar.textContent = name;
   }
 
@@ -2124,6 +2261,7 @@
       if (id === 'finder-window') bringWindowToFront('finder-window', 'Finder');
       else if (id === 'safari-window') bringWindowToFront('safari-window', 'Safari');
       else if (id === 'terminal-window') bringWindowToFront('terminal-window', 'Terminal');
+      else if (id === 'word-window') bringWindowToFront('word-window', 'Word');
       else if (id === 'settings-window') bringWindowToFront('settings-window', 'System Settings');
       else if (id === 'launchpad-window') bringWindowToFront('launchpad-window', 'Launchpad');
     } else {
@@ -2217,7 +2355,7 @@
   let historyIdx = 0;
   
   // File System State
-  const FOLDER_ICON = 'url(https://static.wikia.nocookie.net/ipod/images/b/b5/MacFolder.png/revision/latest?cb=20220215150041)';
+  const FOLDER_ICON = 'url(https://www.macworld.com/wp-content/uploads/2023/12/folder-icon-macos.png)';
   const fileSystem = {
     'Desktop': [],
     'Bubuvar': [
@@ -2257,6 +2395,7 @@
     contextMenu.style.left = `${e.clientX}px`;
     contextMenu.style.top = `${e.clientY}px`;
     contextMenu.classList.add('show');
+    contextMenu.dispatchEvent(new Event('force-liquid-glass'));
   });
 
   document.addEventListener('click', (e) => {
@@ -2273,9 +2412,33 @@
   document.getElementById('ctx-new-folder').addEventListener('click', () => {
     contextMenu.classList.remove('show');
     newFolderModal.classList.add('show');
+    const modalInner = newFolderModal.querySelector('.modal');
+    if(modalInner) modalInner.dispatchEvent(new Event('force-liquid-glass'));
     newFolderInput.value = "untitled folder";
     newFolderInput.focus();
     newFolderInput.select();
+  });
+
+  document.getElementById('ctx-change-bg').addEventListener('click', () => {
+    contextMenu.classList.remove('show');
+    // Open Settings and go to Wallpaper
+    settingsState.targetScaleX = 1; settingsState.targetScaleY = 1;
+    settingsState.targetOpacity = 1; settingsState.isOpen = true; 
+    settingsState.isMinimized = false;
+    setActiveApp('System Settings');
+    const wallpaperBtn = document.querySelector('.settings-sidebar-item[data-view="wallpaper"]');
+    if (wallpaperBtn) wallpaperBtn.click();
+  });
+
+  document.getElementById('ctx-get-info').addEventListener('click', () => {
+    contextMenu.classList.remove('show');
+    // Open Settings and go to General
+    settingsState.targetScaleX = 1; settingsState.targetScaleY = 1;
+    settingsState.targetOpacity = 1; settingsState.isOpen = true; 
+    settingsState.isMinimized = false;
+    setActiveApp('System Settings');
+    const generalBtn = document.querySelector('.settings-sidebar-item[data-view="general"]');
+    if (generalBtn) generalBtn.click();
   });
 
   function createFolder() {
@@ -2293,10 +2456,12 @@
     if (contextMenuTarget === 'desktop') {
       fileSystem['Desktop'].push(newFolder);
       renderDesktop();
+      if (currentFolder === 'Desktop' && winState.isOpen) renderContent();
     } else if (contextMenuTarget === 'finder') {
       if (!fileSystem[currentFolder]) fileSystem[currentFolder] = [];
       fileSystem[currentFolder].push(newFolder);
       renderContent();
+      if (currentFolder === 'Desktop') renderDesktop();
     }
     newFolderModal.classList.remove('show');
   }
@@ -2313,18 +2478,52 @@
   function renderDesktop() {
     let html = '';
     const items = fileSystem['Desktop'] || [];
-    items.forEach(item => {
+    items.forEach((item, index) => {
       const bgStyle = item.type === 'folder' ? `background-image: ${item.icon}` : '';
       const textIcon = item.type === 'folder' ? '' : item.icon;
+      let posStyle = '';
+      if (item.x !== undefined && item.y !== undefined) {
+         posStyle = `position: absolute; left: ${item.x}px; top: ${item.y}px;`;
+      }
       html += `
-        <div class="desktop-item">
+        <div class="desktop-item" draggable="true" data-index="${index}" style="${posStyle}">
           <div class="icon" style="${bgStyle}">${textIcon}</div>
           <div class="name">${item.name}</div>
         </div>
       `;
     });
     desktopIcons.innerHTML = html;
+
+    document.querySelectorAll('.desktop-item').forEach(el => {
+      el.addEventListener('dragstart', (e) => {
+        e.dataTransfer.setData('text/plain', e.target.getAttribute('data-index'));
+        setTimeout(() => e.target.style.opacity = '0.5', 0);
+      });
+      el.addEventListener('dragend', (e) => {
+        e.target.style.opacity = '1';
+      });
+    });
   }
+
+  desktopIcons.addEventListener('dragover', (e) => {
+    e.preventDefault();
+  });
+
+  desktopIcons.addEventListener('drop', (e) => {
+    e.preventDefault();
+    const index = parseInt(e.dataTransfer.getData('text/plain'));
+    if (isNaN(index)) return;
+    
+    const items = fileSystem['Desktop'];
+    if (items && items[index]) {
+      const rect = desktopIcons.getBoundingClientRect();
+      const x = e.clientX - rect.left - 40;
+      const y = e.clientY - rect.top - 40;
+      items[index].x = x;
+      items[index].y = y;
+      renderDesktop();
+    }
+  });
 
   const windowTitle = document.getElementById('window-title');
   const sidebarItems = document.querySelectorAll('.sidebar-item[data-folder]');
@@ -2663,6 +2862,34 @@
     });
   }
 
+  const dockGlassDistSlider = document.getElementById('dock-glass-distortion-slider');
+  const dockGlassDistValue = document.getElementById('dock-glass-distortion-value');
+  if (dockGlassDistSlider) {
+    dockGlassDistSlider.addEventListener('input', (e) => {
+      const val = parseFloat(e.target.value);
+      dockGlassDistValue.textContent = val.toFixed(1);
+      window.liquidGlassStrength = val;
+      const dockCont = document.querySelector('.dock-container');
+      if(dockCont) dockCont.dispatchEvent(new Event('force-liquid-glass'));
+    });
+  }
+
+  const dockGlassBlurSlider = document.getElementById('dock-glass-blur-slider');
+  const dockGlassBlurValue = document.getElementById('dock-glass-blur-value');
+  if (dockGlassBlurSlider) {
+    dockGlassBlurSlider.addEventListener('input', (e) => {
+      const val = parseInt(e.target.value);
+      dockGlassBlurValue.textContent = val + 'px';
+      window.dockLiquidGlassBlur = val;
+      const dockCont = document.querySelector('.dock-container');
+      if (dockCont) {
+        const blurStr = val > 0 ? `blur(${val}px) ` : '';
+        dockCont.style.backdropFilter = `${blurStr}url(#dock-liquid-glass_filter) contrast(1.05) brightness(1.0) saturate(1.01)`;
+        dockCont.style.webkitBackdropFilter = `${blurStr}url(#dock-liquid-glass_filter) contrast(1.05) brightness(1.0) saturate(1.01)`;
+      }
+    });
+  }
+
   const darkModeToggle = document.getElementById('dark-mode-toggle');
   if (darkModeToggle) {
     darkModeToggle.addEventListener('change', (e) => {
@@ -2733,6 +2960,12 @@
       dark: "url('https://upload.wikimedia.org/wikipedia/commons/e/ed/Apple_Music_icon_iOS_26_%28Dark_Varient%29.svg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=original')",
       lightSize: "85%",
       darkSize: "85%"
+    },
+    'Word': {
+      light: "url('https://cdn.jim-nielsen.com/macos/512/microsoft-word-2025-11-20.png?rf=1024')",
+      dark: "url('https://cdn.jim-nielsen.com/macos/512/microsoft-word-2025-11-20.png?rf=1024')",
+      lightSize: "100%",
+      darkSize: "100%"
     },
     'Instagram': {
       light: "url('https://user-images.githubusercontent.com/24403355/33800842-566c09d8-dd17-11e7-88ff-be7f30481d67.png')",
@@ -2971,6 +3204,135 @@
     });
   }
 
+  const wordState = {
+    scaleX: 0.85, targetScaleX: 0.85, velScaleX: 0,
+    scaleY: 0.85, targetScaleY: 0.85, velScaleY: 0,
+    opacity: 0, targetOpacity: 0, velOpacity: 0,
+    translateY: 0, targetTranslateY: 0, velTranslateY: 0,
+    dragX: 0, targetDragX: 0, velDragX: 0,
+    dragY: 0, targetDragY: 0, velDragY: 0,
+    width: 800, targetWidth: 800, velWidth: 0,
+    height: 600, targetHeight: 600, velHeight: 0,
+    isOpen: false, isMinimized: false, isMaximized: false,
+    preMaxDragX: 0, preMaxDragY: 0
+  };
+
+  document.getElementById('word-btn-close').addEventListener('click', () => {
+    wordState.targetScaleX = 0.85; wordState.targetScaleY = 0.85;
+    wordState.targetOpacity = 0; wordState.isOpen = false;
+    setActiveApp('Finder');
+  });
+  document.getElementById('word-btn-minimize').addEventListener('click', () => {
+    if (!wordState.isMinimized) {
+      wordState.targetScaleX = 0.2; wordState.targetScaleY = 0.05;
+      wordState.targetTranslateY = 300; wordState.targetOpacity = 0;
+      wordState.isOpen = true; wordState.isMinimized = true;
+    } else {
+      wordState.targetScaleX = 1; wordState.targetScaleY = 1;
+      wordState.targetTranslateY = 0; wordState.targetOpacity = 1;
+      wordState.isMinimized = false;
+    }
+  });
+  document.getElementById('word-btn-maximize').addEventListener('click', () => {
+    if (!wordState.isMaximized) {
+      wordState.preMaxDragX = wordState.targetDragX;
+      wordState.preMaxDragY = wordState.targetDragY;
+      wordState.targetDragX = 0; wordState.targetDragY = 0;
+      wordState.targetWidth = window.innerWidth - 40;
+      wordState.targetHeight = window.innerHeight - 120;
+      wordState.targetTranslateY = -30;
+      wordState.isMaximized = true;
+    } else {
+      wordState.targetDragX = wordState.preMaxDragX;
+      wordState.targetDragY = wordState.preMaxDragY;
+      wordState.targetWidth = 800; wordState.targetHeight = 600;
+      wordState.targetTranslateY = 0; wordState.isMaximized = false;
+    }
+  });
+
+  const wordEditor = document.getElementById('word-editor');
+  
+  document.querySelectorAll('.word-tool-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const cmd = btn.getAttribute('data-cmd');
+      if (cmd) {
+        document.execCommand(cmd, false, null);
+      } else if (btn.id === 'btn-overline') {
+        const selection = window.getSelection();
+        if (!selection.rangeCount) return;
+        const range = selection.getRangeAt(0);
+        const span = document.createElement('span');
+        span.style.textDecoration = 'overline';
+        span.appendChild(range.extractContents());
+        range.insertNode(span);
+      }
+      wordEditor.focus();
+    });
+  });
+
+  document.getElementById('word-font').addEventListener('change', (e) => {
+    document.execCommand('fontName', false, e.target.value);
+    wordEditor.focus();
+  });
+
+  wordEditor.addEventListener('keydown', (e) => {
+    if (e.ctrlKey || e.metaKey) {
+      if (e.key === 's' || e.key === 'S') {
+        e.preventDefault();
+        
+        const fileName = prompt('Save Document As:', 'Untitled.docx');
+        if (fileName) {
+          if (!fileSystem['Documents']) fileSystem['Documents'] = [];
+          fileSystem['Documents'].push({
+            name: fileName,
+            date: 'Today',
+            size: '1 KB',
+            icon: '📄',
+            type: 'file',
+            content: wordEditor.innerHTML
+          });
+          if (currentFolder === 'Documents') renderContent();
+          
+          const saveNotice = document.createElement('div');
+          saveNotice.textContent = 'Saved to Documents';
+          saveNotice.style.position = 'absolute';
+          saveNotice.style.bottom = '20px';
+          saveNotice.style.left = '50%';
+          saveNotice.style.transform = 'translateX(-50%)';
+          saveNotice.style.background = 'rgba(0,0,0,0.7)';
+          saveNotice.style.color = '#fff';
+          saveNotice.style.padding = '8px 16px';
+          saveNotice.style.borderRadius = '20px';
+          saveNotice.style.fontSize = '12px';
+          saveNotice.style.pointerEvents = 'none';
+          document.getElementById('word-window').appendChild(saveNotice);
+          setTimeout(() => saveNotice.remove(), 2000);
+        }
+      }
+    }
+  });
+
+  const wordIcon = document.querySelector('.dock-icon[data-name="Word"]');
+  if(wordIcon) {
+    wordIcon.addEventListener('click', (e) => {
+      e.stopPropagation();
+      bringWindowToFront('word-window', 'Word');
+      if (!wordState.isOpen || wordState.isMinimized) {
+        wordState.targetScaleX = 1; wordState.targetScaleY = 1;
+        wordState.targetWidth = wordState.isMaximized ? window.innerWidth - 40 : 800;
+        wordState.targetHeight = wordState.isMaximized ? window.innerHeight - 120 : 600;
+        wordState.targetOpacity = 1; 
+        wordState.targetTranslateY = wordState.isMaximized ? -30 : 0;
+        wordState.isOpen = true; wordState.isMinimized = false;
+      } else {
+        wordState.targetScaleX = 0.2; wordState.targetScaleY = 0.05;
+        wordState.targetTranslateY = 300; wordState.targetOpacity = 0;
+        wordState.isMinimized = true;
+      }
+    });
+  }
+
   const instagramIcon = document.querySelector('.dock-icon[data-name="Instagram"]');
   if(instagramIcon) {
     instagramIcon.addEventListener('click', (e) => {
@@ -3002,6 +3364,40 @@
 
   document.addEventListener('mouseup', () => {
     isTerminalDragging = false;
+  });
+
+  // Word Window dragging
+  let isWordDragging = false;
+  let wordStartX, wordStartY, wordInitialDragX, wordInitialDragY;
+
+  const wordTitlebar = document.getElementById('word-titlebar');
+  wordTitlebar.addEventListener('mousedown', (e) => {
+    if (e.target.closest('.traffic-lights')) return;
+    if (wordState.isMaximized) return;
+    isWordDragging = true;
+    wordStartX = e.clientX;
+    wordStartY = e.clientY;
+    wordInitialDragX = wordState.targetDragX;
+    wordInitialDragY = wordState.targetDragY;
+    
+    // Disable pointer events on iframe while dragging to prevent stutter
+    const iframe = document.querySelector('#word-window iframe');
+    if (iframe) iframe.style.pointerEvents = 'none';
+  });
+
+  document.addEventListener('mousemove', (e) => {
+    if (isWordDragging) {
+      wordState.targetDragX = wordInitialDragX + (e.clientX - wordStartX);
+      wordState.targetDragY = wordInitialDragY + (e.clientY - wordStartY);
+    }
+  });
+
+  document.addEventListener('mouseup', () => {
+    if (isWordDragging) {
+      isWordDragging = false;
+      const iframe = document.querySelector('#word-window iframe');
+      if (iframe) iframe.style.pointerEvents = 'auto';
+    }
   });
 
   // --- End Terminal Logic ---
@@ -3581,6 +3977,50 @@
       else settingsWindow.style.display = 'flex';
     }
 
+    // Word Window animation
+    const wordForceScaleX = (wordState.targetScaleX - wordState.scaleX) * winStiffness;
+    wordState.velScaleX += wordForceScaleX; wordState.velScaleX *= winDamping; wordState.scaleX += wordState.velScaleX;
+
+    const wordForceScaleY = (wordState.targetScaleY - wordState.scaleY) * winStiffness;
+    wordState.velScaleY += wordForceScaleY; wordState.velScaleY *= winDamping; wordState.scaleY += wordState.velScaleY;
+
+    const wordForceOpacity = (wordState.targetOpacity - wordState.opacity) * winStiffness;
+    wordState.velOpacity += wordForceOpacity; wordState.velOpacity *= winDamping; wordState.opacity += wordState.velOpacity;
+
+    const wordForceTranslateY = (wordState.targetTranslateY - wordState.translateY) * winStiffness;
+    wordState.velTranslateY += wordForceTranslateY; wordState.velTranslateY *= winDamping; wordState.translateY += wordState.velTranslateY;
+
+    const wordForceDragX = (wordState.targetDragX - wordState.dragX) * winStiffness;
+    wordState.velDragX += wordForceDragX; wordState.velDragX *= winDamping; wordState.dragX += wordState.velDragX;
+
+    const wordForceDragY = (wordState.targetDragY - wordState.dragY) * winStiffness;
+    wordState.velDragY += wordForceDragY; wordState.velDragY *= winDamping; wordState.dragY += wordState.velDragY;
+
+    const wordForceWidth = (wordState.targetWidth - wordState.width) * winStiffness;
+    wordState.velWidth += wordForceWidth; wordState.velWidth *= winDamping; wordState.width += wordState.velWidth;
+
+    const wordForceHeight = (wordState.targetHeight - wordState.height) * winStiffness;
+    wordState.velHeight += wordForceHeight; wordState.velHeight *= winDamping; wordState.height += wordState.velHeight;
+
+    const wordWindow = document.getElementById('word-window');
+    wordWindow.style.transform = `translate(${wordState.dragX}px, ${wordState.translateY + wordState.dragY}px) scale(${wordState.scaleX}, ${wordState.scaleY})`;
+    wordWindow.style.opacity = wordState.opacity;
+    wordWindow.style.width = `${wordState.width}px`;
+    wordWindow.style.height = `${wordState.height}px`;
+    wordWindow.style.marginLeft = `-${wordState.width / 2}px`;
+    wordWindow.style.marginTop = `-${wordState.height / 2}px`;
+
+    if (wordState.isOpen) {
+      wordWindow.classList.add('interactive');
+      wordIcon && wordIcon.classList.add('active');
+      wordWindow.style.display = 'flex';
+    } else {
+      wordWindow.classList.remove('interactive');
+      wordIcon && wordIcon.classList.remove('active');
+      if (wordState.opacity < 0.01) wordWindow.style.display = 'none';
+      else wordWindow.style.display = 'flex';
+    }
+
     requestAnimationFrame(animate);
   }
 
@@ -3596,19 +4036,156 @@
   const appleMenuBtn = document.getElementById('apple-menu-btn');
   const appleDropdown = document.getElementById('apple-dropdown');
   
+  const fileMenuBtn = document.getElementById('menu-file-btn');
+  const fileDropdown = document.getElementById('file-dropdown');
+
   appleMenuBtn.addEventListener('click', (e) => {
     e.stopPropagation();
     appleMenuBtn.classList.toggle('open');
     appleDropdown.classList.toggle('show');
+    if (fileDropdown.classList.contains('show')) {
+      fileMenuBtn.classList.remove('open');
+      fileDropdown.classList.remove('show');
+    }
     if (appleDropdown.classList.contains('show')) {
       appleDropdown.dispatchEvent(new Event('force-liquid-glass'));
     }
+  });
+
+  fileMenuBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    fileMenuBtn.classList.toggle('open');
+    fileDropdown.classList.toggle('show');
+    if (appleDropdown.classList.contains('show')) {
+      appleMenuBtn.classList.remove('open');
+      appleDropdown.classList.remove('show');
+    }
+    if (fileDropdown.classList.contains('show')) {
+      fileDropdown.dispatchEvent(new Event('force-liquid-glass'));
+    }
+  });
+
+  document.getElementById('file-new').addEventListener('click', () => {
+    contextMenuTarget = 'desktop'; // Or current, but let's default to desktop
+    if (winState.isOpen && !winState.isMinimized && activeAppName === 'Finder') contextMenuTarget = 'finder';
+    newFolderModal.classList.add('show');
+    const modalInner = newFolderModal.querySelector('.modal');
+    if(modalInner) modalInner.dispatchEvent(new Event('force-liquid-glass'));
+    newFolderInput.value = "untitled folder";
+    newFolderInput.focus();
+    newFolderInput.select();
+  });
+
+  // Helper for download
+  function downloadContent(filename, content) {
+    const el = document.createElement('a');
+    el.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(content));
+    el.setAttribute('download', filename);
+    el.style.display = 'none';
+    document.body.appendChild(el);
+    el.click();
+    document.body.removeChild(el);
+  }
+
+  document.getElementById('file-save').addEventListener('click', () => {
+    if (activeAppName === 'Word' && wordState.isOpen) {
+      const fileName = prompt('Save Document As:', 'Untitled.docx');
+      if (fileName) {
+        if (!fileSystem['Documents']) fileSystem['Documents'] = [];
+        fileSystem['Documents'].push({
+          name: fileName,
+          date: 'Today',
+          size: '1 KB',
+          icon: '📄',
+          type: 'file',
+          content: wordEditor.innerHTML
+        });
+        if (currentFolder === 'Documents') renderContent();
+        
+        const saveNotice = document.createElement('div');
+        saveNotice.textContent = 'Saved to Documents';
+        saveNotice.style.position = 'absolute';
+        saveNotice.style.bottom = '20px';
+        saveNotice.style.left = '50%';
+        saveNotice.style.transform = 'translateX(-50%)';
+        saveNotice.style.background = 'rgba(0,0,0,0.7)';
+        saveNotice.style.color = '#fff';
+        saveNotice.style.padding = '8px 16px';
+        saveNotice.style.borderRadius = '20px';
+        saveNotice.style.fontSize = '12px';
+        saveNotice.style.pointerEvents = 'none';
+        document.getElementById('word-window').appendChild(saveNotice);
+        setTimeout(() => saveNotice.remove(), 2000);
+      }
+    }
+  });
+
+  const saveFileModal = document.getElementById('save-file-modal');
+  const saveFileInput = document.getElementById('save-file-input');
+
+  document.getElementById('file-download').addEventListener('click', () => {
+    if (activeAppName === 'Word' && wordState.isOpen) {
+       fileDropdown.classList.remove('show');
+       fileMenuBtn.classList.remove('open');
+       saveFileModal.classList.add('show');
+       const modalInner = saveFileModal.querySelector('.modal');
+       if(modalInner) modalInner.dispatchEvent(new Event('force-liquid-glass'));
+       saveFileInput.value = "Document.docx";
+       saveFileInput.focus();
+       saveFileInput.select();
+    } else {
+       fileDropdown.classList.remove('show');
+       fileMenuBtn.classList.remove('open');
+    }
+  });
+  
+  document.getElementById('save-file-cancel').addEventListener('click', () => {
+    saveFileModal.classList.remove('show');
+  });
+
+  document.getElementById('save-file-confirm').addEventListener('click', () => {
+    let filename = saveFileInput.value.trim() || 'Document.docx';
+    if (!filename.endsWith('.docx')) filename += '.docx';
+    
+    let content = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${filename}</title></head><body>${wordEditor.innerHTML}</body></html>`; 
+    if (typeof htmlDocx !== 'undefined') {
+       let converted = htmlDocx.asBlob(content);
+       const el = document.createElement('a');
+       el.setAttribute('href', URL.createObjectURL(converted));
+       el.setAttribute('download', filename);
+       el.style.display = 'none';
+       document.body.appendChild(el);
+       el.click();
+       document.body.removeChild(el);
+    } else {
+       downloadContent(filename.replace('.docx', '.html'), content);
+    }
+    saveFileModal.classList.remove('show');
+    
+    const saveNotice = document.createElement('div');
+    saveNotice.textContent = 'Exported ' + filename;
+    saveNotice.style.position = 'absolute';
+    saveNotice.style.bottom = '20px';
+    saveNotice.style.left = '50%';
+    saveNotice.style.transform = 'translateX(-50%)';
+    saveNotice.style.background = 'rgba(0,0,0,0.7)';
+    saveNotice.style.color = '#fff';
+    saveNotice.style.padding = '8px 16px';
+    saveNotice.style.borderRadius = '20px';
+    saveNotice.style.fontSize = '12px';
+    saveNotice.style.pointerEvents = 'none';
+    document.getElementById('word-window').appendChild(saveNotice);
+    setTimeout(() => saveNotice.remove(), 2000);
   });
 
   document.body.addEventListener('click', (e) => {
     if (!appleDropdown.contains(e.target) && e.target !== appleMenuBtn && !appleMenuBtn.contains(e.target)) {
       appleDropdown.classList.remove('show');
       appleMenuBtn.classList.remove('open');
+    }
+    if (!fileDropdown.contains(e.target) && e.target !== fileMenuBtn && !fileMenuBtn.contains(e.target)) {
+      fileDropdown.classList.remove('show');
+      fileMenuBtn.classList.remove('open');
     }
   });
 
@@ -3866,13 +4443,17 @@
     el.style.webkitBackdropFilter = `${blurStr}url(#${id}_filter) contrast(1.05) brightness(1.0) saturate(1.01)`;
   }
   
-  createLiquidGlassForElement('.dock-container', 'dock-liquid-glass', 24, 2);
-  createLiquidGlassForElement('#launchpad-window', 'launchpad-liquid-glass', 20, 6);
-  createLiquidGlassForElement('#launchpad-search', 'launchpad-search-liquid-glass', 14, 6);
-  createLiquidGlassForElement('#terminal-window', 'terminal-liquid-glass', 10, 3);
-  createLiquidGlassForElement('#about-window', 'about-liquid-glass', 10, 6);
-  createLiquidGlassForElement('.menu-dropdown', 'menu-dropdown-liquid-glass', 8, 8);
-  createLiquidGlassForElement('#lock-screen-signin-btn', 'lock-screen-signin-liquid-glass', 18, 0);
+  createLiquidGlassForElement('.dock-container', 'dock-liquid-glass', 24, window.dockLiquidGlassBlur || 4);
+  createLiquidGlassForElement('#tooltip', 'tooltip-liquid-glass', 14, 4);
+  createLiquidGlassForElement('#launchpad-window', 'launchpad-liquid-glass', 20, 4);
+  createLiquidGlassForElement('#launchpad-search', 'launchpad-search-liquid-glass', 14, 4);
+  createLiquidGlassForElement('#terminal-window', 'terminal-liquid-glass', 10, 4);
+  createLiquidGlassForElement('#about-window', 'about-liquid-glass', 10, 4);
+  createLiquidGlassForElement('#apple-dropdown', 'apple-dropdown-liquid-glass', 8, 4);
+  createLiquidGlassForElement('#file-dropdown', 'file-dropdown-liquid-glass', 8, 4);
+  createLiquidGlassForElement('#context-menu', 'context-menu-liquid-glass', 8, 4);
+  createLiquidGlassForElement('.modal', 'modal-liquid-glass', 10, 4);
+  createLiquidGlassForElement('#lock-screen-signin-btn', 'lock-screen-signin-liquid-glass', 18, 4);
 
   animate();
 </script>
