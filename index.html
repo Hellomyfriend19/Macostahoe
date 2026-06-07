@@ -132,23 +132,33 @@
     background: #000;
     overflow: hidden;
     font-family: 'SF Pro Display', 'Apple Color Emoji Custom', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
   }
 
   .dock-container {
     margin-bottom: 20px;
     padding: 10px;
     border-radius: 24px;
-    background: rgba(0, 0, 0, 0.1);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: 0 30px 60px rgba(0,0,0,0.4);
     display: flex;
     align-items: flex-end;
     gap: 10px;
     height: 73px; /* 53px + 20px padding */
     box-sizing: border-box;
     position: relative;
-    z-index: 999999;
+    z-index: 2147483647;
   }
   
+  #dock-glass-wrapper .dock-container::before {
+    display: none !important;
+  }
+
   .dock-container::before {
     content: "";
     position: absolute;
@@ -206,6 +216,10 @@
   
   body.dark-mode .dock-tooltip-text {
     color: #e0e0e0;
+  }
+
+  body.dark-mode .dock-container {
+    background: rgba(0, 0, 0, 0.45);
   }
 
   .dock-tooltip.show {
@@ -287,9 +301,7 @@
     background: transparent !important;
   }
 
-  body.dark-mode #launchpad-window {
-    background-color: rgba(255, 255, 255, 0.65) !important;
-  }
+  
   
 
 
@@ -386,7 +398,8 @@
     color: #fff;
   }
   
-  body.dark-mode .launchpad-titlebar {
+  body.dark-mode .launchpad-titlebar,
+  body.dark-mode .launchpad-name {
     color: #fff;
   }
 
@@ -925,20 +938,18 @@
 
   /* Launchpad Styles */
   #launchpad-window {
-    width: 500px;
-    height: 500px;
-    background: rgba(255, 255, 255, 0.65) !important;
-    border-radius: 26px;
-    box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+    background: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    box-shadow: none !important;
     display: none;
     flex-direction: column;
     overflow: hidden;
     z-index: 100;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    margin-top: -250px;
-    margin-left: -250px;
+  }
+  
+  body.dark-mode #launchpad-window {
+    background: transparent !important;
   }
   .launchpad-titlebar {
     height: 52px;
@@ -1017,17 +1028,17 @@
   #terminal-window {
     width: 600px;
     height: 400px;
-    background: rgba(0, 0, 0, 0.4);
+    background: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    box-shadow: none !important;
     border-radius: 24px;
-    box-shadow: 0 30px 80px rgba(0,0,0,0.6);
     display: none;
     flex-direction: column;
     overflow: hidden;
     color: #fff;
     font-family: 'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
     font-size: 13px;
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
   }
   #terminal-window .titlebar {
     background: transparent;
@@ -1561,6 +1572,7 @@
   }
 </style>
 <script src="https://unpkg.com/html-docx-js@0.3.1/dist/html-docx.js"></script>
+
 </head>
 <body>
 <div class="lock-screen" id="lock-screen">
@@ -1576,22 +1588,25 @@
   </div>
 </div>
 
-<div class="bg-layer active" id="bg-layer-1" style="background-image: url('https://512pixels.net/wp-content/uploads/2025/06/26-Tahoe-Light-6K-thumb.jpeg')"></div>
+<div class="bg-layer active" id="bg-layer-1" style="background-image: url('https://wsrv.nl/?url=https://512pixels.net/wp-content/uploads/2025/06/26-Tahoe-Light-6K-thumb.jpeg')"></div>
 <div class="bg-layer" id="bg-layer-2"></div>
 <div class="top-gradient-overlay" style="position: absolute; top: 0; left: 0; width: 100vw; height: 160px; background: linear-gradient(to bottom, rgba(0,0,0,0.5), transparent); mix-blend-mode: overlay; pointer-events: none; z-index: 5;"></div>
 <div class="top-gradient-normal" style="position: absolute; top: 0; left: 0; width: 100vw; height: 160px; background: linear-gradient(to bottom, rgba(0,0,0,0.05), transparent); pointer-events: none; z-index: 6;"></div>
 
 <div class="desktop-icons" id="desktop-icons"></div>
 
-<div class="context-menu" id="context-menu">
+<glass-element id="context-menu-glass" style="position:fixed; z-index:100000; display:none;" radius="8" depth="5" blur="3" strength="40" background-color="rgba(255,255,255,0.15)" chromatic-aberration="1" auto-size>
+<div class="context-menu" id="context-menu" style="position:relative; background:transparent; backdrop-filter:none; -webkit-backdrop-filter:none; box-shadow:none; border:none; opacity:1; pointer-events:auto; transform:none; border-radius:0;">
   <div class="context-menu-item" id="ctx-new-folder">New Folder</div>
   <div class="context-menu-divider"></div>
   <div class="context-menu-item" id="ctx-get-info">Get Info</div>
   <div class="context-menu-item" id="ctx-change-bg">Change Desktop Background...</div>
 </div>
+</glass-element>
 
 <div class="modal-overlay" id="new-folder-modal">
-  <div class="modal">
+  <glass-element radius="12" depth="6" blur="3" strength="45" background-color="rgba(255,255,255,0.15)" chromatic-aberration="1" auto-size>
+  <div class="modal" style="background:transparent; backdrop-filter:none; -webkit-backdrop-filter:none; box-shadow:none; border:none; border-radius:0;">
     <div class="modal-title">New Folder</div>
     <div class="modal-body">
       <input type="text" id="new-folder-input" value="untitled folder" />
@@ -1601,10 +1616,12 @@
       <button class="modal-btn primary" id="new-folder-create">Create</button>
     </div>
   </div>
+</glass-element>
 </div>
 
 <div class="modal-overlay" id="save-file-modal">
-  <div class="modal">
+  <glass-element radius="12" depth="6" blur="3" strength="45" background-color="rgba(255,255,255,0.15)" chromatic-aberration="1" auto-size>
+  <div class="modal" style="background:transparent; backdrop-filter:none; -webkit-backdrop-filter:none; box-shadow:none; border:none; border-radius:0;">
     <div class="modal-title">Save As</div>
     <div class="modal-body">
       <input type="text" id="save-file-input" value="Document.docx" />
@@ -1614,6 +1631,7 @@
       <button class="modal-btn primary" id="save-file-confirm">Save</button>
     </div>
   </div>
+</glass-element>
 </div>
 
 <div class="menubar">
@@ -1638,7 +1656,8 @@
   </div>
   
   <!-- Dropdowns -->
-  <div class="menu-dropdown" id="apple-dropdown">
+  <glass-element id="apple-dropdown-glass" style="position:absolute; top:28px; left:10px; z-index:99999; display:none;" radius="8" depth="5" blur="3" strength="40" background-color="rgba(255,255,255,0.15)" chromatic-aberration="1" auto-size>
+<div class="menu-dropdown" id="apple-dropdown" style="position:relative; top:0; left:0; background:transparent; backdrop-filter:none; -webkit-backdrop-filter:none; box-shadow:none; border:none; opacity:1; pointer-events:auto; transform:none;">
     <div class="menu-dropdown-item" id="about-mac">About This Mac</div>
     <div class="menu-dropdown-divider"></div>
     <div class="menu-dropdown-item">System Settings...</div>
@@ -1655,16 +1674,20 @@
     <div class="menu-dropdown-item" id="lock-screen-btn">Lock Screen</div>
     <div class="menu-dropdown-item">Log Out...</div>
   </div>
+</glass-element>
   
-  <div class="menu-dropdown" id="file-dropdown" style="left: 80px;">
+  <glass-element id="file-dropdown-glass" style="position:absolute; top:28px; left:80px; z-index:99999; display:none;" radius="8" depth="5" blur="3" strength="40" background-color="rgba(255,255,255,0.15)" chromatic-aberration="1" auto-size>
+<div class="menu-dropdown" id="file-dropdown" style="position:relative; top:0; left:0; background:transparent; backdrop-filter:none; -webkit-backdrop-filter:none; box-shadow:none; border:none; opacity:1; pointer-events:auto; transform:none;">
     <div class="menu-dropdown-item" id="file-new">New Folder</div>
     <div class="menu-dropdown-divider"></div>
     <div class="menu-dropdown-item" id="file-save">Save</div>
     <div class="menu-dropdown-item" id="file-download">Download to PC...</div>
   </div>
+</glass-element>
 </div>
 
-<div class="window about-window" id="about-window">
+<glass-element id="about-glass" style="position:absolute; top:50%; left:50%; margin-left:-150px; margin-top:-200px; z-index:10000; display:none;" radius="12" depth="6" blur="3" strength="45" background-color="rgba(255,255,255,0.15)" chromatic-aberration="1" auto-size>
+<div class="window about-window" id="about-window" style="position:relative; top:0; left:0; margin:0; background:transparent; backdrop-filter:none; -webkit-backdrop-filter:none; box-shadow:none; border-radius:0; opacity:1; pointer-events:auto; transform:none;">
   <div class="titlebar">
     <div class="traffic-lights">
       <div class="btn close" id="about-close"></div>
@@ -1687,6 +1710,7 @@
     </div>
   </div>
 </div>
+</glass-element>
 
 <div class="window" id="finder-window">
   <div class="finder-container">
@@ -1841,23 +1865,25 @@
   </div>
 </div>
 
-<div class="window" id="terminal-window">
-  <div class="titlebar" id="terminal-titlebar">
-    <div class="traffic-lights">
-      <div class="btn close" id="terminal-btn-close"></div>
-      <div class="btn minimize" id="terminal-btn-minimize"></div>
-      <div class="btn maximize" id="terminal-btn-maximize"></div>
+<glass-element id="terminal-window" class="window" style="width:600px; height:400px; display:none; flex-direction:column; overflow:hidden;" radius="24" depth="8" blur="3" strength="60" background-color="rgba(15, 15, 15, 0.7)" chromatic-aberration="1" width="600" height="400">
+  <div class="window-inner" style="position:relative; width:100%; height:100%; display:flex; flex-direction:column; background:transparent; backdrop-filter:none; -webkit-backdrop-filter:none; box-shadow:none; border-radius:0; border:none; padding:0; overflow:hidden;">
+    <div class="titlebar" id="terminal-titlebar">
+      <div class="traffic-lights">
+        <div class="btn close" id="terminal-btn-close"></div>
+        <div class="btn minimize" id="terminal-btn-minimize"></div>
+        <div class="btn maximize" id="terminal-btn-maximize"></div>
+      </div>
+      <div class="window-title">bash — 80x24</div>
     </div>
-    <div class="window-title">bash — 80x24</div>
-  </div>
-  <div class="terminal-content" id="terminal-content">
-    <div class="terminal-line">Last login: <span id="term-time"></span> on console</div>
-    <div class="terminal-input-line">
-      <span class="terminal-prompt">user@Mac-Pro ~ %</span>
-      <input type="text" class="terminal-input" id="terminal-input" autocomplete="off" spellcheck="false" autofocus>
+    <div class="terminal-content" id="terminal-content">
+      <div class="terminal-line">Last login: <span id="term-time"></span> on console</div>
+      <div class="terminal-input-line">
+        <span class="terminal-prompt">user@Mac-Pro ~ %</span>
+        <input type="text" class="terminal-input" id="terminal-input" autocomplete="off" spellcheck="false" autofocus>
+      </div>
     </div>
   </div>
-</div>
+</glass-element>
 
 <div class="window" id="settings-window">
   <div class="settings-container">
@@ -1985,12 +2011,33 @@
               <span class="toggle-slider"></span>
             </label>
           </div>
-          <div style="display: flex; flex-direction: column; gap: 8px;">
+          <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
             <div style="display: flex; justify-content: space-between; align-items: center;">
               <span style="font-weight: 500; font-size: 14px;">Dock Magnification</span>
-              <span id="dock-mag-value" style="font-size: 13px; color: #555;">2.0x</span>
+              <span id="dock-mag-value" style="font-size: 13px; opacity: 0.7;">2.0x</span>
             </div>
             <input type="range" id="dock-mag-slider" min="1.0" max="3.0" step="0.1" value="2.0" style="width: 100%;">
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-weight: 500; font-size: 14px;">Dock Depth</span>
+              <span id="dock-depth-value" style="font-size: 13px; opacity: 0.7;">3px</span>
+            </div>
+            <input type="range" id="dock-depth-slider" min="0" max="30" step="1" value="3" style="width: 100%;">
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-weight: 500; font-size: 14px;">Dock Blur</span>
+              <span id="dock-blur-value" style="font-size: 13px; opacity: 0.7;">2px</span>
+            </div>
+            <input type="range" id="dock-blur-slider" min="0" max="20" step="1" value="2" style="width: 100%;">
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-weight: 500; font-size: 14px;">Dock Strength</span>
+              <span id="dock-strength-value" style="font-size: 13px; opacity: 0.7;">185</span>
+            </div>
+            <input type="range" id="dock-strength-slider" min="0" max="200" step="5" value="185" style="width: 100%;">
           </div>
         </div>
       </div>
@@ -1999,23 +2046,27 @@
   </div>
 </div>
 
-<div class="window" id="launchpad-window">
-  <div class="launchpad-titlebar">
-    <div style="display: flex; align-items: center; gap: 12px;">
-      <div class="traffic-lights" style="margin-right: 8px;">
-        <div class="btn close" id="launchpad-btn-close"></div>
-        <div class="btn minimize" id="launchpad-btn-minimize"></div>
-        <div class="btn maximize disabled" id="launchpad-btn-maximize"></div>
+<glass-element id="launchpad-window" class="window" style="position:absolute; top:50%; left:50%; width:800px; height:500px; margin-left:-400px; margin-top:-250px; display:none; flex-direction:column; z-index:100; overflow:hidden;" radius="24" depth="8" blur="2" strength="60" background-color="rgba(255,255,255,0.25)" chromatic-aberration="1" width="800" height="500">
+  <div class="window-inner" style="position:relative; width:100%; height:100%; display:flex; flex-direction:column; background:transparent; backdrop-filter:none; -webkit-backdrop-filter:none; box-shadow:none; border-radius:0; border:none; padding:0; overflow:hidden;">
+    <div class="launchpad-titlebar">
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <div class="traffic-lights" style="margin-right: 8px;">
+          <div class="btn close" id="launchpad-btn-close"></div>
+          <div class="btn minimize" id="launchpad-btn-minimize"></div>
+          <div class="btn maximize disabled" id="launchpad-btn-maximize"></div>
+        </div>
+        <img src="https://github.com/Hellomyfriend19/Macostahoe/blob/main/app%20store%20icon.png?raw=true" alt="Apps" style="width: 22px; height: 22px; margin-right: 4px;">
+        <span style="font-weight: 600; font-size: 13px; color: currentcolor;">Apps</span>
       </div>
-      <img src="https://github.com/Hellomyfriend19/Macostahoe/blob/main/app%20store%20icon.png?raw=true" alt="Apps" style="width: 22px; height: 22px; margin-right: 4px;">
-      <span style="font-weight: 600; font-size: 13px; color: #111;">Apps</span>
+      <input type="text" id="launchpad-search" class="launchpad-search-input" placeholder="Search" autocomplete="off">
     </div>
-    <input type="text" id="launchpad-search" class="launchpad-search-input" placeholder="Search" autocomplete="off">
+    <div class="launchpad-content" id="launchpad-content"></div>
   </div>
-  <div class="launchpad-content" id="launchpad-content"></div>
-</div>
+</glass-element>
 
-<div class="dock-container" id="dock">
+<glass-element id="dock-glass-wrapper" style="position:fixed; bottom:20px; left:50%; transform:translateX(-50%); z-index:2147483647;" radius="24" depth="3" blur="2" strength="185" background-color="transparent" chromatic-aberration="1" auto-size>
+<div class="dock-container" id="dock" style="margin-bottom:0; background:transparent; backdrop-filter:none; -webkit-backdrop-filter:none; box-shadow:none; border-radius:0; position:relative;">
+  
   <div class="dock-tooltip" id="tooltip">
     <svg class="dock-tooltip-svg" id="tooltip-svg" style="pointer-events: none;"></svg>
     <span class="dock-tooltip-text" id="tooltip-text"></span>
@@ -2031,6 +2082,7 @@
   <div class="dock-icon" data-name="System Settings" style="background-image: url('https://www.tonymacx86.com/attachments/systemsettings-tahoe-png.595625/')"></div>
   <div class="dock-icon" data-name="Trash" style="background-image: url('https://icons.iconarchive.com/icons/wwalczyszyn/iwindows/256/Recycle-Bin-icon.png')"></div>
 </div>
+</glass-element>
 
 <svg style="position: absolute; width: 0; height: 0; pointer-events: none;">
   <filter id="icon-transparent-filter" color-interpolation-filters="sRGB">
@@ -2093,9 +2145,286 @@
 </svg>
 
 <script>
+// ============ displacement-utils.js ============
+function getDisplacementMap({ height, width, radius, depth }) {
+    const svg = `<svg height="${height}" width="${width}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
+        <style>.mix { mix-blend-mode: screen; }</style>
+        <defs>
+            <linearGradient id="Y" x1="0" x2="0" y1="${Math.ceil((radius / height) * 15)}%" y2="${Math.floor(100 - (radius / height) * 15)}%">
+                <stop offset="0%" stop-color="#0F0" />
+                <stop offset="100%" stop-color="#000" />
+            </linearGradient>
+            <linearGradient id="X" x1="${Math.ceil((radius / width) * 15)}%" x2="${Math.floor(100 - (radius / width) * 15)}%" y1="0" y2="0">
+                <stop offset="0%" stop-color="#F00" />
+                <stop offset="100%" stop-color="#000" />
+            </linearGradient>
+        </defs>
+        <rect x="0" y="0" height="${height}" width="${width}" fill="#808080" />
+        <g filter="blur(2px)">
+          <rect x="0" y="0" height="${height}" width="${width}" fill="#000080" />
+          <rect x="0" y="0" height="${height}" width="${width}" fill="url(#Y)" class="mix" />
+          <rect x="0" y="0" height="${height}" width="${width}" fill="url(#X)" class="mix" />
+          <rect x="${depth}" y="${depth}" height="${height - 2 * depth}" width="${width - 2 * depth}" fill="#808080" rx="${radius}" ry="${radius}" filter="blur(${depth}px)" />
+        </g>
+    </svg>`;
+    return "data:image/svg+xml;utf8," + encodeURIComponent(svg);
+}
+
+function getDisplacementFilter({ height, width, radius, depth, strength = 100, chromaticAberration = 0 }) {
+    const displacementMapUrl = getDisplacementMap({ height, width, radius, depth });
+    const svg = `<svg height="${height}" width="${width}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+            <filter id="displace" x="0%" y="0%" width="100%" height="100%" color-interpolation-filters="sRGB">
+                <feImage x="0" y="0" height="${height}" width="${width}" href="${displacementMapUrl}" result="displacementMap" />
+                <feDisplacementMap in="SourceGraphic" in2="displacementMap" scale="${strength + chromaticAberration * 2}" xChannelSelector="R" yChannelSelector="G" />
+                <feColorMatrix type="matrix" values="1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0" result="displacedR" />
+                <feDisplacementMap in="SourceGraphic" in2="displacementMap" scale="${strength + chromaticAberration}" xChannelSelector="R" yChannelSelector="G" />
+                <feColorMatrix type="matrix" values="0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 1 0" result="displacedG" />
+                <feDisplacementMap in="SourceGraphic" in2="displacementMap" scale="${strength}" xChannelSelector="R" yChannelSelector="G" />
+                <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 0" result="displacedB" />
+                <feBlend in="displacedR" in2="displacedG" mode="screen"/>
+                <feBlend in2="displacedB" mode="screen"/>
+            </filter>
+        </defs>
+    </svg>`;
+    return "data:image/svg+xml;utf8," + encodeURIComponent(svg) + "#displace";
+}
+
+window.DisplacementUtils = { getDisplacementMap, getDisplacementFilter };
+</script>
+
+<script>
+// ============ glass-element.js ============
+if (typeof window._glassElementIdCounter === 'undefined') {
+    window._glassElementIdCounter = 0;
+}
+
+class GlassElement extends HTMLElement {
+    constructor() {
+        super();
+        this._id = ++window._glassElementIdCounter;
+        this.clicked = false;
+        this.attachShadow({ mode: 'open' });
+        if (GlassElement._svgFilterSupport === undefined) {
+            GlassElement._svgFilterSupport = this.detectSVGFilterSupport();
+        }
+    }
+    detectSVGFilterSupport() {
+        const testElement = document.createElement('div');
+        testElement.style.backdropFilter = 'blur(1px)';
+        if (!testElement.style.backdropFilter) return false;
+        const ua = navigator.userAgent.toLowerCase();
+        const isChrome = /chrome|chromium|crios|edg/.test(ua) && !/firefox|fxios/.test(ua);
+        if (isChrome) return true;
+        if (/firefox|fxios|safari/.test(ua)) return false;
+        try {
+            testElement.style.backdropFilter = 'url(#test)';
+            return testElement.style.backdropFilter.includes('url');
+        } catch(e) { return false; }
+    }
+    get hasSVGFilterSupport() { return GlassElement._svgFilterSupport; }
+    static get observedAttributes() {
+        return ['width','height','radius','depth','blur','strength','chromatic-aberration','debug','background-color','responsive','base-width','base-height','auto-size','min-width','min-height'];
+    }
+    connectedCallback() {
+        this.render();
+        this.setupEventListeners();
+        if (window.ResizeObserver) {
+            this._resizeObserver = new ResizeObserver(() => {
+                this.updateStyles();
+            });
+            this._resizeObserver.observe(this);
+        }
+        this._tickListener = () => {
+            if (this.offsetWidth > 0 || this.offsetHeight > 0) {
+                this.updateStyles();
+            }
+        };
+        window.addEventListener('liquid-glass-tick', this._tickListener);
+    }
+    disconnectedCallback() {
+        if (this._resizeObserver) {
+            this._resizeObserver.disconnect();
+        }
+        if (this._tickListener) {
+            window.removeEventListener('liquid-glass-tick', this._tickListener);
+        }
+        if (this._forceGlassListener) {
+            this.removeEventListener('force-liquid-glass', this._forceGlassListener);
+        }
+    }
+    attributeChangedCallback() { if (this.shadowRoot) this.render(); }
+    get width() { return parseInt(this.getAttribute('width')) || 200; }
+    get height() { return parseInt(this.getAttribute('height')) || 200; }
+    get radius() { return parseInt(this.getAttribute('radius')) || 50; }
+    get baseDepth() { return parseInt(this.getAttribute('depth')) || 10; }
+    get blur() { return parseInt(this.getAttribute('blur')) || 2; }
+    get strength() { return parseInt(this.getAttribute('strength')) || 100; }
+    get chromaticAberration() { return parseInt(this.getAttribute('chromatic-aberration')) || 0; }
+    get debug() { return this.getAttribute('debug') === 'true'; }
+    get backgroundColor() { return this.getAttribute('background-color') || 'rgba(255,255,255,0.4)'; }
+    get autoSize() { return this.hasAttribute('auto-size'); }
+    get minWidth() { return parseInt(this.getAttribute('min-width')) || 0; }
+    get minHeight() { return parseInt(this.getAttribute('min-height')) || 0; }
+    get depth() { return this.baseDepth; }
+    setupEventListeners() {
+        this._forceGlassListener = () => this.updateStyles();
+        this.addEventListener('force-liquid-glass', this._forceGlassListener);
+    }
+    updateStyles() {
+        const glassBox = this.shadowRoot.querySelector('.glass-box');
+        if (glassBox) this.applyDynamicStyles(glassBox);
+    }
+    applyDynamicStyles(element) {
+        const { getDisplacementMap } = window.DisplacementUtils;
+        element.style.borderRadius = `${this.radius}px`;
+        
+        let actualWidth = 0;
+        let actualHeight = 0;
+        
+        if (this.autoSize) {
+            element.style.backdropFilter = 'none';
+            element.offsetWidth; // force style reflow
+            const rect = element.getBoundingClientRect();
+            actualWidth = Math.max(Math.ceil(rect.width), this.minWidth, 50);
+            actualHeight = Math.max(Math.ceil(rect.height), this.minHeight, 30);
+            if (rect.width === 0) {
+                actualWidth = this.width || 100;
+                actualHeight = this.height || 100;
+            }
+        } else {
+            element.style.height = '100%';
+            element.style.width = '100%';
+            actualWidth = this.offsetWidth;
+            actualHeight = this.offsetHeight;
+            if (actualWidth === 0 || actualHeight === 0) {
+                actualWidth = this.width;
+                actualHeight = this.height;
+            }
+        }
+
+        const filterId = 'displace-' + this._id;
+
+        if (!this.hasSVGFilterSupport) {
+            element.style.backdropFilter = `blur(${this.blur * 2}px)`;
+            element.style.background = this.backgroundColor;
+            element.style.boxShadow = 'none';
+        } else {
+            const displacementMapUrl = getDisplacementMap({ height: actualHeight, width: actualWidth, radius: this.radius, depth: this.depth });
+            const filterContainer = this.shadowRoot.getElementById('svg-filter-container');
+            if (filterContainer) {
+                filterContainer.innerHTML = `
+                <svg height="${actualHeight}" width="${actualWidth}" viewBox="0 0 ${actualWidth} ${actualHeight}" xmlns="http://www.w3.org/2000/svg">
+                    <style>#${filterId} { color-interpolation-filters: sRGB; }</style>
+                    <defs>
+                        <filter id="${filterId}" x="-50%" y="-50%" width="200%" height="200%">
+                            <feImage x="0" y="0" height="${actualHeight}" width="${actualWidth}" href="${displacementMapUrl}" result="displacementMap" />
+                            <feDisplacementMap in="SourceGraphic" in2="displacementMap" scale="${this.strength + this.chromaticAberration * 2}" xChannelSelector="R" yChannelSelector="G" />
+                            <feColorMatrix type="matrix" values="1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0" result="displacedR" />
+                            <feDisplacementMap in="SourceGraphic" in2="displacementMap" scale="${this.strength + this.chromaticAberration}" xChannelSelector="R" yChannelSelector="G" />
+                            <feColorMatrix type="matrix" values="0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 1 0" result="displacedG" />
+                            <feDisplacementMap in="SourceGraphic" in2="displacementMap" scale="${this.strength}" xChannelSelector="R" yChannelSelector="G" />
+                            <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 0" result="displacedB" />
+                            <feBlend in="displacedR" in2="displacedG" mode="screen"/>
+                            <feBlend in2="displacedB" mode="screen"/>
+                        </filter>
+                    </defs>
+                </svg>`;
+            }
+
+            element.style.backdropFilter = `blur(${this.blur / 2}px) url('#${filterId}') blur(${this.blur}px) brightness(1.0) saturate(1.0)`;
+            element.style.background = this.backgroundColor;
+            element.style.boxShadow = 'none';
+        }
+    }
+    render() {
+        this.shadowRoot.innerHTML = `
+            <style>
+                :host { display: ${this.autoSize ? 'inline-block' : 'block'}; ${this.autoSize ? '' : 'width: 100%; height: 100%;'} }
+                #svg-filter-container {
+                    position: absolute;
+                    width: 0;
+                    height: 0;
+                    overflow: hidden;
+                    pointer-events: none;
+                }
+                .glass-box {
+                    background: rgba(255,255,255,0.4);
+                    position: relative;
+                    width: 100%;
+                    height: 100%;
+                    box-sizing: border-box;
+                    ${this.autoSize ? `display: inline-block; width: fit-content; min-width: ${this.minWidth}px; min-height: ${this.minHeight}px;` : ''}
+                }
+                .glass-box::before {
+                    content: "";
+                    position: absolute;
+                    inset: 0;
+                    border-radius: inherit;
+                    padding: 1px;
+                    background: linear-gradient(135deg, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0.1) 40%, rgba(255,255,255,0) 60%, rgba(255,255,255,0.2) 100%);
+                    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+                    -webkit-mask-composite: xor;
+                    mask-composite: exclude;
+                    pointer-events: none;
+                    mix-blend-mode: overlay;
+                    z-index: 1;
+                }
+                .content {
+                    position: relative;
+                    z-index: 2;
+                    width: 100%;
+                    height: 100%;
+                    box-sizing: border-box;
+                    ${this.autoSize ? 'padding: var(--glass-padding, 0px);' : ''}
+                }
+            </style>
+            <div id="svg-filter-container"></div>
+            <div class="glass-box">
+                <div class="content"><slot></slot></div>
+            </div>`;
+        const glassBox = this.shadowRoot.querySelector('.glass-box');
+        if (this.autoSize) {
+            requestAnimationFrame(() => requestAnimationFrame(() => this.applyDynamicStyles(glassBox)));
+        } else {
+            this.applyDynamicStyles(glassBox);
+        }
+    }
+}
+customElements.define('glass-element', GlassElement);
+</script>
+
+<script>
+  
   window.liquidGlassStrength = 1.0;
-  window.dockLiquidGlassBlur = 4;
+  window.dockLiquidGlassBlur = 2;
   const dock = document.getElementById('dock');
+  
+  function updateDockGlassTheme() {
+    const isDarkMode = document.body.classList.contains('dark-mode');
+    const dockGlass = document.getElementById('dock-glass-wrapper');
+    if (dockGlass) {
+      dockGlass.setAttribute('background-color', 'transparent');
+    }
+    const lpGlass = document.getElementById('launchpad-window');
+    if (lpGlass) {
+      if (isDarkMode) {
+        lpGlass.setAttribute('background-color', 'rgba(30,30,30,0.85)');
+      } else {
+        lpGlass.setAttribute('background-color', 'rgba(255,255,255,0.5)');
+      }
+    }
+    const termGlass = document.getElementById('terminal-window');
+    if (termGlass) {
+      if (isDarkMode) {
+        termGlass.setAttribute('background-color', 'rgba(10, 10, 10, 0.8)');
+      } else {
+        termGlass.setAttribute('background-color', 'rgba(15, 15, 15, 0.7)');
+      }
+    }
+  }
+  updateDockGlassTheme();
+
   // Restructure icons to support transparency
   const rawIcons = Array.from(document.querySelectorAll('.dock-icon'));
   rawIcons.forEach(icon => {
@@ -2127,11 +2456,11 @@
 
   // Piecewise interpolation function
   function interpolate(x, input, output) {
-    if (x <= input[0]) return output[0];
+    if (input[0] >= x) return output[0];
     if (x >= input[input.length - 1]) return output[output.length - 1];
     
-    for (let i = 0; i < input.length - 1; i++) {
-      if (x >= input[i] && x <= input[i + 1]) {
+    for (let i = 0; i > -1 && i !== input.length - 1; i++) {
+      if (x >= input[i] && input[i + 1] >= x) {
         const t = (x - input[i]) / (input[i + 1] - input[i]);
         return output[i] + t * (output[i + 1] - output[i]);
       }
@@ -2394,11 +2723,22 @@
       contextMenuTarget = 'desktop';
     } else {
       contextMenu.classList.remove('show');
+    const cgw_rem = document.getElementById('context-menu-glass');
+    if(cgw_rem) cgw_rem.style.display = 'none';
       return;
     }
 
-    contextMenu.style.left = `${e.clientX}px`;
-    contextMenu.style.top = `${e.clientY}px`;
+    const cgw_add = document.getElementById('context-menu-glass');
+    if(cgw_add) {
+      cgw_add.style.display = 'block';
+      cgw_add.style.left = `${e.clientX}px`;
+      cgw_add.style.top = `${e.clientY}px`;
+      contextMenu.style.left = '';
+      contextMenu.style.top = '';
+    } else {
+      contextMenu.style.left = `${e.clientX}px`;
+      contextMenu.style.top = `${e.clientY}px`;
+    }
     contextMenu.classList.add('show');
     contextMenu.dispatchEvent(new Event('force-liquid-glass'));
   });
@@ -2406,6 +2746,8 @@
   document.addEventListener('click', (e) => {
     if (!e.target.closest('.context-menu')) {
       contextMenu.classList.remove('show');
+    const cgw_rem = document.getElementById('context-menu-glass');
+    if(cgw_rem) cgw_rem.style.display = 'none';
     }
   });
 
@@ -2416,6 +2758,8 @@
 
   document.getElementById('ctx-new-folder').addEventListener('click', () => {
     contextMenu.classList.remove('show');
+    const cgw_rem = document.getElementById('context-menu-glass');
+    if(cgw_rem) cgw_rem.style.display = 'none';
     newFolderModal.classList.add('show');
     const modalInner = newFolderModal.querySelector('.modal');
     if(modalInner) modalInner.dispatchEvent(new Event('force-liquid-glass'));
@@ -2426,6 +2770,8 @@
 
   document.getElementById('ctx-change-bg').addEventListener('click', () => {
     contextMenu.classList.remove('show');
+    const cgw_rem = document.getElementById('context-menu-glass');
+    if(cgw_rem) cgw_rem.style.display = 'none';
     // Open Settings and go to Wallpaper
     settingsState.targetScaleX = 1; settingsState.targetScaleY = 1;
     settingsState.targetOpacity = 1; settingsState.isOpen = true; 
@@ -2437,6 +2783,8 @@
 
   document.getElementById('ctx-get-info').addEventListener('click', () => {
     contextMenu.classList.remove('show');
+    const cgw_rem = document.getElementById('context-menu-glass');
+    if(cgw_rem) cgw_rem.style.display = 'none';
     // Open Settings and go to General
     settingsState.targetScaleX = 1; settingsState.targetScaleY = 1;
     settingsState.targetOpacity = 1; settingsState.isOpen = true; 
@@ -2941,6 +3289,44 @@
     });
   }
 
+  const dockGlassWrapper = document.getElementById('dock-glass-wrapper');
+
+  const dockDepthSlider = document.getElementById('dock-depth-slider');
+  const dockDepthValue = document.getElementById('dock-depth-value');
+  if (dockDepthSlider) {
+    dockDepthSlider.addEventListener('input', (e) => {
+      const depth = parseInt(e.target.value);
+      dockDepthValue.textContent = depth + 'px';
+      if (dockGlassWrapper) {
+        dockGlassWrapper.setAttribute('depth', depth);
+      }
+    });
+  }
+
+  const dockBlurSlider = document.getElementById('dock-blur-slider');
+  const dockBlurValue = document.getElementById('dock-blur-value');
+  if (dockBlurSlider) {
+    dockBlurSlider.addEventListener('input', (e) => {
+      const blur = parseInt(e.target.value);
+      dockBlurValue.textContent = blur + 'px';
+      if (dockGlassWrapper) {
+        dockGlassWrapper.setAttribute('blur', blur);
+      }
+    });
+  }
+
+  const dockStrengthSlider = document.getElementById('dock-strength-slider');
+  const dockStrengthValue = document.getElementById('dock-strength-value');
+  if (dockStrengthSlider) {
+    dockStrengthSlider.addEventListener('input', (e) => {
+      const strength = parseInt(e.target.value);
+      dockStrengthValue.textContent = strength;
+      if (dockGlassWrapper) {
+        dockGlassWrapper.setAttribute('strength', strength);
+      }
+    });
+  }
+
   const darkModeToggle = document.getElementById('dark-mode-toggle');
   if (darkModeToggle) {
     darkModeToggle.addEventListener('change', (e) => {
@@ -2949,6 +3335,7 @@
       } else {
         document.body.classList.remove('dark-mode');
       }
+      updateDockGlassTheme();
 
       const darkModeIconsToggle = document.getElementById('dark-mode-icons-toggle');
       if (darkModeIconsToggle && darkModeIconsToggle.checked !== e.target.checked) {
@@ -2959,9 +3346,15 @@
       // Update wallpaper
       const activeWallpaper = document.querySelector('.wallpaper-item.active');
       if (activeWallpaper) {
-        const lightUrl = activeWallpaper.getAttribute('data-bg-light');
-        const darkUrl = activeWallpaper.getAttribute('data-bg-dark');
-        const standardUrl = activeWallpaper.getAttribute('data-bg');
+        const ligthUrlRaw = activeWallpaper.getAttribute('data-bg-light');
+        const darkUrlRaw = activeWallpaper.getAttribute('data-bg-dark');
+        const standardUrlRaw = activeWallpaper.getAttribute('data-bg');
+        
+        // Proxy images to avoid CORS errors in html2canvas
+        const lightUrl = ligthUrlRaw ? `https://wsrv.nl/?url=${encodeURIComponent(ligthUrlRaw)}` : null;
+        const darkUrl = darkUrlRaw ? `https://wsrv.nl/?url=${encodeURIComponent(darkUrlRaw)}` : null;
+        const standardUrl = standardUrlRaw ? `https://wsrv.nl/?url=${encodeURIComponent(standardUrlRaw)}` : null;
+
         if (darkUrl || lightUrl) {
            const newUrl = e.target.checked && darkUrl ? darkUrl : (lightUrl ? lightUrl : standardUrl);
            const bgLayer1 = document.getElementById('bg-layer-1');
@@ -3116,9 +3509,14 @@
       wallpaperItems.forEach(w => w.classList.remove('active'));
       item.classList.add('active');
       const isDark = document.body.classList.contains('dark-mode');
-      const lightUrl = item.getAttribute('data-bg-light');
-      const darkUrl = item.getAttribute('data-bg-dark');
-      const standardUrl = item.getAttribute('data-bg');
+      const lightUrlRaw = item.getAttribute('data-bg-light');
+      const darkUrlRaw = item.getAttribute('data-bg-dark');
+      const standardUrlRaw = item.getAttribute('data-bg');
+      
+      const lightUrl = lightUrlRaw ? `https://wsrv.nl/?url=${encodeURIComponent(lightUrlRaw)}` : null;
+      const darkUrl = darkUrlRaw ? `https://wsrv.nl/?url=${encodeURIComponent(darkUrlRaw)}` : null;
+      const standardUrl = standardUrlRaw ? `https://wsrv.nl/?url=${encodeURIComponent(standardUrlRaw)}` : null;
+
       const newUrl = isDark && darkUrl ? darkUrl : (lightUrl && !isDark ? lightUrl : standardUrl);
       
       const currentLayer = bgLayer1.classList.contains('active') ? 1 : 2;
@@ -3794,18 +4192,24 @@ if (val === 'help') {
   function animate() {
     if (!dock) return;
     const dockRect = dock.getBoundingClientRect();
+
+    if (window.updateDockGlassSize) {
+      window.updateDockGlassSize(Math.round(dockRect.width), Math.round(dockRect.height));
+    }
+
     const dockCenterX = dockRect.left + dockRect.width / 2;
     const totalIcons = icons.length;
     const unscaledDockWidth = totalIcons * baseSize + (totalIcons - 1) * 10 + 20;
     const startX = dockCenterX - unscaledDockWidth / 2;
 
-    const dockHeightLimit = 100;
+    const dockHeightLimit = -2000;
     const halfWinHeight = window.innerHeight / 2;
     winState.targetDragY = Math.min(winState.targetDragY, halfWinHeight - winState.height / 2 - dockHeightLimit);
     safariState.targetDragY = Math.min(safariState.targetDragY, halfWinHeight - safariState.height / 2 - dockHeightLimit);
     terminalState.targetDragY = Math.min(terminalState.targetDragY, halfWinHeight - terminalState.height / 2 - dockHeightLimit);
     settingsState.targetDragY = Math.min(settingsState.targetDragY, halfWinHeight - settingsState.height / 2 - dockHeightLimit);
     wordState.targetDragY = Math.min(wordState.targetDragY, halfWinHeight - wordState.height / 2 - dockHeightLimit);
+    launchpadState.targetDragY = Math.min(launchpadState.targetDragY, halfWinHeight - 250 - dockHeightLimit);
 
     iconStates.forEach(state => {
       if (isHovering && mouseX !== null) {
@@ -3886,7 +4290,11 @@ if (val === 'help') {
     winState.velHeight *= winDamping;
     winState.height += winState.velHeight;
 
-    finderWindow.style.transform = `translate(${winState.dragX}px, ${winState.translateY + winState.dragY}px) scale(${winState.scaleX}, ${winState.scaleY})`;
+    const winMaxDragY = halfWinHeight - winState.height / 2 - dockHeightLimit;
+    const winMinDragY = -halfWinHeight + winState.height / 2 + 28;
+    const winClampedDragY = Math.max(winMinDragY, Math.min(winState.dragY, winMaxDragY));
+
+    finderWindow.style.transform = `translate(${winState.dragX}px, ${winState.translateY + winClampedDragY}px) scale(${winState.scaleX}, ${winState.scaleY})`;
     finderWindow.style.opacity = winState.opacity;
     finderWindow.style.width = `${winState.width}px`;
     finderWindow.style.height = `${winState.height}px`;
@@ -3929,7 +4337,11 @@ if (val === 'help') {
     const safForceHeight = (safariState.targetHeight - safariState.height) * winStiffness;
     safariState.velHeight += safForceHeight; safariState.velHeight *= winDamping; safariState.height += safariState.velHeight;
 
-    safariWindow.style.transform = `translate(${safariState.dragX}px, ${safariState.translateY + safariState.dragY}px) scale(${safariState.scaleX}, ${safariState.scaleY})`;
+    const safMaxDragY = halfWinHeight - safariState.height / 2 - dockHeightLimit;
+    const safMinDragY = -halfWinHeight + safariState.height / 2 + 28;
+    const safClampedDragY = Math.max(safMinDragY, Math.min(safariState.dragY, safMaxDragY));
+
+    safariWindow.style.transform = `translate(${safariState.dragX}px, ${safariState.translateY + safClampedDragY}px) scale(${safariState.scaleX}, ${safariState.scaleY})`;
     safariWindow.style.opacity = safariState.opacity;
     safariWindow.style.width = `${safariState.width}px`;
     safariWindow.style.height = `${safariState.height}px`;
@@ -4002,7 +4414,11 @@ if (val === 'help') {
     const termForceHeight = (terminalState.targetHeight - terminalState.height) * winStiffness;
     terminalState.velHeight += termForceHeight; terminalState.velHeight *= winDamping; terminalState.height += terminalState.velHeight;
 
-    terminalWindow.style.transform = `translate(${terminalState.dragX}px, ${terminalState.translateY + terminalState.dragY}px) scale(${terminalState.scaleX}, ${terminalState.scaleY})`;
+    const termMaxDragY = halfWinHeight - terminalState.height / 2 - dockHeightLimit;
+    const termMinDragY = -halfWinHeight + terminalState.height / 2 + 28;
+    const termClampedDragY = Math.max(termMinDragY, Math.min(terminalState.dragY, termMaxDragY));
+
+    terminalWindow.style.transform = `translate(${terminalState.dragX}px, ${terminalState.translateY + termClampedDragY}px) scale(${terminalState.scaleX}, ${terminalState.scaleY})`;
     terminalWindow.style.opacity = terminalState.opacity;
     terminalWindow.style.width = `${terminalState.width}px`;
     terminalWindow.style.height = `${terminalState.height}px`;
@@ -4045,7 +4461,11 @@ if (val === 'help') {
     const setForceHeight = (settingsState.targetHeight - settingsState.height) * winStiffness;
     settingsState.velHeight += setForceHeight; settingsState.velHeight *= winDamping; settingsState.height += settingsState.velHeight;
 
-    settingsWindow.style.transform = `translate(${settingsState.dragX}px, ${settingsState.translateY + settingsState.dragY}px) scale(${settingsState.scaleX}, ${settingsState.scaleY})`;
+    const setMaxDragY = halfWinHeight - settingsState.height / 2 - dockHeightLimit;
+    const setMinDragY = -halfWinHeight + settingsState.height / 2 + 28;
+    const setClampedDragY = Math.max(setMinDragY, Math.min(settingsState.dragY, setMaxDragY));
+
+    settingsWindow.style.transform = `translate(${settingsState.dragX}px, ${settingsState.translateY + setClampedDragY}px) scale(${settingsState.scaleX}, ${settingsState.scaleY})`;
     settingsWindow.style.opacity = settingsState.opacity;
     settingsWindow.style.width = `${settingsState.width}px`;
     settingsWindow.style.height = `${settingsState.height}px`;
@@ -4089,7 +4509,11 @@ if (val === 'help') {
     wordState.velHeight += wordForceHeight; wordState.velHeight *= winDamping; wordState.height += wordState.velHeight;
 
     const wordWindow = document.getElementById('word-window');
-    wordWindow.style.transform = `translate(${wordState.dragX}px, ${wordState.translateY + wordState.dragY}px) scale(${wordState.scaleX}, ${wordState.scaleY})`;
+    const wordMaxDragY = halfWinHeight - wordState.height / 2 - dockHeightLimit;
+    const wordMinDragY = -halfWinHeight + wordState.height / 2 + 28;
+    const wordClampedDragY = Math.max(wordMinDragY, Math.min(wordState.dragY, wordMaxDragY));
+
+    wordWindow.style.transform = `translate(${wordState.dragX}px, ${wordState.translateY + wordClampedDragY}px) scale(${wordState.scaleX}, ${wordState.scaleY})`;
     wordWindow.style.opacity = wordState.opacity;
     wordWindow.style.width = `${wordState.width}px`;
     wordWindow.style.height = `${wordState.height}px`;
@@ -4156,9 +4580,11 @@ if (val === 'help') {
     e.stopPropagation();
     appleMenuBtn.classList.toggle('open');
     appleDropdown.classList.toggle('show');
+    document.getElementById('apple-dropdown-glass').style.display = appleDropdown.classList.contains('show') ? 'block' : 'none';
     if (fileDropdown.classList.contains('show')) {
       fileMenuBtn.classList.remove('open');
       fileDropdown.classList.remove('show');
+    document.getElementById('file-dropdown-glass').style.display = 'none';
     }
     if (appleDropdown.classList.contains('show')) {
       appleDropdown.dispatchEvent(new Event('force-liquid-glass'));
@@ -4169,9 +4595,11 @@ if (val === 'help') {
     e.stopPropagation();
     fileMenuBtn.classList.toggle('open');
     fileDropdown.classList.toggle('show');
+    document.getElementById('file-dropdown-glass').style.display = fileDropdown.classList.contains('show') ? 'block' : 'none';
     if (appleDropdown.classList.contains('show')) {
       appleMenuBtn.classList.remove('open');
       appleDropdown.classList.remove('show');
+    document.getElementById('apple-dropdown-glass').style.display = 'none';
     }
     if (fileDropdown.classList.contains('show')) {
       fileDropdown.dispatchEvent(new Event('force-liquid-glass'));
@@ -4239,6 +4667,7 @@ if (val === 'help') {
   document.getElementById('file-download').addEventListener('click', () => {
     if (activeAppName === 'Word' && wordState.isOpen) {
        fileDropdown.classList.remove('show');
+    document.getElementById('file-dropdown-glass').style.display = 'none';
        fileMenuBtn.classList.remove('open');
        saveFileModal.classList.add('show');
        const modalInner = saveFileModal.querySelector('.modal');
@@ -4248,6 +4677,7 @@ if (val === 'help') {
        saveFileInput.select();
     } else {
        fileDropdown.classList.remove('show');
+    document.getElementById('file-dropdown-glass').style.display = 'none';
        fileMenuBtn.classList.remove('open');
     }
   });
@@ -4294,10 +4724,12 @@ if (val === 'help') {
   document.body.addEventListener('click', (e) => {
     if (!appleDropdown.contains(e.target) && e.target !== appleMenuBtn && !appleMenuBtn.contains(e.target)) {
       appleDropdown.classList.remove('show');
+    document.getElementById('apple-dropdown-glass').style.display = 'none';
       appleMenuBtn.classList.remove('open');
     }
     if (!fileDropdown.contains(e.target) && e.target !== fileMenuBtn && !fileMenuBtn.contains(e.target)) {
       fileDropdown.classList.remove('show');
+    document.getElementById('file-dropdown-glass').style.display = 'none';
       fileMenuBtn.classList.remove('open');
     }
   });
@@ -4305,13 +4737,16 @@ if (val === 'help') {
   document.getElementById('about-mac').addEventListener('click', () => {
     const aboutWindow = document.getElementById('about-window');
     aboutWindow.classList.add('show');
+    document.getElementById('about-glass').style.display = 'block';
     aboutWindow.dispatchEvent(new Event('force-liquid-glass'));
     appleDropdown.classList.remove('show');
+    document.getElementById('apple-dropdown-glass').style.display = 'none';
     appleMenuBtn.classList.remove('open');
   });
 
   document.getElementById('about-close').addEventListener('click', () => {
     document.getElementById('about-window').classList.remove('show');
+    document.getElementById('about-glass').style.display = 'none';
   });
 
   document.getElementById('sleep-mac').addEventListener('click', () => {
@@ -4407,30 +4842,8 @@ if (val === 'help') {
     }
   });
 
-  // Liquid Glass Effect
-  function createLiquidGlassForElement(elementSelector, idPrefix, elementRadius, blurRadius = 3) {
-    if (!window.registerLiquidGlass) {
-      window._pendingGlassElements = window._pendingGlassElements || [];
-      window._pendingGlassElements.push([elementSelector, blurRadius]);
-    } else {
-      window.registerLiquidGlass(elementSelector, blurRadius);
-    }
-  }
-  
-  createLiquidGlassForElement('.dock-container', 'dock-liquid-glass', 24, 4);
-  createLiquidGlassForElement('#tooltip', 'tooltip-liquid-glass', 14, 12);
-  createLiquidGlassForElement('#launchpad-window', 'launchpad-liquid-glass', 20, 12);
-  createLiquidGlassForElement('#launchpad-search', 'launchpad-search-liquid-glass', 14, 12);
-  createLiquidGlassForElement('#about-window', 'about-liquid-glass', 10, 12);
-  createLiquidGlassForElement('#apple-dropdown', 'apple-dropdown-liquid-glass', 8, 12);
-  createLiquidGlassForElement('#file-dropdown', 'file-dropdown-liquid-glass', 8, 12);
-  createLiquidGlassForElement('#context-menu', 'context-menu-liquid-glass', 8, 12);
-  createLiquidGlassForElement('.modal', 'modal-liquid-glass', 10, 12);
-  createLiquidGlassForElement('#lock-screen-signin-btn', 'lock-screen-signin-liquid-glass', 18, 4);
-  createLiquidGlassForElement('#terminal-window', 'terminal-liquid-glass', 24, 16);
-
   animate();
-</script>
-<script type="module" src="/src/liquid-glass-adapter.tsx"></script>
+
+  </script>
 </body>
 </html>
