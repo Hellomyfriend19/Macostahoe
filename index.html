@@ -155,6 +155,13 @@
     z-index: 2147483647;
   }
   
+  #dock-glass-wrapper {
+    --glass-blend: overlay;
+    --glass-stroke: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.05) 40%, rgba(255,255,255,0) 60%, rgba(255,255,255,0.1) 100%);
+    --glass-shadow-blend: overlay;
+    --glass-shadow-opacity: 0.05;
+  }
+
   #dock-glass-wrapper .dock-container::before {
     display: none !important;
   }
@@ -346,21 +353,7 @@
     color: #e0e0e0;
   }
   
-  body.dark-mode #about-window {
-    background: rgba(30, 30, 30, 0.95);
-    color: #e0e0e0;
-  }
-  
-  body.dark-mode .about-footer {
-    background: rgba(0, 0, 0, 0.2);
-    border-top-color: rgba(255, 255, 255, 0.1);
-  }
-  
-  body.dark-mode .about-btn {
-    background: rgba(255, 255, 255, 0.1);
-    color: #e0e0e0;
-    border-color: rgba(255, 255, 255, 0.2);
-  }
+  /* Removed previous about-window dark styles to keep styles modular and defined in one place */
 
   body.dark-mode .settings-container, 
   body.dark-mode .app-window-content {
@@ -394,8 +387,11 @@
   }
   
   body.dark-mode .launchpad-search-input {
-    background: rgba(0, 0, 0, 0.5);
-    color: #fff;
+    background: transparent !important;
+    color: #fff !important;
+  }
+  body.dark-mode .launchpad-search-input::placeholder {
+    color: rgba(255, 255, 255, 0.65);
   }
   
   body.dark-mode .launchpad-titlebar,
@@ -423,8 +419,31 @@
     pointer-events: none;
   }
   
+  div.window:not(#about-window)::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.75) 0%, rgba(255, 255, 255, 0.75) 75%, rgba(255, 255, 255, 0.35) 100%);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    z-index: 10001;
+  }
   .window::after {
-    display: none !important;
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: 20002;
+    box-sizing: border-box;
+    border: 0.5px solid rgba(128, 128, 128, 0.85); /* 0.5px gray stroke 85% opacity */
+  }
+  body.dark-mode .window::after {
+    border-color: rgba(0, 0, 0, 0.85); /* 0.5px black stroke 85% opacity */
   }
   .window.interactive { pointer-events: auto; }
   .titlebar {
@@ -952,11 +971,12 @@
     background: transparent !important;
   }
   .launchpad-titlebar {
-    height: 52px;
+    height: 64px;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 0 20px;
+    justify-content: flex-start;
+    padding: 0 24px;
+    gap: 16px;
     font-size: 14px;
     font-weight: 600;
     color: #333;
@@ -964,23 +984,30 @@
     cursor: move;
   }
   .launchpad-titlebar img {
-    width: 30px;
-    height: 30px;
-    margin-right: 8px;
+    width: 36px;
+    height: 36px;
+    margin-right: 0px;
+    object-fit: contain;
   }
   .launchpad-search-input {
-    margin-left: 20px;
-    padding: 6px 14px;
-    border-radius: 14px;
-    border: 1px solid rgba(0,0,0,0.1);
-    background: rgba(255, 255, 255, 0.4);
-    color: #333;
+    background: transparent;
+    border: none;
     outline: none;
-    font-size: 13px;
-    width: 150px;
+    font-size: 20px;
+    font-weight: 600;
+    color: #333;
+    padding: 4px 0;
+    width: 400px;
+    font-family: inherit;
+    border-bottom: 2px solid transparent;
+    transition: border-color 0.2s ease-in-out;
+  }
+  .launchpad-search-input:focus {
+    border-bottom-color: rgba(0, 122, 255, 0.5);
   }
   .launchpad-search-input::placeholder {
-    color: rgba(0,0,0,0.5);
+    color: rgba(51, 51, 51, 0.65);
+    font-weight: 600;
   }
   .launchpad-content {
     flex: 1;
@@ -1446,14 +1473,16 @@
   .about-window {
     width: 300px;
     height: auto;
-    margin-left: -150px;
-    margin-top: -200px;
-    background: rgba(255, 255, 255, 0.15); /* More transparent, not dark color */
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    border-radius: 22px; /* More rounded as requested */
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
     z-index: 10000;
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.2s ease, transform 0.2s ease;
-    transform: scale(0.95);
+    transition: opacity 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transform: scale(0.85); /* Proper pop-in default */
   }
   .about-window.show {
     opacity: 1;
@@ -1465,31 +1494,31 @@
     border-bottom: none;
   }
   .about-content {
-    padding: 20px;
+    padding: 24px 20px 20px 20px;
     text-align: center;
-    color: #fff;
-    text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+    color: #1d1d1f;
+    text-shadow: none;
   }
   .about-logo {
-    width: 60px;
-    height: 60px;
+    width: 120px;
+    height: auto;
     margin-bottom: 10px;
   }
   .about-title {
-    font-size: 24px;
-    font-weight: 700;
-    margin: 0 0 5px 0;
-    letter-spacing: -0.5px;
-    color: #fff;
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0 0 2px 0;
+    letter-spacing: -0.2px;
+    color: #1d1d1f;
   }
-  .about-version {
-    font-size: 12px;
-    color: #aaa;
+  .about-subtitle {
+    font-size: 11px;
+    color: #86868b;
     margin: 0 0 15px 0;
   }
   .about-divider {
     height: 1px;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.08);
     margin: 15px 0;
   }
   .about-specs {
@@ -1499,29 +1528,80 @@
     line-height: 1.4;
   }
   .about-specs strong {
-    color: #fff;
-    font-weight: 700;
+    color: #1d1d1f;
+    font-weight: 600;
   }
   .about-specs span.spec-value {
-    color: #aaa;
+    color: #515154;
     font-weight: normal;
   }
   .about-footer {
     margin-top: 20px;
   }
   .about-btn {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: #fff;
-    border-radius: 4px;
-    padding: 4px 12px;
+    background: rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    color: #1d1d1f;
+    border-radius: 6px;
+    padding: 5px 16px;
     font-size: 12px;
+    font-weight: 500;
     cursor: pointer;
+    transition: background 0.15s ease;
   }
   .about-btn:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(0, 0, 0, 0.12);
+  }
+  .about-copyright {
+    margin-top: 15px;
+    font-size: 9px;
+    line-height: 1.4;
+    color: rgba(128, 128, 128, 0.75);
+    text-align: center;
+    font-weight: 400;
+  }
+
+  .about-window::after {
+    border-radius: 22px !important;
+  }
+
+  /* Dark Mode specific overrides for About window */
+  body.dark-mode .about-window {
+    background: rgba(30, 30, 30, 0.65) !important;
+    backdrop-filter: blur(40px) !important;
+    -webkit-backdrop-filter: blur(40px) !important;
+    color: #f5f5f7 !important;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+  }
+  body.dark-mode .about-content {
+    color: #f5f5f7 !important;
+    text-shadow: none !important;
+  }
+  body.dark-mode .about-title {
+    color: #fff !important;
+  }
+  body.dark-mode .about-subtitle {
+    color: rgba(255, 255, 255, 0.55) !important;
+  }
+  body.dark-mode .about-divider {
+    background: rgba(255, 255, 255, 0.12) !important;
+  }
+  body.dark-mode .about-specs strong {
+    color: #fff !important;
+  }
+  body.dark-mode .about-specs span.spec-value {
+    color: #a1a1a6 !important;
+  }
+  body.dark-mode .about-btn {
+    background: rgba(255, 255, 255, 0.15) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: #f5f5f7 !important;
+  }
+  body.dark-mode .about-btn:hover {
+    background: rgba(255, 255, 255, 0.25) !important;
+  }
+  body.dark-mode .about-copyright {
+    color: rgba(255, 255, 255, 0.45) !important;
   }
   
   .toggle-switch {
@@ -1570,6 +1650,383 @@
     border-color: #ccc !important;
     cursor: default;
   }
+
+  /* Control Center Styles */
+  .control-center-panel {
+    position: absolute;
+    top: 32px;
+    right: 10px;
+    width: 336px; /* 312px grid width + 24px padding */
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    padding: 12px;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    z-index: 999999;
+    color: #ffffff;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    transform: scale(0.9) translateY(-15px);
+    transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.3s linear;
+  }
+  .control-center-panel.show {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: scale(1) translateY(0);
+  }
+  body.dark-mode .control-center-panel {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    color: #ffffff;
+  }
+  .cc-grid {
+    position: relative;
+    width: 312px; /* 4 columns * 72px + 3 gaps * 8px = 312px */
+    height: 376px; /* 6 rows * 56px + 5 gaps * 8px = 376px */
+    background: transparent;
+  }
+  .cc-tile-glass {
+    transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+    background: transparent;
+    box-shadow: none;
+    border: none;
+  }
+  .cc-tile-inner {
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    cursor: pointer;
+    user-select: none;
+    color: #ffffff;
+    border-radius: inherit;
+    transition: background-color 0.2s ease, transform 0.15s ease;
+  }
+  body.dark-mode .cc-tile-inner {
+    color: #ffffff;
+  }
+  .cc-tile-inner.active .cc-tile-icon-wrapper {
+    background: #007aff !important;
+    color: #ffffff !important;
+    box-shadow: none;
+  }
+  body.dark-mode .cc-tile-inner.active .cc-tile-icon-wrapper {
+    background: #007aff !important;
+    color: #ffffff !important;
+  }
+  .cc-tile-icon-wrapper {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+  }
+  body.dark-mode .cc-tile-icon-wrapper {
+    background: rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+  }
+  .cc-tile-icon-wrapper svg {
+    width: 16px;
+    height: 16px;
+  }
+  .cc-tile-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .cc-tile-details {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .cc-tile-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: #ffffff;
+    line-height: 1.25;
+  }
+  body.dark-mode .cc-tile-title {
+    color: #ffffff;
+  }
+  .cc-tile-subtitle {
+    font-size: 9px;
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.2;
+    margin-top: 1px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  body.dark-mode .cc-tile-subtitle {
+    color: rgba(255, 255, 255, 0.7);
+  }
+  
+  /* Layout configurations inside 2x2 or wide tiles */
+  .cc-tile-2x2 {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    width: 100%;
+  }
+  .cc-tile-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+  }
+  
+  /* Sliders and custom content inside Tiles */
+  .cc-slider-container {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    width: 100%;
+    margin-top: auto;
+  }
+  .cc-slider-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+  }
+  .cc-slider {
+    flex: 1;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 14px;
+    border-radius: 7px;
+    background: rgba(0, 0, 0, 0.08);
+    outline: none;
+    overflow: hidden;
+    cursor: pointer;
+  }
+  body.dark-mode .cc-slider {
+    background: rgba(255, 255, 255, 0.15);
+  }
+  .cc-slider::-webkit-slider-runnable-track {
+    height: 14px;
+    background: transparent;
+  }
+  .cc-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: -407px 0 0 400px #007aff;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+  }
+  
+  /* Music tile specifics */
+  .cc-music-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    width: 100%;
+  }
+  .cc-music-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .cc-music-cover {
+    width: 42px;
+    height: 42px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #ff2d55, #ff5e3a);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 20px;
+    font-weight: bold;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  }
+  .cc-music-texts {
+    display: flex;
+    flex-direction: column;
+    width: calc(100% - 52px);
+  }
+  .cc-music-title {
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .cc-music-artist {
+    font-size: 9px;
+    color: #86868b;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  body.dark-mode .cc-music-artist {
+    color: #a1a1a6;
+  }
+  .cc-music-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 6px;
+    background: rgba(0, 0, 0, 0.03);
+    border-radius: 10px;
+    padding: 6px;
+  }
+  body.dark-mode .cc-music-controls {
+    background: rgba(255, 255, 255, 0.05);
+  }
+  .cc-music-btn {
+    background: transparent;
+    border: none;
+    color: inherit;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s ease;
+  }
+  .cc-music-btn svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  /* Control center footer & actions */
+  .cc-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 12px;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    padding-top: 10px;
+    gap: 8px;
+  }
+  body.dark-mode .cc-footer {
+    border-top-color: rgba(255, 255, 255, 0.08);
+  }
+  .cc-btn-action {
+    background: rgba(0, 0, 0, 0.05);
+    border: none;
+    border-radius: 8px;
+    padding: 6px 14px;
+    font-size: 11px;
+    font-weight: 500;
+    color: inherit;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s;
+    flex: 1;
+    text-align: center;
+  }
+  body.dark-mode .cc-btn-action {
+    background: rgba(255, 255, 255, 0.1);
+  }
+  
+  /* Customizer Sub-panel styles */
+  .cc-customizer {
+    margin-top: 10px;
+    background: rgba(0, 0, 0, 0.03);
+    border: 1px dashed rgba(0, 0, 0, 0.15);
+    border-radius: 12px;
+    padding: 10px;
+    display: none;
+    flex-direction: column;
+    gap: 8px;
+  }
+  body.dark-mode .cc-customizer {
+    background: rgba(255, 255, 255, 0.02);
+    border-color: rgba(255, 255, 255, 0.15);
+  }
+  .cc-customizer-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    font-weight: 600;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    padding-bottom: 4px;
+  }
+  body.dark-mode .cc-customizer-header {
+    border-bottom-color: rgba(255,255,255,0.08);
+  }
+  .cc-close-btn {
+    background: transparent;
+    border: none;
+    font-size: 14px;
+    cursor: pointer;
+    color: inherit;
+    line-height: 1;
+  }
+  .cc-form-group {
+    display: flex;
+    flex-direction: column;
+  }
+  .cc-form-group label {
+    font-size: 10px;
+    color: #86868b;
+    margin-bottom: 2px;
+    font-weight: 500;
+  }
+  body.dark-mode .cc-form-group label {
+    color: #a1a1a6;
+  }
+  .cc-form-group select, .cc-form-group input {
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 6px;
+    padding: 4px 8px;
+    font-size: 11px;
+    color: #1d1d1f;
+    outline: none;
+  }
+  body.dark-mode .cc-form-group select, body.dark-mode .cc-form-group input {
+    background: rgba(50, 50, 50, 0.9);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #f5f5f7;
+  }
+  .cc-form-row {
+    display: flex;
+    gap: 8px;
+  }
+  .cc-form-row .cc-form-group {
+    flex: 1;
+  }
+  .cc-btn-secondary {
+    background: rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 6px;
+    padding: 6px;
+    font-size: 10px;
+    font-weight: 500;
+    color: inherit;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.15s;
+  }
+  body.dark-mode .cc-btn-secondary {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
 </style>
 <script src="https://unpkg.com/html-docx-js@0.3.1/dist/html-docx.js"></script>
 
@@ -1590,6 +2047,8 @@
 
 <div class="bg-layer active" id="bg-layer-1" style="background-image: url('https://wsrv.nl/?url=https://512pixels.net/wp-content/uploads/2025/06/26-Tahoe-Light-6K-thumb.jpeg')"></div>
 <div class="bg-layer" id="bg-layer-2"></div>
+<div id="screen-brightness-dimmer" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: black; opacity: 0; z-index: 9999999; pointer-events: none; transition: opacity 0.15s ease;"></div>
+<div id="night-shift-overlay" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(255, 140, 0, 0.18); opacity: 0; z-index: 9999998; pointer-events: none; transition: opacity 0.3s ease;"></div>
 <div class="top-gradient-overlay" style="position: absolute; top: 0; left: 0; width: 100vw; height: 160px; background: linear-gradient(to bottom, rgba(0,0,0,0.5), transparent); mix-blend-mode: overlay; pointer-events: none; z-index: 5;"></div>
 <div class="top-gradient-normal" style="position: absolute; top: 0; left: 0; width: 100vw; height: 160px; background: linear-gradient(to bottom, rgba(0,0,0,0.05), transparent); pointer-events: none; z-index: 6;"></div>
 
@@ -1651,7 +2110,7 @@
     <div class="menu-item"><img src="https://github.com/Hellomyfriend19/Macostahoe/blob/main/battery.png?raw=true" style="height: 22px; filter: brightness(0) invert(1) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.15));" alt="Battery"></div>
     <div class="menu-item"><img src="https://github.com/Hellomyfriend19/Macostahoe/blob/main/wifi.png?raw=true" style="height: 22px; filter: brightness(0) invert(1) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.15));" alt="WiFi"></div>
     <div class="menu-item"><img src="https://github.com/Hellomyfriend19/Macostahoe/blob/main/language.png?raw=true" style="height: 22px; filter: brightness(0) invert(1) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.15));" alt="Search"></div>
-    <div class="menu-item"><img src="https://github.com/Hellomyfriend19/Macostahoe/blob/main/settings.png?raw=true" style="height: 22px; filter: brightness(0) invert(1) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.15));" alt="Control Center"></div>
+    <div class="menu-item" id="menubar-settings-btn"><img src="https://github.com/Hellomyfriend19/Macostahoe/blob/main/settings.png?raw=true" style="height: 22px; filter: brightness(0) invert(1) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.15));" alt="Control Center"></div>
     <div class="menu-item" id="menubar-time">Tue Mar 17 2:21 PM</div>
   </div>
   
@@ -1686,10 +2145,70 @@
 </glass-element>
 </div>
 
-<glass-element id="about-glass" style="position:absolute; top:50%; left:50%; margin-left:-150px; margin-top:-200px; z-index:10000; display:none;" radius="12" depth="6" blur="3" strength="45" background-color="rgba(255,255,255,0.15)" chromatic-aberration="1" auto-size>
-<div class="window about-window" id="about-window" style="position:relative; top:0; left:0; margin:0; background:transparent; backdrop-filter:none; -webkit-backdrop-filter:none; box-shadow:none; border-radius:0; opacity:1; pointer-events:auto; transform:none;">
-  <div class="titlebar">
-    <div class="traffic-lights">
+<!-- Control Center Panel -->
+<div id="control-center-panel" class="control-center-panel">
+  <!-- Grid container for customizing tiles -->
+  <div class="cc-grid" id="cc-grid">
+    <!-- Tiles populated via JS -->
+  </div>
+  
+  <!-- Footer actions -->
+  <div class="cc-footer">
+    <button class="cc-btn-action" id="cc-toggle-customizer">Customize Grid</button>
+    <button class="cc-btn-action" id="cc-copy-layout">Copy Layout JSON</button>
+  </div>
+
+  <!-- Customizer Editor Subpage -->
+  <div class="cc-customizer" id="cc-customizer-panel">
+    <div class="cc-customizer-header">
+      <span>Interactive Layout Editor</span>
+      <button id="cc-close-customizer" class="cc-close-btn">&times;</button>
+    </div>
+    <div class="cc-form-group">
+      <label for="cc-select-button">Active Tile:</label>
+      <select id="cc-select-button">
+        <!-- Filled by JS -->
+      </select>
+    </div>
+    <div class="cc-form-row">
+      <div class="cc-form-group">
+        <label for="cc-input-x">Grid X (Col 0-3):</label>
+        <input type="number" id="cc-input-x" min="0" max="3" value="0">
+      </div>
+      <div class="cc-form-group">
+        <label for="cc-input-y">Grid Y (Row 0-5):</label>
+        <input type="number" id="cc-input-y" min="0" max="5" value="0">
+      </div>
+    </div>
+    <div class="cc-form-row">
+      <div class="cc-form-group">
+        <label for="cc-input-w">Width (1-2 cells):</label>
+        <input type="number" id="cc-input-w" min="1" max="2" value="1">
+      </div>
+      <div class="cc-form-group">
+        <label for="cc-input-h">Height (1-2 cells):</label>
+        <input type="number" id="cc-input-h" min="1" max="2" value="1">
+      </div>
+    </div>
+    <div style="font-size: 9px; opacity: 0.7; font-weight: 500; text-align: center;">
+      Position updates instantly! Real-time collision-free rendering.
+    </div>
+    <div class="cc-form-row" style="gap: 6px;">
+      <button class="cc-btn-secondary" id="cc-reset-layout" style="flex:1;">Reset Defaults</button>
+      <button class="cc-btn-secondary" id="cc-import-layout" style="flex:1;">Paste JSON</button>
+    </div>
+    <div id="cc-export-text" style="display:none; margin-top:2px;">
+      <textarea id="cc-json-textarea" style="width:100%; height:75px; font-family:monospace; font-size:10px; padding:6px; border:1px solid rgba(0,0,0,0.15); border-radius:6px; resize:none; background: rgba(255,255,255,0.85); color: #1d1d1f;" readonly></textarea>
+      <div style="font-size:10px; color: #007aff; margin-top:2px; font-weight:600;" id="cc-copy-status">Copied layout to clipboard!</div>
+    </div>
+  </div>
+</div>
+
+
+<div id="about-glass" style="position:absolute; top:50%; left:50%; margin-left:-150px; margin-top:-240px; width:300px; height:auto; z-index:10000; display:none;">
+<div class="window about-window" id="about-window" style="position:relative; top:0; left:0; margin:0;">
+  <div class="titlebar" style="height: 32px; position: relative;">
+    <div class="traffic-lights" style="position: absolute; top: 16px; left: 16px; gap: 8px;">
       <div class="btn close" id="about-close"></div>
       <div class="btn minimize disabled"></div>
       <div class="btn maximize disabled"></div>
@@ -1697,7 +2216,8 @@
   </div>
   <div class="about-content">
     <img src="https://github.com/Hellomyfriend19/Macostahoe/blob/main/image%20(12).png?raw=true" class="about-logo" alt="Mac Pro" style="width: 120px; height: auto; margin-bottom: 10px;">
-    <h2 class="about-title" style="font-weight: 500; font-size: 20px; letter-spacing: 0.5px;">Mac Pro</h2>
+    <h2 class="about-title" style="font-weight: 500; font-size: 20px; letter-spacing: 0.5px; margin-bottom: 2px;">Mac Pro</h2>
+    <p class="about-subtitle">Retina 5K, 27-Inch, 2019</p>
     <div class="about-divider" style="margin-top: 15px;"></div>
     <p class="about-specs"><strong>Emulator:</strong> <span class="spec-value">Bubu</span></p>
     <p class="about-specs"><strong>Processor:</strong> <span class="spec-value">Apple M4 Max</span></p>
@@ -1707,10 +2227,13 @@
     <p class="about-specs"><strong>macOS:</strong> <span class="spec-value">26.0</span></p>
     <div class="about-footer">
       <button class="about-btn">More Info...</button>
+      <div class="about-copyright">
+        ™ and Ⓒ 1983-2026 Apple Inc.<br>All rights reserved
+      </div>
     </div>
   </div>
 </div>
-</glass-element>
+</div>
 
 <div class="window" id="finder-window">
   <div class="finder-container">
@@ -2021,7 +2544,7 @@
           <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
             <div style="display: flex; justify-content: space-between; align-items: center;">
               <span style="font-weight: 500; font-size: 14px;">Dock Depth</span>
-              <span id="dock-depth-value" style="font-size: 13px; opacity: 0.7;">2px</span>
+              <span id="dock-depth-value" style="font-size: 13px; opacity: 0.7;">3px</span>
             </div>
             <input type="range" id="dock-depth-slider" min="0" max="30" step="1" value="3" style="width: 100%;">
           </div>
@@ -2049,16 +2572,14 @@
 <glass-element id="launchpad-window" class="window" style="position:absolute; top:50%; left:50%; width:800px; height:500px; margin-left:-400px; margin-top:-250px; display:none; flex-direction:column; z-index:100; overflow:hidden;" radius="24" depth="8" blur="2" strength="60" background-color="rgba(255,255,255,0.25)" chromatic-aberration="1" width="800" height="500">
   <div class="window-inner" style="position:relative; width:100%; height:100%; display:flex; flex-direction:column; background:transparent; backdrop-filter:none; -webkit-backdrop-filter:none; box-shadow:none; border-radius:0; border:none; padding:0; overflow:hidden;">
     <div class="launchpad-titlebar">
-      <div style="display: flex; align-items: center; gap: 12px;">
-        <div class="traffic-lights" style="margin-right: 8px;">
-          <div class="btn close" id="launchpad-btn-close"></div>
-          <div class="btn minimize" id="launchpad-btn-minimize"></div>
-          <div class="btn maximize disabled" id="launchpad-btn-maximize"></div>
-        </div>
-        <img src="https://github.com/Hellomyfriend19/Macostahoe/blob/main/app%20store%20icon.png?raw=true" alt="Apps" style="width: 22px; height: 22px; margin-right: 4px;">
-        <span style="font-weight: 600; font-size: 13px; color: currentcolor;">Apps</span>
+      <!-- Hidden traffic lights to maintain script functionality -->
+      <div class="traffic-lights" style="display: none !important;">
+        <div class="btn close" id="launchpad-btn-close"></div>
+        <div class="btn minimize" id="launchpad-btn-minimize"></div>
+        <div class="btn maximize disabled" id="launchpad-btn-maximize"></div>
       </div>
-      <input type="text" id="launchpad-search" class="launchpad-search-input" placeholder="Search" autocomplete="off">
+      <img src="https://github.com/Hellomyfriend19/Macostahoe/blob/main/app%20store%20icon.png?raw=true" alt="Applications" style="width: 36px; height: 36px; margin-right: 0px; object-fit: contain;">
+      <input type="text" id="launchpad-search" class="launchpad-search-input" placeholder="Applications" autocomplete="off">
     </div>
     <div class="launchpad-content" id="launchpad-content"></div>
   </div>
@@ -2253,7 +2774,17 @@ class GlassElement extends HTMLElement {
             this.removeEventListener('force-liquid-glass', this._forceGlassListener);
         }
     }
-    attributeChangedCallback() { if (this.shadowRoot) this.render(); }
+    attributeChangedCallback(name, oldValue, newValue) {
+        if (oldValue === newValue) return;
+        if (this.shadowRoot) {
+            const glassBox = this.shadowRoot.querySelector('.glass-box');
+            if (glassBox && name !== 'auto-size') {
+                this.updateStyles();
+            } else {
+                this.render();
+            }
+        }
+    }
     get width() { return parseInt(this.getAttribute('width')) || 200; }
     get height() { return parseInt(this.getAttribute('height')) || 200; }
     get radius() { return parseInt(this.getAttribute('radius')) || 50; }
@@ -2283,25 +2814,59 @@ class GlassElement extends HTMLElement {
         let actualHeight = 0;
         
         if (this.autoSize) {
-            element.style.backdropFilter = 'none';
-            element.offsetWidth; // force style reflow
-            const rect = element.getBoundingClientRect();
-            actualWidth = Math.max(Math.ceil(rect.width), this.minWidth, 50);
-            actualHeight = Math.max(Math.ceil(rect.height), this.minHeight, 30);
-            if (rect.width === 0) {
-                actualWidth = this.width || 100;
-                actualHeight = this.height || 100;
+            // Read bounds without initial mutation if possible to reduce layout thrashing
+            const rectBefore = element.getBoundingClientRect();
+            let tempW = Math.max(Math.ceil(rectBefore.width), this.minWidth, 50);
+            let tempH = Math.max(Math.ceil(rectBefore.height), this.minHeight, 30);
+            if (rectBefore.width === 0) {
+                tempW = this.width || 100;
+                tempH = this.height || 100;
             }
+            actualWidth = tempW;
+            actualHeight = tempH;
         } else {
             element.style.height = '100%';
             element.style.width = '100%';
-            actualWidth = this.offsetWidth;
-            actualHeight = this.offsetHeight;
+            if (this.hasAttribute('width') && this.hasAttribute('height')) {
+                actualWidth = this.width;
+                actualHeight = this.height;
+            } else {
+                actualWidth = this.offsetWidth;
+                actualHeight = this.offsetHeight;
+            }
             if (actualWidth === 0 || actualHeight === 0) {
                 actualWidth = this.width;
                 actualHeight = this.height;
             }
         }
+
+        // Quantize bounds during active layout animations to prevent continuous SVG re-renders and twitching
+        let runWidth = actualWidth;
+        let runHeight = actualHeight;
+        const globAnimating = typeof isAnimating !== 'undefined' && isAnimating;
+        if (globAnimating) {
+            runWidth = Math.round(actualWidth / 40) * 40;
+            runHeight = Math.round(actualHeight / 40) * 40;
+            if (runWidth < 50) runWidth = 40;
+            if (runHeight < 30) runHeight = 40;
+        }
+
+        const cacheKey = [
+            runWidth,
+            runHeight,
+            this.radius,
+            this.depth,
+            this.strength,
+            this.chromaticAberration,
+            this.blur,
+            this.backgroundColor,
+            this.hasSVGFilterSupport
+        ].join('|');
+
+        if (this._lastCacheKey === cacheKey) {
+            return;
+        }
+        this._lastCacheKey = cacheKey;
 
         const filterId = 'displace-' + this._id;
 
@@ -2310,15 +2875,15 @@ class GlassElement extends HTMLElement {
             element.style.background = this.backgroundColor;
             element.style.boxShadow = 'none';
         } else {
-            const displacementMapUrl = getDisplacementMap({ height: actualHeight, width: actualWidth, radius: this.radius, depth: this.depth });
+            const displacementMapUrl = getDisplacementMap({ height: runHeight, width: runWidth, radius: this.radius, depth: this.depth });
             const filterContainer = this.shadowRoot.getElementById('svg-filter-container');
             if (filterContainer) {
                 filterContainer.innerHTML = `
-                <svg height="${actualHeight}" width="${actualWidth}" viewBox="0 0 ${actualWidth} ${actualHeight}" xmlns="http://www.w3.org/2000/svg">
+                <svg height="${runHeight}" width="${runWidth}" viewBox="0 0 ${runWidth} ${runHeight}" xmlns="http://www.w3.org/2000/svg">
                     <style>#${filterId} { color-interpolation-filters: sRGB; }</style>
                     <defs>
                         <filter id="${filterId}" x="-50%" y="-50%" width="200%" height="200%">
-                            <feImage x="0" y="0" height="${actualHeight}" width="${actualWidth}" href="${displacementMapUrl}" result="displacementMap" />
+                            <feImage x="0" y="0" height="${runHeight}" width="${runWidth}" href="${displacementMapUrl}" result="displacementMap" />
                             <feDisplacementMap in="SourceGraphic" in2="displacementMap" scale="${this.strength + this.chromaticAberration * 2}" xChannelSelector="R" yChannelSelector="G" />
                             <feColorMatrix type="matrix" values="1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0" result="displacedR" />
                             <feDisplacementMap in="SourceGraphic" in2="displacementMap" scale="${this.strength + this.chromaticAberration}" xChannelSelector="R" yChannelSelector="G" />
@@ -2338,6 +2903,7 @@ class GlassElement extends HTMLElement {
         }
     }
     render() {
+        this._lastCacheKey = null;
         this.shadowRoot.innerHTML = `
             <style>
                 :host { display: ${this.autoSize ? 'inline-block' : 'block'}; ${this.autoSize ? '' : 'width: 100%; height: 100%;'} }
@@ -2362,12 +2928,22 @@ class GlassElement extends HTMLElement {
                     inset: 0;
                     border-radius: inherit;
                     padding: 1px;
-                    background: linear-gradient(135deg, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0.1) 40%, rgba(255,255,255,0) 60%, rgba(255,255,255,0.2) 100%);
+                    background: var(--glass-stroke, radial-gradient(ellipse at center, rgba(255, 255, 255, 0.75) 0%, rgba(255, 255, 255, 0.75) 75%, rgba(255, 255, 255, 0.35) 100%));
                     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
                     -webkit-mask-composite: xor;
                     mask-composite: exclude;
                     pointer-events: none;
-                    mix-blend-mode: overlay;
+                    mix-blend-mode: var(--glass-blend, normal);
+                    z-index: 1;
+                }
+                 .glass-box::after {
+                    content: "";
+                    position: absolute;
+                    inset: 0;
+                    border-radius: inherit;
+                    box-shadow: inset 0 0 12px rgba(255, 255, 255, var(--glass-shadow-opacity, 0.25));
+                    pointer-events: none;
+                    mix-blend-mode: var(--glass-shadow-blend, normal);
                     z-index: 1;
                 }
                 .content {
@@ -2520,11 +3096,17 @@ customElements.define('glass-element', GlassElement);
 
       const isDarkMode = document.body.classList.contains('dark-mode');
       const fill = isDarkMode ? "rgba(0,0,0,0.7)" : "rgba(255,255,255,0.7)";
-      const stroke = isDarkMode ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.15)";
       
       tooltipSvg.innerHTML = `
+        <defs>
+          <radialGradient id="tooltip-stroke-grad" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#fff" stop-opacity="0.75" />
+            <stop offset="70%" stop-color="#fff" stop-opacity="0.75" />
+            <stop offset="100%" stop-color="#fff" stop-opacity="0.35" />
+          </radialGradient>
+        </defs>
         <clipPath id="tooltip-clip"><path d="${pathD}"/></clipPath>
-        <path d="${pathD}" fill="${fill}" stroke="${stroke}" stroke-width="2"/>
+        <path d="${pathD}" fill="${fill}" stroke="url(#tooltip-stroke-grad)" stroke-width="1"/>
       `;
       tooltip.style.clipPath = 'url(#tooltip-clip)';
       tooltip.style.webkitClipPath = 'url(#tooltip-clip)';
@@ -4736,9 +5318,12 @@ if (val === 'help') {
 
   document.getElementById('about-mac').addEventListener('click', () => {
     const aboutWindow = document.getElementById('about-window');
-    aboutWindow.classList.add('show');
     document.getElementById('about-glass').style.display = 'block';
-    aboutWindow.dispatchEvent(new Event('force-liquid-glass'));
+    
+    // Force a CSS reflow to ensure the browser registers the transition from scale(0.85) to scale(1)
+    void aboutWindow.offsetWidth;
+    
+    aboutWindow.classList.add('show');
     appleDropdown.classList.remove('show');
     document.getElementById('apple-dropdown-glass').style.display = 'none';
     appleMenuBtn.classList.remove('open');
@@ -4841,6 +5426,505 @@ if (val === 'help') {
       desktopIcons.style.pointerEvents = '';
     }
   });
+
+  // --- CONTROL CENTER LOGIC ---
+  const settingsBtn = document.getElementById('menubar-settings-btn');
+  const ccPanel = document.getElementById('control-center-panel');
+  const ccToggleCustomizer = document.getElementById('cc-toggle-customizer');
+  const ccCustomizerPanel = document.getElementById('cc-customizer-panel');
+  const ccCloseCustomizer = document.getElementById('cc-close-customizer');
+  const ccSelectButton = document.getElementById('cc-select-button');
+  const ccInputX = document.getElementById('cc-input-x');
+  const ccInputY = document.getElementById('cc-input-y');
+  const ccInputW = document.getElementById('cc-input-w');
+  const ccInputH = document.getElementById('cc-input-h');
+  const ccCopyLayoutBtn = document.getElementById('cc-copy-layout');
+  const ccResetLayoutBtn = document.getElementById('cc-reset-layout');
+  const ccImportLayoutBtn = document.getElementById('cc-import-layout');
+  const ccExportText = document.getElementById('cc-export-text');
+  const ccJsonTextarea = document.getElementById('cc-json-textarea');
+  const ccCopyStatus = document.getElementById('cc-copy-status');
+
+  let ccButtons = [
+    { id: "wifi", name: "Wi-Fi", subtitle: "HomeNetwork", icon: "wifi", x: 0, y: 0, w: 2, h: 1, active: true, type: "toggle" },
+    { id: "bluetooth", name: "Bluetooth", subtitle: "On", icon: "bluetooth", x: 0, y: 1, w: 2, h: 1, active: true, type: "toggle" },
+    { id: "airdrop", name: "AirDrop", subtitle: "Contacts Only", icon: "airdrop", x: 0, y: 2, w: 2, h: 1, active: true, type: "toggle" },
+    { id: "focus", name: "Focus", subtitle: "Do Not Disturb", icon: "focus", x: 2, y: 3, w: 1, h: 1, active: false, type: "toggle" },
+    { id: "brightness", name: "Brightness", subtitle: "70%", icon: "brightness", x: 0, y: 5, w: 4, h: 1, value: 70, type: "slider" },
+    { id: "music", name: "Music", subtitle: "Playing", icon: "music", x: 2, y: 0, w: 2, h: 2, active: true, type: "music", song: "Starboy", artist: "The Weeknd" },
+    { id: "sound", name: "Sound", subtitle: "80%", icon: "volume", x: 0, y: 4, w: 4, h: 1, value: 80, type: "slider" },
+    { id: "mirroring", name: "Screen Mirroring", subtitle: "Off", icon: "mirror", x: 3, y: 3, w: 1, h: 1, active: false, type: "toggle" },
+    { id: "battery", name: "Battery Status", subtitle: "84% (Charging)", icon: "battery", x: 2, y: 2, w: 1, h: 1, active: false, type: "info" },
+    { id: "keyboard", name: "Keyboard Light", subtitle: "Bright", icon: "keyboard", x: 1, y: 3, w: 1, h: 1, active: true, type: "toggle" },
+    { id: "dark_mode", name: "Dark Mode", subtitle: "Enabled", icon: "dark_mode", x: 0, y: 3, w: 1, h: 1, active: true, type: "toggle" },
+    { id: "night_shift", name: "Night Shift", subtitle: "Warm Tint", icon: "night_shift", x: 3, y: 2, w: 1, h: 1, active: false, type: "toggle" }
+  ];
+
+  const defaultCCButtons = JSON.parse(JSON.stringify(ccButtons));
+
+  const ccSongs = [
+    { title: "Starboy", artist: "The Weeknd" },
+    { title: "Blinding Lights", artist: "The Weeknd" },
+    { title: "Godberry", artist: "Kid Cudi" },
+    { title: "Day 'n' Nite", artist: "Kid Cudi" },
+    { title: "Sweater Weather", artist: "The Neighbourhood" }
+  ];
+  let currentSongIndex = 0;
+
+  function getCCIcon(iconName) {
+    const icons = {
+      wifi: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"></path><path d="M1.42 9a16 16 0 0 1 21.16 0"></path><path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path><line x1="12" y1="20" x2="12.01" y2="20"></line></svg>`,
+      bluetooth: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="6.5 6.5 17.5 17.5 12 23 12 1 17.5 6.5 6.5 17.5"></polygon></svg>`,
+      airdrop: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M12 2a15.3 15.3 0 0 1 4 7l-1.5 1.5M12 2a15.3 15.3 0 0 0-4 7l1.5 1.5M12 22a15.3 15.3 0 0 0 4-7l-1.5-1.5M12 22a15.3 15.3 0 0 1-4 7l1.5-1.5"></path></svg>`,
+      focus: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>`,
+      brightness: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>`,
+      volume: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>`,
+      mirror: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>`,
+      battery: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="6" width="18" height="12" rx="2" ry="2"></rect><line x1="23" y1="11" x2="23" y2="13"></line><line x1="5" y1="10" x2="5" y2="14"></line><line x1="9" y1="10" x2="9" y2="14"></line><line x1="13" y1="10" x2="13" y2="14"></line></svg>`,
+      keyboard: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2" ry="2"></rect><line x1="6" y1="8" x2="6" y2="8"></line><line x1="10" y1="8" x2="10" y2="8"></line><line x1="14" y1="8" x2="14" y2="8"></line><line x1="18" y1="8" x2="18" y2="8"></line><line x1="6" y1="12" x2="6" y2="12"></line><line x1="10" y1="12" x2="10" y2="12"></line><line x1="14" y1="12" x2="14" y2="12"></line><line x1="18" y1="12" x2="18" y2="12"></line><line x1="7" y1="16" x2="17" y2="16"></line></svg>`,
+      dark_mode: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path></svg>`,
+      night_shift: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path><circle cx="12" cy="12" r="4"></circle></svg>`,
+      music: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>`
+    };
+    return icons[iconName] || icons.wifi;
+  }
+
+  function toggleCCButton(btn) {
+    if (btn.type === "toggle" || btn.type === "info") {
+      btn.active = !btn.active;
+      if (btn.id === "wifi") {
+        btn.subtitle = btn.active ? "HomeNetwork" : "Searching...";
+      } else if (btn.id === "bluetooth") {
+        btn.subtitle = btn.active ? "On" : "Off";
+      } else if (btn.id === "airdrop") {
+        btn.subtitle = btn.active ? "Contacts Only" : "Off";
+      } else if (btn.id === "focus") {
+        btn.subtitle = btn.active ? "Do Not Disturb" : "Off";
+      } else if (btn.id === "mirroring") {
+        btn.subtitle = btn.active ? "Mirroring Screen" : "Off";
+      } else if (btn.id === "battery") {
+        btn.subtitle = btn.active ? "Low Power Mode" : "84% (Charging)";
+      } else if (btn.id === "keyboard") {
+        btn.subtitle = btn.active ? "Bright" : "Off";
+      } else if (btn.id === "dark_mode") {
+        btn.subtitle = btn.active ? "Enabled" : "Disabled";
+        const dmToggle = document.getElementById('dark-mode-toggle');
+        if (dmToggle) {
+          dmToggle.checked = btn.active;
+          dmToggle.dispatchEvent(new Event('change'));
+        }
+      } else if (btn.id === "night_shift") {
+        btn.subtitle = btn.active ? "Warm Tint" : "Off";
+        const nsOverlay = document.getElementById('night-shift-overlay');
+        if (nsOverlay) {
+          nsOverlay.style.opacity = btn.active ? "1" : "0";
+        }
+      }
+      renderCCGrid();
+    }
+  }
+
+  function handleCCSlider(id, value) {
+    const btn = ccButtons.find(b => b.id === id);
+    if (btn) {
+      btn.value = value;
+      btn.subtitle = `${value}%`;
+      const sub = document.querySelector(`.cc-tile-id-${id} .cc-tile-subtitle`);
+      if (sub) sub.textContent = btn.subtitle;
+
+      if (id === 'brightness') {
+        const dimmer = document.getElementById('screen-brightness-dimmer');
+        if (dimmer) {
+          const opacity = (100 - value) / 100 * 0.75;
+          dimmer.style.opacity = opacity;
+        }
+        
+        // Physically apply brightness filter to wallpaper, dock, and desktop icons
+        const wp1 = document.getElementById('bg-layer-1');
+        const wp2 = document.getElementById('bg-layer-2');
+        const dockEl = document.getElementById('dock');
+        const deskIcons = document.getElementById('desktop-icons');
+        const valDecimal = (value / 100).toFixed(2);
+        
+        if (wp1) wp1.style.filter = `brightness(${valDecimal})`;
+        if (wp2) wp2.style.filter = `brightness(${valDecimal})`;
+        if (dockEl) dockEl.style.filter = `brightness(${valDecimal})`;
+        if (deskIcons) deskIcons.style.filter = `brightness(${valDecimal})`;
+      }
+    }
+  }
+
+  function playNextSong() {
+    const btn = ccButtons.find(b => b.id === 'music');
+    if (btn) {
+      currentSongIndex = (currentSongIndex + 1) % ccSongs.length;
+      btn.song = ccSongs[currentSongIndex].title;
+      btn.artist = ccSongs[currentSongIndex].artist;
+      btn.active = true;
+      renderCCGrid();
+    }
+  }
+
+  function playPrevSong() {
+    const btn = ccButtons.find(b => b.id === 'music');
+    if (btn) {
+      currentSongIndex = (currentSongIndex - 1 + ccSongs.length) % ccSongs.length;
+      btn.song = ccSongs[currentSongIndex].title;
+      btn.artist = ccSongs[currentSongIndex].artist;
+      btn.active = true;
+      renderCCGrid();
+    }
+  }
+
+  function toggleMusicPlay(btn) {
+    btn.active = !btn.active;
+    btn.subtitle = btn.active ? "Playing" : "Paused";
+    renderCCGrid();
+  }
+
+  let currentCCDepth = 3.0;
+  let currentCCAnimationId = null;
+
+  function animateCCGlassDepth(startDepth, targetDepth, duration = 300) {
+    const startTime = performance.now();
+    if (currentCCAnimationId) {
+      cancelAnimationFrame(currentCCAnimationId);
+    }
+    
+    function step(now) {
+      const progress = Math.min((now - startTime) / duration, 1);
+      const easeProgress = 1 - Math.pow(1 - progress, 3); // easeOutCubic
+      
+      currentCCDepth = startDepth + (targetDepth - startDepth) * easeProgress;
+      updateAllTileDepths(currentCCDepth);
+      
+      if (progress < 1) {
+        currentCCAnimationId = requestAnimationFrame(step);
+      } else {
+        currentCCAnimationId = null;
+      }
+    }
+    currentCCAnimationId = requestAnimationFrame(step);
+  }
+
+  function updateAllTileDepths(depthVal) {
+    const glassTiles = document.querySelectorAll('.cc-tile-glass');
+    glassTiles.forEach(tile => {
+      tile.setAttribute('depth', depthVal.toFixed(3));
+      if (tile.updateStyles) {
+        tile.updateStyles();
+      }
+    });
+  }
+
+  function setCCPanelVisibility(show) {
+    if (show) {
+      ccPanel.classList.add('show');
+      currentCCDepth = 0.05;
+      renderCCGrid();
+      animateCCGlassDepth(0.05, 3.0, 300);
+    } else {
+      animateCCGlassDepth(3.0, 0.05, 300);
+      ccPanel.classList.remove('show');
+    }
+  }
+
+  function renderCCGrid() {
+    const gridContainer = document.getElementById('cc-grid');
+    if (!gridContainer) return;
+    gridContainer.innerHTML = '';
+
+    ccButtons.forEach(btn => {
+      // Sound & brightness overrides as 4 cell width
+      if (btn.id === 'sound' || btn.id === 'brightness') {
+        btn.w = 4;
+        btn.h = 1;
+      }
+
+      const cellW = 72;
+      const cellH = 56;
+      const gap = 8;
+
+      const leftPx = btn.x * (cellW + gap);
+      const topPx = btn.y * (cellH + gap);
+      const widthPx = btn.w * cellW + (btn.w - 1) * gap;
+      const heightPx = btn.h * cellH + (btn.h - 1) * gap;
+
+      const tile = document.createElement('glass-element');
+      tile.className = `cc-tile-glass cc-tile-id-${btn.id}`;
+      tile.setAttribute('radius', btn.id === 'music' ? '18' : '28');
+      tile.setAttribute('depth', currentCCDepth.toFixed(3));
+      tile.setAttribute('blur', '2');
+      tile.setAttribute('strength', '185');
+      tile.setAttribute('background-color', 'transparent');
+      tile.setAttribute('chromatic-aberration', '1');
+      tile.setAttribute('width', widthPx.toString());
+      tile.setAttribute('height', heightPx.toString());
+
+      tile.style.position = 'absolute';
+      tile.style.left = `${leftPx}px`;
+      tile.style.top = `${topPx}px`;
+      tile.style.width = `${widthPx}px`;
+      tile.style.height = `${heightPx}px`;
+      tile.style.cursor = 'pointer';
+
+      const inner = document.createElement('div');
+      inner.className = `cc-tile-inner ${btn.active ? 'active' : ''}`;
+
+      if (btn.type === 'slider') {
+        inner.innerHTML = `
+          <div class="cc-tile-header" style="width:100%; justify-content: flex-start; align-items: center; gap: 8px; padding: 8px 10px 4px 10px; box-sizing: border-box; display: flex;">
+            <div class="cc-tile-icon-wrapper" style="width: 24px; height: 24px;">${getCCIcon(btn.icon)}</div>
+            <div class="cc-tile-details" style="display: flex; flex-direction: column; justify-content: center;">
+              <div class="cc-tile-title" style="font-size: 10px;">${btn.name}</div>
+              <div class="cc-tile-subtitle" style="font-size: 9px; color: rgba(255, 255, 255, 0.7);">${btn.subtitle}</div>
+            </div>
+          </div>
+          <div class="cc-slider-container" style="padding: 0 10px 8px 10px; box-sizing: border-box; width: 100%; display: flex;">
+            <input type="range" class="cc-slider" min="10" max="100" value="${btn.value || 50}" data-id="${btn.id}" style="width: 100%;">
+          </div>
+        `;
+        const sliderInput = inner.querySelector('.cc-slider');
+        sliderInput.addEventListener('click', (e) => e.stopPropagation());
+        sliderInput.addEventListener('input', (e) => {
+          handleCCSlider(btn.id, parseInt(e.target.value));
+        });
+      } else if (btn.type === 'music') {
+        inner.innerHTML = `
+          <div class="cc-music-container" style="padding: 10px; height: 100%; display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box;">
+            <div class="cc-music-info">
+              <div class="cc-music-cover">♫</div>
+              <div class="cc-music-texts">
+                <div class="cc-music-title">${btn.song || ''}</div>
+                <div class="cc-music-artist">${btn.artist || ''}</div>
+              </div>
+            </div>
+            <div class="cc-music-controls">
+              <button class="cc-music-btn" id="cc-music-prev" title="Previous">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6L18 6v12z"/></svg>
+              </button>
+              <button class="cc-music-btn" id="cc-music-play" title="Play/Pause">
+                ${btn.active ? 
+                  `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>` : 
+                  `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>`
+                }
+              </button>
+              <button class="cc-music-btn" id="cc-music-next" title="Next">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6zm9-12v12h2V6z"/></svg>
+              </button>
+            </div>
+          </div>
+        `;
+        inner.addEventListener('click', (e) => e.stopPropagation());
+        inner.querySelector('#cc-music-prev').addEventListener('click', (e) => { e.stopPropagation(); playPrevSong(); });
+        inner.querySelector('#cc-music-play').addEventListener('click', (e) => { e.stopPropagation(); toggleMusicPlay(btn); });
+        inner.querySelector('#cc-music-next').addEventListener('click', (e) => { e.stopPropagation(); playNextSong(); });
+      } else {
+        if (btn.w === 1) {
+          tile.setAttribute('title', `${btn.name}: ${btn.subtitle}`);
+          inner.innerHTML = `
+            <div style="display: flex; align-items: center; justify-content: center; width: 100%; height: 100%;">
+              <div class="cc-tile-icon-wrapper" style="width: 32px; height: 32px; border-radius: 50%;">
+                ${getCCIcon(btn.icon)}
+              </div>
+            </div>
+          `;
+        } else {
+          inner.innerHTML = `
+            <div class="cc-tile-header" style="height:100%; width:100%; justify-content: flex-start; align-items: center; gap: 8px; padding: 10px; box-sizing: border-box; display: flex;">
+              <div class="cc-tile-icon-wrapper">${getCCIcon(btn.icon)}</div>
+              <div class="cc-tile-details" style="display: flex; flex-direction: column; justify-content: center;">
+                <div class="cc-tile-title">${btn.name}</div>
+                <div class="cc-tile-subtitle">${btn.subtitle}</div>
+              </div>
+            </div>
+          `;
+        }
+        
+        tile.addEventListener('click', () => {
+          toggleCCButton(btn);
+        });
+      }
+
+      tile.appendChild(inner);
+      gridContainer.appendChild(tile);
+    });
+  }
+
+  // Populate Customizer Dropdown
+  function populateCustomizerDropdown() {
+    if (!ccSelectButton) return;
+    ccSelectButton.innerHTML = '';
+    ccButtons.forEach(btn => {
+      const opt = document.createElement('option');
+      opt.value = btn.id;
+      opt.textContent = btn.name;
+      ccSelectButton.appendChild(opt);
+    });
+    updateCustomizerUI();
+  }
+
+  function updateCustomizerUI() {
+    const selectedId = ccSelectButton.value;
+    const btn = ccButtons.find(b => b.id === selectedId);
+    if (btn) {
+      ccInputX.value = btn.x;
+      ccInputY.value = btn.y;
+      ccInputW.value = btn.w;
+      ccInputH.value = btn.h;
+    }
+  }
+
+  // Listeners for customizer inputs
+  function handleCustomizerInputChange() {
+    const selectedId = ccSelectButton.value;
+    const btn = ccButtons.find(b => b.id === selectedId);
+    if (btn) {
+      btn.x = Math.max(0, Math.min(3, parseInt(ccInputX.value) || 0));
+      btn.y = Math.max(0, Math.min(5, parseInt(ccInputY.value) || 0));
+      btn.w = Math.max(1, Math.min(2, parseInt(ccInputW.value) || 1));
+      btn.h = Math.max(1, Math.min(2, parseInt(ccInputH.value) || 1));
+      renderCCGrid();
+    }
+  }
+
+  if (ccSelectButton) {
+    ccSelectButton.addEventListener('change', updateCustomizerUI);
+    ccInputX.addEventListener('input', handleCustomizerInputChange);
+    ccInputY.addEventListener('input', handleCustomizerInputChange);
+    ccInputW.addEventListener('input', handleCustomizerInputChange);
+    ccInputH.addEventListener('input', handleCustomizerInputChange);
+  }
+
+  if (settingsBtn) {
+    settingsBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpening = !ccPanel.classList.contains('show');
+      if (isOpening) {
+        setCCPanelVisibility(true);
+      } else {
+        setCCPanelVisibility(false);
+      }
+
+      // close other dropdowns
+      if (appleDropdown.classList.contains('show')) {
+        appleMenuBtn.classList.remove('open');
+        appleDropdown.classList.remove('show');
+        document.getElementById('apple-dropdown-glass').style.display = 'none';
+      }
+      if (fileDropdown.classList.contains('show')) {
+        fileMenuBtn.classList.remove('open');
+        fileDropdown.classList.remove('show');
+        document.getElementById('file-dropdown-glass').style.display = 'none';
+      }
+    });
+  }
+
+  if (ccToggleCustomizer) {
+    ccToggleCustomizer.addEventListener('click', () => {
+      if (ccCustomizerPanel.style.display === 'flex') {
+        ccCustomizerPanel.style.display = 'none';
+      } else {
+        ccCustomizerPanel.style.display = 'flex';
+        ccExportText.style.display = 'none';
+      }
+    });
+    ccCloseCustomizer.addEventListener('click', () => {
+      ccCustomizerPanel.style.display = 'none';
+    });
+  }
+
+  if (ccCopyLayoutBtn) {
+    ccCopyLayoutBtn.addEventListener('click', () => {
+      const layout = ccButtons.map(b => ({ id: b.id, name: b.name, x: b.x, y: b.y, w: b.w, h: b.h }));
+      const jsonStr = JSON.stringify(layout, null, 2);
+      
+      ccCustomizerPanel.style.display = 'flex';
+      ccExportText.style.display = 'block';
+      ccJsonTextarea.value = jsonStr;
+      
+      navigator.clipboard.writeText(jsonStr).then(() => {
+        ccCopyStatus.style.display = 'block';
+        ccCopyStatus.textContent = "Copied layout to clipboard!";
+        ccCopyStatus.style.opacity = '1';
+        setTimeout(() => { ccCopyStatus.style.opacity = '0'; }, 3000);
+      }).catch(err => {
+        ccCopyStatus.style.display = 'block';
+        ccCopyStatus.textContent = "Select from editor & copy manually!";
+      });
+    });
+  }
+
+  if (ccResetLayoutBtn) {
+    ccResetLayoutBtn.addEventListener('click', () => {
+      ccButtons = JSON.parse(JSON.stringify(defaultCCButtons));
+      renderCCGrid();
+      updateCustomizerUI();
+    });
+  }
+
+  if (ccImportLayoutBtn) {
+    ccImportLayoutBtn.addEventListener('click', () => {
+      const raw = prompt("Paste alignment/position layout JSON data here:");
+      if (raw) {
+        try {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed)) {
+            parsed.forEach(item => {
+              const btn = ccButtons.find(b => b.id === item.id);
+              if (btn) {
+                if (typeof item.x === 'number') btn.x = Math.max(0, Math.min(3, item.x));
+                if (typeof item.y === 'number') btn.y = Math.max(0, Math.min(5, item.y));
+                if (typeof item.w === 'number') btn.w = Math.max(1, Math.min(2, item.w));
+                if (typeof item.h === 'number') btn.h = Math.max(1, Math.min(2, item.h));
+              }
+            });
+            renderCCGrid();
+            updateCustomizerUI();
+            alert("Layout imported successfully!");
+          }
+        } catch (err) {
+          alert("Invalid layout JSON format.");
+        }
+      }
+    });
+  }
+
+  // Click outside to close Control Center
+  document.body.addEventListener('click', (e) => {
+    if (ccPanel && ccPanel.classList.contains('show')) {
+      if (!e.target.isConnected) return; // Ignore components detached by click handles
+      if (e.target.closest && e.target.closest('#cc-customizer-panel')) return;
+      if (!ccPanel.contains(e.target) && e.target !== settingsBtn && !settingsBtn.contains(e.target)) {
+        setCCPanelVisibility(false);
+      }
+    }
+  });
+
+  // Sync main dark mode check
+  const systemDarkModeToggle = document.getElementById('dark-mode-toggle');
+  if (systemDarkModeToggle) {
+    systemDarkModeToggle.addEventListener('change', (e) => {
+      const btn = ccButtons.find(b => b.id === 'dark_mode');
+      if (btn) {
+        btn.active = e.target.checked;
+        btn.subtitle = btn.active ? "Enabled" : "Disabled";
+        renderCCGrid();
+      }
+    });
+  }
+
+  // Sync initial dark mode state
+  const initialDark = document.body.classList.contains('dark-mode');
+  const dmBtn = ccButtons.find(b => b.id === 'dark_mode');
+  if (dmBtn) {
+    dmBtn.active = initialDark;
+    dmBtn.subtitle = initialDark ? "Enabled" : "Disabled";
+  }
+
+  // Initial runs
+  renderCCGrid();
+  populateCustomizerDropdown();
 
   animate();
 
