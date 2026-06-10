@@ -122,6 +122,7 @@
     transform: scale(0.95);
   }
   body {
+    --window-stroke: 0 0 0 0.5px rgba(128, 128, 128, 0.85);
     margin: 0;
     padding: 0;
     width: 100vw;
@@ -148,8 +149,9 @@
     box-shadow: 0 30px 60px rgba(0,0,0,0.4);
     display: flex;
     align-items: flex-end;
+
     gap: 10px;
-    height: 73px; /* 53px + 20px padding */
+    height: 68px; /* 48px + 20px padding */
     box-sizing: border-box;
     position: relative;
     z-index: 2147483647;
@@ -159,7 +161,11 @@
     --glass-blend: overlay;
     --glass-stroke: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.05) 40%, rgba(255,255,255,0) 60%, rgba(255,255,255,0.1) 100%);
     --glass-shadow-blend: overlay;
-    --glass-shadow-opacity: 0.05;
+    --glass-shadow-opacity: 0;
+  }
+
+  #dock-glass-wrapper .glass-box::after {
+    box-shadow: none !important;
   }
 
   #dock-glass-wrapper .dock-container::before {
@@ -221,6 +227,10 @@
     letter-spacing: 0.2px;
   }
   
+  body.dark-mode {
+    --window-stroke: 0 0 0 0.5px rgba(0, 0, 0, 0.85);
+  }
+
   body.dark-mode .dock-tooltip-text {
     color: #e0e0e0;
   }
@@ -234,8 +244,8 @@
   }
 
   .dock-icon {
-    width: 53px;
-    height: 53px;
+    width: 48px;
+    height: 48px;
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
@@ -409,7 +419,7 @@
     margin-top: -250px;
     background: #fff;
     border-radius: 24px;
-    box-shadow: 0 30px 80px rgba(0,0,0,0.6), 0 0 1px rgba(0,0,0,0.5);
+    box-shadow: 0 30px 80px rgba(0,0,0,0.6), var(--window-stroke);
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -419,7 +429,7 @@
     pointer-events: none;
   }
   
-  div.window:not(#about-window)::before {
+  div.window::before {
     content: "";
     position: absolute;
     inset: 0;
@@ -440,10 +450,10 @@
     pointer-events: none;
     z-index: 20002;
     box-sizing: border-box;
-    border: 0.5px solid rgba(128, 128, 128, 0.85); /* 0.5px gray stroke 85% opacity */
+    border: none;
   }
   body.dark-mode .window::after {
-    border-color: rgba(0, 0, 0, 0.85); /* 0.5px black stroke 85% opacity */
+    border: none;
   }
   .window.interactive { pointer-events: auto; }
   .titlebar {
@@ -453,7 +463,7 @@
     background: #f5f5f5;
     display: flex;
     align-items: center;
-    padding: 0 16px;
+    padding: 0 16px 0 14px;
     border-bottom: 1px solid #e0e0e0;
     user-select: none;
   }
@@ -474,7 +484,7 @@
     backdrop-filter: blur(2px);
     -webkit-backdrop-filter: blur(2px);
     border-radius: 24px;
-    box-shadow: 0 30px 80px rgba(0,0,0,0.6), inset 0 0 0 1px rgba(255, 255, 255, 0.3);
+    box-shadow: 0 30px 80px rgba(0,0,0,0.6), var(--window-stroke);
     display: none;
     flex-direction: row;
   }
@@ -612,14 +622,12 @@
     color: #fff;
     opacity: 0;
     pointer-events: none;
-    transform: scale(0.95);
-    transform-origin: top left;
-    transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+    display: none;
   }
   .context-menu.show {
     opacity: 1;
     pointer-events: auto;
-    transform: scale(1);
+    display: block;
   }
   .context-menu-item {
     padding: 4px 10px;
@@ -744,7 +752,7 @@
     backdrop-filter: blur(2px);
     -webkit-backdrop-filter: blur(2px);
     border-radius: 24px;
-    box-shadow: 0 30px 80px rgba(0,0,0,0.6), inset 0 0 0 1px rgba(255, 255, 255, 0.3);
+    box-shadow: 0 30px 80px rgba(0,0,0,0.6), var(--window-stroke);
     display: none;
     flex-direction: row;
     overflow: hidden;
@@ -957,10 +965,11 @@
 
   /* Launchpad Styles */
   #launchpad-window {
-    background: transparent !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-    box-shadow: none !important;
+    background: rgba(255, 255, 255, 0.45) !important;
+    backdrop-filter: blur(25px) !important;
+    -webkit-backdrop-filter: blur(25px) !important;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.6), var(--window-stroke) !important;
+    border-radius: 24px;
     display: none;
     flex-direction: column;
     overflow: hidden;
@@ -968,7 +977,9 @@
   }
   
   body.dark-mode #launchpad-window {
-    background: transparent !important;
+    background: rgba(30, 30, 30, 0.75) !important;
+    backdrop-filter: blur(35px) !important;
+    -webkit-backdrop-filter: blur(35px) !important;
   }
   .launchpad-titlebar {
     height: 64px;
@@ -1053,26 +1064,49 @@
 
   /* Terminal Styles */
   #terminal-window {
+    --term-radius: 17px;
+    --term-ribbon-height: 31px;
+    --term-lower-tint: rgba(33, 39, 52, 0.80);
+    --term-ribbon-tint: rgba(34, 39, 40, 0.70);
+    --term-blur: 40px;
+
     width: 600px;
     height: 400px;
-    background: transparent !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-    box-shadow: none !important;
-    border-radius: 24px;
+    background: var(--term-lower-tint) !important;
+    backdrop-filter: blur(var(--term-blur)) !important;
+    -webkit-backdrop-filter: blur(var(--term-blur)) !important;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.6), var(--window-stroke) !important;
+    border-radius: var(--term-radius) !important;
     display: none;
     flex-direction: column;
     overflow: hidden;
-    color: #fff;
+    color: var(--term-text-color, #fff) !important;
     font-family: 'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
     font-size: 13px;
+    --glass-shadow-opacity: 0;
+  }
+  #terminal-window::before,
+  #launchpad-window::before {
+    content: "" !important;
+    position: absolute !important;
+    inset: 0 !important;
+    border-radius: inherit !important;
+    padding: 1px !important;
+    background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.75) 0%, rgba(255, 255, 255, 0.75) 75%, rgba(255, 255, 255, 0.35) 100%) !important;
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0) !important;
+    -webkit-mask-composite: xor !important;
+    mask-composite: exclude !important;
+    pointer-events: none !important;
+    z-index: 1000 !important;
   }
   #terminal-window .titlebar {
-    background: transparent;
+    height: var(--term-ribbon-height) !important;
+    min-height: var(--term-ribbon-height) !important;
+    background: var(--term-ribbon-tint) !important;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   }
   #terminal-window .window-title {
-    color: #fff;
+    color: var(--term-text-color, #fff) !important;
     font-weight: 500;
   }
   .terminal-content {
@@ -1092,14 +1126,14 @@
     align-items: center;
   }
   .terminal-prompt {
-    color: #4af626;
+    color: #ffffff !important;
     margin-right: 8px;
     white-space: nowrap;
   }
   .terminal-input {
     background: transparent;
     border: none;
-    color: #fff;
+    color: var(--term-text-color, #fff) !important;
     font-family: inherit;
     font-size: inherit;
     flex: 1;
@@ -1119,7 +1153,7 @@
     background: #ECECEC;
     display: flex;
     align-items: center;
-    padding: 0 16px;
+    padding: 0 16px 0 14px;
     user-select: none;
     border-bottom: 1px solid #d1d1d1;
   }
@@ -1438,15 +1472,15 @@
     min-width: 220px;
     opacity: 0;
     pointer-events: none;
-    transform: translateY(-10px);
-    transition: opacity 0.15s ease, transform 0.15s ease;
     z-index: 99999;
     color: #fff;
+    display: none;
+    flex-direction: column;
   }
   .menu-dropdown.show {
     opacity: 1;
     pointer-events: auto;
-    transform: translateY(0);
+    display: flex;
   }
   .menu-dropdown-item {
     padding: 4px 10px;
@@ -1477,7 +1511,7 @@
     backdrop-filter: blur(25px);
     -webkit-backdrop-filter: blur(25px);
     border-radius: 22px; /* More rounded as requested */
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15), var(--window-stroke);
     z-index: 10000;
     opacity: 0;
     pointer-events: none;
@@ -1561,6 +1595,20 @@
     font-weight: 400;
   }
 
+  .about-window::before {
+    content: "" !important;
+    position: absolute !important;
+    inset: 0 !important;
+    border-radius: inherit !important;
+    padding: 1px !important;
+    background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.75) 0%, rgba(255, 255, 255, 0.75) 75%, rgba(255, 255, 255, 0.35) 100%) !important;
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0) !important;
+    -webkit-mask-composite: xor !important;
+    mask-composite: exclude !important;
+    pointer-events: none !important;
+    z-index: 10005 !important;
+    display: block !important;
+  }
   .about-window::after {
     border-radius: 22px !important;
   }
@@ -1571,7 +1619,7 @@
     backdrop-filter: blur(40px) !important;
     -webkit-backdrop-filter: blur(40px) !important;
     color: #f5f5f7 !important;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4), var(--window-stroke) !important;
   }
   body.dark-mode .about-content {
     color: #f5f5f7 !important;
@@ -1664,21 +1712,19 @@
     -webkit-backdrop-filter: none;
     padding: 12px;
     opacity: 0;
-    visibility: hidden;
     pointer-events: none;
-    display: flex;
+    display: none;
     flex-direction: column;
     z-index: 999999;
     color: #ffffff;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    transform: scale(0.9) translateY(-15px);
-    transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.3s linear;
+    transform: none;
   }
   .control-center-panel.show {
     opacity: 1;
-    visibility: visible;
     pointer-events: auto;
-    transform: scale(1) translateY(0);
+    transform: none;
+    display: flex;
   }
   body.dark-mode .control-center-panel {
     background: transparent;
@@ -2151,64 +2197,13 @@
   <div class="cc-grid" id="cc-grid">
     <!-- Tiles populated via JS -->
   </div>
-  
-  <!-- Footer actions -->
-  <div class="cc-footer">
-    <button class="cc-btn-action" id="cc-toggle-customizer">Customize Grid</button>
-    <button class="cc-btn-action" id="cc-copy-layout">Copy Layout JSON</button>
-  </div>
-
-  <!-- Customizer Editor Subpage -->
-  <div class="cc-customizer" id="cc-customizer-panel">
-    <div class="cc-customizer-header">
-      <span>Interactive Layout Editor</span>
-      <button id="cc-close-customizer" class="cc-close-btn">&times;</button>
-    </div>
-    <div class="cc-form-group">
-      <label for="cc-select-button">Active Tile:</label>
-      <select id="cc-select-button">
-        <!-- Filled by JS -->
-      </select>
-    </div>
-    <div class="cc-form-row">
-      <div class="cc-form-group">
-        <label for="cc-input-x">Grid X (Col 0-3):</label>
-        <input type="number" id="cc-input-x" min="0" max="3" value="0">
-      </div>
-      <div class="cc-form-group">
-        <label for="cc-input-y">Grid Y (Row 0-5):</label>
-        <input type="number" id="cc-input-y" min="0" max="5" value="0">
-      </div>
-    </div>
-    <div class="cc-form-row">
-      <div class="cc-form-group">
-        <label for="cc-input-w">Width (1-2 cells):</label>
-        <input type="number" id="cc-input-w" min="1" max="2" value="1">
-      </div>
-      <div class="cc-form-group">
-        <label for="cc-input-h">Height (1-2 cells):</label>
-        <input type="number" id="cc-input-h" min="1" max="2" value="1">
-      </div>
-    </div>
-    <div style="font-size: 9px; opacity: 0.7; font-weight: 500; text-align: center;">
-      Position updates instantly! Real-time collision-free rendering.
-    </div>
-    <div class="cc-form-row" style="gap: 6px;">
-      <button class="cc-btn-secondary" id="cc-reset-layout" style="flex:1;">Reset Defaults</button>
-      <button class="cc-btn-secondary" id="cc-import-layout" style="flex:1;">Paste JSON</button>
-    </div>
-    <div id="cc-export-text" style="display:none; margin-top:2px;">
-      <textarea id="cc-json-textarea" style="width:100%; height:75px; font-family:monospace; font-size:10px; padding:6px; border:1px solid rgba(0,0,0,0.15); border-radius:6px; resize:none; background: rgba(255,255,255,0.85); color: #1d1d1f;" readonly></textarea>
-      <div style="font-size:10px; color: #007aff; margin-top:2px; font-weight:600;" id="cc-copy-status">Copied layout to clipboard!</div>
-    </div>
-  </div>
 </div>
 
 
 <div id="about-glass" style="position:absolute; top:50%; left:50%; margin-left:-150px; margin-top:-240px; width:300px; height:auto; z-index:10000; display:none;">
 <div class="window about-window" id="about-window" style="position:relative; top:0; left:0; margin:0;">
   <div class="titlebar" style="height: 32px; position: relative;">
-    <div class="traffic-lights" style="position: absolute; top: 16px; left: 16px; gap: 8px;">
+    <div class="traffic-lights" style="position: absolute; top: 16px; left: 14px; gap: 8px;">
       <div class="btn close" id="about-close"></div>
       <div class="btn minimize disabled"></div>
       <div class="btn maximize disabled"></div>
@@ -2238,7 +2233,7 @@
 <div class="window" id="finder-window">
   <div class="finder-container">
     <div class="finder-sidebar-wrapper" id="finder-titlebar">
-      <div class="traffic-lights" style="padding-left: 18px; margin-bottom: 25px;">
+      <div class="traffic-lights" style="padding-left: 14px; margin-bottom: 25px;">
         <div class="btn close" id="btn-close"></div>
         <div class="btn minimize" id="btn-minimize"></div>
         <div class="btn maximize" id="btn-maximize"></div>
@@ -2388,15 +2383,18 @@
   </div>
 </div>
 
-<glass-element id="terminal-window" class="window" style="width:600px; height:400px; display:none; flex-direction:column; overflow:hidden;" radius="24" depth="8" blur="3" strength="60" background-color="rgba(15, 15, 15, 0.7)" chromatic-aberration="1" width="600" height="400">
+<div id="terminal-window" class="window" style="width:600px; height:400px; display:none; flex-direction:column; overflow:hidden;">
   <div class="window-inner" style="position:relative; width:100%; height:100%; display:flex; flex-direction:column; background:transparent; backdrop-filter:none; -webkit-backdrop-filter:none; box-shadow:none; border-radius:0; border:none; padding:0; overflow:hidden;">
-    <div class="titlebar" id="terminal-titlebar">
-      <div class="traffic-lights">
+    <div class="titlebar" id="terminal-titlebar" style="position: relative; display: flex; align-items: center;">
+      <div class="traffic-lights" style="margin-right: 0;">
         <div class="btn close" id="terminal-btn-close"></div>
         <div class="btn minimize" id="terminal-btn-minimize"></div>
         <div class="btn maximize" id="terminal-btn-maximize"></div>
       </div>
-      <div class="window-title">bash — 80x24</div>
+      <div style="position: absolute; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 8px; z-index: 1;" id="terminal-title-container">
+        <div style="width: 16px; height: 16px; background-image: url('https://www.macworld.com/wp-content/uploads/2023/12/folder-icon-macos.png'); background-size: contain; background-repeat: no-repeat; background-position: center; flex-shrink: 0;" id="terminal-folder-icon"></div>
+        <div class="window-title" style="margin: 0; color: var(--term-text-color, #fff) !important; font-weight: 500; font-size: 13px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; white-space: nowrap;">User – -zsh – 80x24</div>
+      </div>
     </div>
     <div class="terminal-content" id="terminal-content">
       <div class="terminal-line">Last login: <span id="term-time"></span> on console</div>
@@ -2406,12 +2404,12 @@
       </div>
     </div>
   </div>
-</glass-element>
+</div>
 
 <div class="window" id="settings-window">
   <div class="settings-container">
     <div class="settings-sidebar" id="settings-titlebar">
-      <div class="traffic-lights" style="padding-left: 18px; margin-bottom: 25px;">
+      <div class="traffic-lights" style="padding-left: 14px; margin-bottom: 25px;">
         <div class="btn close" id="settings-btn-close"></div>
         <div class="btn minimize" id="settings-btn-minimize"></div>
         <div class="btn maximize" id="settings-btn-maximize"></div>
@@ -2536,6 +2534,30 @@
           </div>
           <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
             <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-weight: 500; font-size: 14px;">Dock Size</span>
+              <span id="dock-size-value" style="font-size: 13px; opacity: 0.7;">Medium</span>
+            </div>
+            <input type="range" id="dock-size-slider" min="0" max="4" step="1" value="2" style="width: 100%;">
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-weight: 500; font-size: 14px;">Dock Corner Radius</span>
+              <span id="dock-radius-value" style="font-size: 13px; opacity: 0.7;">21px</span>
+            </div>
+            <input type="range" id="dock-radius-slider" min="0" max="50" step="1" value="21" style="width: 100%;">
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-weight: 500; font-size: 14px;">Dock Icons Universal Scaler</span>
+              <div style="display: flex; gap: 4px;">
+                <button id="dock-icon-scale-down" style="width: 24px; height: 24px; border-radius: 4px; border: 1px solid rgba(0,0,0,0.1); background: rgba(255,255,255,0.1); cursor: pointer; color: inherit;">-</button>
+                <span id="dock-icon-scale-value" style="font-size: 13px; opacity: 0.7; width: 40px; text-align: center; line-height: 24px;">95%</span>
+                <button id="dock-icon-scale-up" style="width: 24px; height: 24px; border-radius: 4px; border: 1px solid rgba(0,0,0,0.1); background: rgba(255,255,255,0.1); cursor: pointer; color: inherit;">+</button>
+              </div>
+            </div>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
               <span style="font-weight: 500; font-size: 14px;">Dock Magnification</span>
               <span id="dock-mag-value" style="font-size: 13px; opacity: 0.7;">2.0x</span>
             </div>
@@ -2563,13 +2585,63 @@
             <input type="range" id="dock-strength-slider" min="0" max="200" step="5" value="185" style="width: 100%;">
           </div>
         </div>
+
+        <h3 style="margin: 24px 0 12px 0; font-weight: 600; font-size: 16px;">Terminal Customization</h3>
+        <div style="background: rgba(0, 0, 0, 0.05); padding: 20px; border-radius: 12px; border: 1px solid rgba(0, 0, 0, 0.1); margin-bottom: 20px;">
+          <!-- Corner Radius -->
+          <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-weight: 500; font-size: 14px;">Corner Radius</span>
+              <span id="term-radius-value" style="font-size: 13px; opacity: 0.7;">17px</span>
+            </div>
+            <input type="range" id="term-radius-slider" min="0" max="48" step="1" value="17" style="width: 100%;">
+          </div>
+
+          <!-- Top Ribbon Height -->
+          <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-weight: 500; font-size: 14px;">Top Ribbon Height</span>
+              <span id="term-ribbon-height-value" style="font-size: 13px; opacity: 0.7;">31px</span>
+            </div>
+            <input type="range" id="term-ribbon-height-slider" min="15" max="60" step="1" value="31" style="width: 100%;">
+          </div>
+
+          <!-- Background Blur Customization -->
+          <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-weight: 500; font-size: 14px;">Background Blur Effect</span>
+              <span id="term-blur-value" style="font-size: 13px; opacity: 0.7;">40px</span>
+            </div>
+            <input type="range" id="term-blur-slider" min="0" max="100" step="1" value="40" style="width: 100%;">
+          </div>
+
+          <!-- Lower Window Color Tint -->
+          <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
+            <span style="font-weight: 500; font-size: 14px;">Lower Window Color Tint & Opacity</span>
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <input type="color" id="term-lower-color-picker" value="#212734" style="width: 48px; height: 32px; border: none; padding: 0; background: transparent; cursor: pointer; border-radius: 4px;">
+              <input type="range" id="term-lower-opacity-slider" min="0" max="1" step="0.05" value="0.8" style="flex: 1;">
+              <span id="term-lower-opacity-value" style="font-size: 13px; opacity: 0.7; min-width: 32px; text-align: right;">0.80</span>
+            </div>
+          </div>
+
+          <!-- Top Ribbon Color Tint -->
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <span style="font-weight: 500; font-size: 14px;">Top Ribbon Color Tint & Opacity</span>
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <input type="color" id="term-ribbon-color-picker" value="#222728" style="width: 48px; height: 32px; border: none; padding: 0; background: transparent; cursor: pointer; border-radius: 4px;">
+              <input type="range" id="term-ribbon-opacity-slider" min="0" max="1" step="0.05" value="0.7" style="flex: 1;">
+              <span id="term-ribbon-opacity-value" style="font-size: 13px; opacity: 0.7; min-width: 32px; text-align: right;">0.70</span>
+            </div>
+          </div>
+        </div>
       </div>
 
     </div>
   </div>
 </div>
 
-<glass-element id="launchpad-window" class="window" style="position:absolute; top:50%; left:50%; width:800px; height:500px; margin-left:-400px; margin-top:-250px; display:none; flex-direction:column; z-index:100; overflow:hidden;" radius="24" depth="8" blur="2" strength="60" background-color="rgba(255,255,255,0.25)" chromatic-aberration="1" width="800" height="500">
+<div id="launchpad-window" class="window" style="position:absolute; top:50%; left:50%; width:800px; height:500px; margin-left:-400px; margin-top:-250px; display:none; flex-direction:column; z-index:100; overflow:hidden;">
   <div class="window-inner" style="position:relative; width:100%; height:100%; display:flex; flex-direction:column; background:transparent; backdrop-filter:none; -webkit-backdrop-filter:none; box-shadow:none; border-radius:0; border:none; padding:0; overflow:hidden;">
     <div class="launchpad-titlebar">
       <!-- Hidden traffic lights to maintain script functionality -->
@@ -2583,10 +2655,10 @@
     </div>
     <div class="launchpad-content" id="launchpad-content"></div>
   </div>
-</glass-element>
+</div>
 
-<glass-element id="dock-glass-wrapper" style="position:fixed; bottom:20px; left:50%; transform:translateX(-50%); z-index:2147483647;" radius="24" depth="3" blur="2" strength="185" background-color="transparent" chromatic-aberration="1" auto-size>
-<div class="dock-container" id="dock" style="margin-bottom:0; background:transparent; backdrop-filter:none; -webkit-backdrop-filter:none; box-shadow:none; border-radius:0; position:relative;">
+<glass-element id="dock-glass-wrapper" style="position:fixed; bottom:20px; left:50%; transform:translateX(-50%); z-index:2147483647;" radius="21" depth="3" blur="2" strength="185" background-color="transparent" chromatic-aberration="1" auto-size>
+<div class="dock-container" id="dock" style="margin-bottom:0; background:transparent; backdrop-filter:none; -webkit-backdrop-filter:none; box-shadow:none; border-radius:21px; position:relative;">
   
   <div class="dock-tooltip" id="tooltip">
     <svg class="dock-tooltip-svg" id="tooltip-svg" style="pointer-events: none;"></svg>
@@ -2985,17 +3057,20 @@ customElements.define('glass-element', GlassElement);
     const lpGlass = document.getElementById('launchpad-window');
     if (lpGlass) {
       if (isDarkMode) {
-        lpGlass.setAttribute('background-color', 'rgba(30,30,30,0.85)');
+        lpGlass.style.setProperty('background', 'rgba(30, 30, 30, 0.75)', 'important');
       } else {
-        lpGlass.setAttribute('background-color', 'rgba(255,255,255,0.5)');
+        lpGlass.style.setProperty('background', 'rgba(255, 255, 255, 0.45)', 'important');
       }
     }
     const termGlass = document.getElementById('terminal-window');
     if (termGlass) {
+      termGlass.style.setProperty('--term-text-color', '#ffffff');
       if (isDarkMode) {
-        termGlass.setAttribute('background-color', 'rgba(10, 10, 10, 0.8)');
+        termGlass.style.setProperty('--term-lower-tint', 'rgba(33, 39, 52, 0.80)');
+        termGlass.style.setProperty('--term-ribbon-tint', 'rgba(34, 39, 40, 0.70)');
       } else {
-        termGlass.setAttribute('background-color', 'rgba(15, 15, 15, 0.7)');
+        termGlass.style.setProperty('--term-lower-tint', 'rgba(33, 39, 52, 0.80)');
+        termGlass.style.setProperty('--term-ribbon-tint', 'rgba(34, 39, 40, 0.70)');
       }
     }
   }
@@ -3023,7 +3098,7 @@ customElements.define('glass-element', GlassElement);
   const icons = Array.from(document.querySelectorAll('.dock-icon'));
   const tooltip = document.getElementById('tooltip');
 
-  let baseSize = 53;
+  let baseSize = 48;
   const distanceLimit = 220;
   
   // Spring physics parameters
@@ -3114,7 +3189,7 @@ customElements.define('glass-element', GlassElement);
       tooltipSvg.style.height = h + 'px';
       tooltip.style.width = w + 'px';
       tooltip.style.height = h + 'px';
-      tooltip.dispatchEvent(new Event('force-liquid-glass'));
+      tooltip.dispatchEvent(new Event('force-liquid-glass', { bubbles: true }));
     });
     icon.addEventListener('mouseleave', () => {
       if (hoveredIcon === icon) {
@@ -3154,9 +3229,9 @@ customElements.define('glass-element', GlassElement);
     win.style.zIndex = maxZ + 1;
     
     // Dispatch to the window itself
-    win.dispatchEvent(new Event('force-liquid-glass'));
+    win.dispatchEvent(new Event('force-liquid-glass', { bubbles: true }));
     // And to any children that might have liquid glass (like launchpad-search)
-    win.querySelectorAll('*').forEach(child => child.dispatchEvent(new Event('force-liquid-glass')));
+    win.querySelectorAll('*').forEach(child => child.dispatchEvent(new Event('force-liquid-glass', { bubbles: true })));
     
     setActiveApp(appName);
   }
@@ -3322,7 +3397,7 @@ customElements.define('glass-element', GlassElement);
       contextMenu.style.top = `${e.clientY}px`;
     }
     contextMenu.classList.add('show');
-    contextMenu.dispatchEvent(new Event('force-liquid-glass'));
+    contextMenu.dispatchEvent(new Event('force-liquid-glass', { bubbles: true }));
   });
 
   document.addEventListener('click', (e) => {
@@ -3344,7 +3419,7 @@ customElements.define('glass-element', GlassElement);
     if(cgw_rem) cgw_rem.style.display = 'none';
     newFolderModal.classList.add('show');
     const modalInner = newFolderModal.querySelector('.modal');
-    if(modalInner) modalInner.dispatchEvent(new Event('force-liquid-glass'));
+    if(modalInner) modalInner.dispatchEvent(new Event('force-liquid-glass', { bubbles: true }));
     newFolderInput.value = "untitled folder";
     newFolderInput.focus();
     newFolderInput.select();
@@ -3909,6 +3984,82 @@ customElements.define('glass-element', GlassElement);
     });
   }
 
+  // Helper to convert hex and opacity to rgba
+  function hexToRgbaStr(hex, alpha) {
+    hex = hex.replace('#', '');
+    if (hex.length === 3) {
+      hex = hex.split('').map(c => c + c).join('');
+    }
+    const r = parseInt(hex.substring(0,2), 16) || 0;
+    const g = parseInt(hex.substring(2,4), 16) || 0;
+    const b = parseInt(hex.substring(4,6), 16) || 0;
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  }
+
+  const termRadiusSlider = document.getElementById('term-radius-slider');
+  const termRadiusValue = document.getElementById('term-radius-value');
+  const termRibbonHeightSlider = document.getElementById('term-ribbon-height-slider');
+  const termRibbonHeightValue = document.getElementById('term-ribbon-height-value');
+  const termBlurSlider = document.getElementById('term-blur-slider');
+  const termBlurValue = document.getElementById('term-blur-value');
+
+  const termLowerColorPicker = document.getElementById('term-lower-color-picker');
+  const termLowerOpacitySlider = document.getElementById('term-lower-opacity-slider');
+  const termLowerOpacityValue = document.getElementById('term-lower-opacity-value');
+
+  const termRibbonColorPicker = document.getElementById('term-ribbon-color-picker');
+  const termRibbonOpacitySlider = document.getElementById('term-ribbon-opacity-slider');
+  const termRibbonOpacityValue = document.getElementById('term-ribbon-opacity-value');
+
+  const termWindow = document.getElementById('terminal-window');
+
+  function updateTerminalCustomization() {
+    if (!termWindow) return;
+
+    if (termRadiusSlider && termRadiusValue) {
+      const radius = termRadiusSlider.value;
+      termRadiusValue.textContent = radius + 'px';
+      termWindow.style.setProperty('--term-radius', radius + 'px');
+    }
+
+    if (termRibbonHeightSlider && termRibbonHeightValue) {
+      const height = termRibbonHeightSlider.value;
+      termRibbonHeightValue.textContent = height + 'px';
+      termWindow.style.setProperty('--term-ribbon-height', height + 'px');
+    }
+
+    if (termBlurSlider && termBlurValue) {
+      const blur = termBlurSlider.value;
+      termBlurValue.textContent = blur + 'px';
+      termWindow.style.setProperty('--term-blur', blur + 'px');
+    }
+
+    if (termLowerColorPicker && termLowerOpacitySlider && termLowerOpacityValue) {
+      const hex = termLowerColorPicker.value;
+      const opacity = parseFloat(termLowerOpacitySlider.value);
+      termLowerOpacityValue.textContent = opacity.toFixed(2);
+      termWindow.style.setProperty('--term-lower-tint', hexToRgbaStr(hex, opacity));
+    }
+
+    if (termRibbonColorPicker && termRibbonOpacitySlider && termRibbonOpacityValue) {
+      const hex = termRibbonColorPicker.value;
+      const opacity = parseFloat(termRibbonOpacitySlider.value);
+      termRibbonOpacityValue.textContent = opacity.toFixed(2);
+      termWindow.style.setProperty('--term-ribbon-tint', hexToRgbaStr(hex, opacity));
+    }
+  }
+
+  if (termRadiusSlider) termRadiusSlider.addEventListener('input', updateTerminalCustomization);
+  if (termRibbonHeightSlider) termRibbonHeightSlider.addEventListener('input', updateTerminalCustomization);
+  if (termBlurSlider) termBlurSlider.addEventListener('input', updateTerminalCustomization);
+  if (termLowerColorPicker) termLowerColorPicker.addEventListener('input', updateTerminalCustomization);
+  if (termLowerOpacitySlider) termLowerOpacitySlider.addEventListener('input', updateTerminalCustomization);
+  if (termRibbonColorPicker) termRibbonColorPicker.addEventListener('input', updateTerminalCustomization);
+  if (termRibbonOpacitySlider) termRibbonOpacitySlider.addEventListener('input', updateTerminalCustomization);
+
+  // Run once to initialize
+  updateTerminalCustomization();
+
   const darkModeToggle = document.getElementById('dark-mode-toggle');
   if (darkModeToggle) {
     darkModeToggle.addEventListener('change', (e) => {
@@ -4063,7 +4214,7 @@ customElements.define('glass-element', GlassElement);
   const dockSizeSlider = document.getElementById('dock-size-slider');
   const dockSizeValue = document.getElementById('dock-size-value');
   
-  const snapSizes = [28, 40, 53, 65, 76];
+  const snapSizes = [25, 36, 48, 59, 68];
   const snapLabels = ['Very Small', 'Small', 'Medium', 'Large', 'Extra Large'];
   
   if (dockSizeSlider) {
@@ -4079,6 +4230,101 @@ customElements.define('glass-element', GlassElement);
       });
       document.getElementById('dock').style.height = `${baseSize + 20}px`;
     });
+  }
+
+  const dockRadiusSlider = document.getElementById('dock-radius-slider');
+  const dockRadiusValue = document.getElementById('dock-radius-value');
+  const dockContainerObj = document.getElementById('dock');
+  const dockGlassWrapperElement = document.getElementById('dock-glass-wrapper');
+  if (dockRadiusSlider) {
+    // init
+    if (dockRadiusValue) dockRadiusValue.textContent = dockRadiusSlider.value + 'px';
+    if (dockContainerObj) dockContainerObj.style.borderRadius = dockRadiusSlider.value + 'px';
+    if (dockGlassWrapperElement) dockGlassWrapperElement.setAttribute('radius', dockRadiusSlider.value);
+    
+    dockRadiusSlider.addEventListener('input', (e) => {
+      const rad = e.target.value;
+      if (dockRadiusValue) dockRadiusValue.textContent = rad + 'px';
+      if (dockContainerObj) dockContainerObj.style.borderRadius = rad + 'px';
+      if (dockGlassWrapperElement) dockGlassWrapperElement.setAttribute('radius', rad);
+    });
+  }
+
+  window.dockIconScale = 0.95;
+  function updateDockIconScale() {
+    const scaleValueEl = document.getElementById('dock-icon-scale-value');
+    if (scaleValueEl) scaleValueEl.textContent = Math.round(window.dockIconScale * 100) + '%';
+    
+    document.querySelectorAll('.dock-icon').forEach(icon => {
+      let base = icon.dataset.baseBgSize;
+      if (!base) {
+         let bgSizeStr = icon.style.backgroundSize;
+         if (bgSizeStr && bgSizeStr.includes('%')) {
+            base = parseFloat(bgSizeStr) || 100;
+         } else {
+            base = 100; // contain is effectively 100% block logic for scaling inner icons
+         }
+         icon.dataset.baseBgSize = base;
+      }
+      
+      const newSize = (parseFloat(base) * window.dockIconScale) + '%';
+      const imgLayer = icon.querySelector('.icon-image-layer');
+      if (imgLayer) {
+        imgLayer.style.backgroundSize = newSize;
+      } else {
+        icon.style.backgroundSize = newSize;
+      }
+    });
+
+    document.querySelectorAll('.launchpad-item').forEach(lpItem => {
+       const imgLayer = lpItem.querySelector('.icon-image-layer');
+       if (imgLayer) {
+         let lpBase = lpItem.dataset.baseBgSize;
+         if (!lpBase) {
+            let bgSizeStr = imgLayer.style.backgroundSize;
+            if (bgSizeStr && bgSizeStr.includes('%')) {
+               lpBase = parseFloat(bgSizeStr) || 100;
+            } else {
+               lpBase = 100;
+            }
+            lpItem.dataset.baseBgSize = lpBase;
+         }
+         imgLayer.style.backgroundSize = (parseFloat(lpBase) * window.dockIconScale) + '%';
+       }
+    });
+  }
+  
+  // Apply initial scale on load
+  setTimeout(updateDockIconScale, 100);
+
+  const dockScaleDownBtn = document.getElementById('dock-icon-scale-down');
+  const dockScaleUpBtn = document.getElementById('dock-icon-scale-up');
+  
+  if (dockScaleDownBtn) {
+    dockScaleDownBtn.addEventListener('click', () => {
+      window.dockIconScale = Math.max(0.1, window.dockIconScale - 0.05);
+      updateDockIconScale();
+    });
+  }
+  if (dockScaleUpBtn) {
+    dockScaleUpBtn.addEventListener('click', () => {
+      window.dockIconScale = Math.min(2.0, window.dockIconScale + 0.05);
+      updateDockIconScale();
+    });
+  }
+
+  // Hook into dark-mode-icons-toggle logic so it preserves scale!
+  // Wait, we have an existing darkModeIconsToggle listener around here.
+  // Instead of replacing it directly, we will just call updateDockIconScale immediately 
+  // after it is clicked!
+  const existingDarkModeIconsToggle = document.getElementById('dark-mode-icons-toggle');
+  if (existingDarkModeIconsToggle) {
+     existingDarkModeIconsToggle.addEventListener('change', () => {
+       // reset base sizes to match the new light/dark mode variants!
+       document.querySelectorAll('.dock-icon, .launchpad-item').forEach(el => el.removeAttribute('data-base-bg-size'));
+       // Delay one frame to let original listener apply styles first
+       setTimeout(updateDockIconScale, 0);
+     });
   }
 
   const wallpaperItems = document.querySelectorAll('.wallpaper-item');
@@ -5136,7 +5382,23 @@ if (val === 'help') {
         Math.abs(wordState.velOpacity) > 0.005 || Math.abs(launchpadState.velOpacity) > 0.005 ||
         isTerminalDragging || isDraggingWindow || isDraggingSafari || isSettingsDragging || isWordDragging || isLaunchpadDragging;
 
-    if (isAnimating) {
+    // CC Depth Animation
+    if (Math.abs(currentCCDepth - targetCCDepth) > 0.001) {
+      const step = 0.08125;
+      if (currentCCDepth < targetCCDepth) {
+        currentCCDepth += step;
+        if (currentCCDepth > targetCCDepth) currentCCDepth = targetCCDepth;
+      } else {
+        currentCCDepth -= step;
+        if (currentCCDepth < targetCCDepth) currentCCDepth = targetCCDepth;
+      }
+      
+      document.querySelectorAll('.cc-tile-glass').forEach(tile => {
+        tile.setAttribute('depth', currentCCDepth.toFixed(3));
+      });
+    }
+
+    if (isAnimating || Math.abs(currentCCDepth - targetCCDepth) > 0.001) {
         window.dispatchEvent(new Event('liquid-glass-tick'));
     }
 
@@ -5169,7 +5431,7 @@ if (val === 'help') {
     document.getElementById('file-dropdown-glass').style.display = 'none';
     }
     if (appleDropdown.classList.contains('show')) {
-      appleDropdown.dispatchEvent(new Event('force-liquid-glass'));
+      appleDropdown.dispatchEvent(new Event('force-liquid-glass', { bubbles: true }));
     }
   });
 
@@ -5184,7 +5446,7 @@ if (val === 'help') {
     document.getElementById('apple-dropdown-glass').style.display = 'none';
     }
     if (fileDropdown.classList.contains('show')) {
-      fileDropdown.dispatchEvent(new Event('force-liquid-glass'));
+      fileDropdown.dispatchEvent(new Event('force-liquid-glass', { bubbles: true }));
     }
   });
 
@@ -5193,7 +5455,7 @@ if (val === 'help') {
     if (winState.isOpen && !winState.isMinimized && activeAppName === 'Finder') contextMenuTarget = 'finder';
     newFolderModal.classList.add('show');
     const modalInner = newFolderModal.querySelector('.modal');
-    if(modalInner) modalInner.dispatchEvent(new Event('force-liquid-glass'));
+    if(modalInner) modalInner.dispatchEvent(new Event('force-liquid-glass', { bubbles: true }));
     newFolderInput.value = "untitled folder";
     newFolderInput.focus();
     newFolderInput.select();
@@ -5253,7 +5515,7 @@ if (val === 'help') {
        fileMenuBtn.classList.remove('open');
        saveFileModal.classList.add('show');
        const modalInner = saveFileModal.querySelector('.modal');
-       if(modalInner) modalInner.dispatchEvent(new Event('force-liquid-glass'));
+       if(modalInner) modalInner.dispatchEvent(new Event('force-liquid-glass', { bubbles: true }));
        saveFileInput.value = "Document.docx";
        saveFileInput.focus();
        saveFileInput.select();
@@ -5430,20 +5692,6 @@ if (val === 'help') {
   // --- CONTROL CENTER LOGIC ---
   const settingsBtn = document.getElementById('menubar-settings-btn');
   const ccPanel = document.getElementById('control-center-panel');
-  const ccToggleCustomizer = document.getElementById('cc-toggle-customizer');
-  const ccCustomizerPanel = document.getElementById('cc-customizer-panel');
-  const ccCloseCustomizer = document.getElementById('cc-close-customizer');
-  const ccSelectButton = document.getElementById('cc-select-button');
-  const ccInputX = document.getElementById('cc-input-x');
-  const ccInputY = document.getElementById('cc-input-y');
-  const ccInputW = document.getElementById('cc-input-w');
-  const ccInputH = document.getElementById('cc-input-h');
-  const ccCopyLayoutBtn = document.getElementById('cc-copy-layout');
-  const ccResetLayoutBtn = document.getElementById('cc-reset-layout');
-  const ccImportLayoutBtn = document.getElementById('cc-import-layout');
-  const ccExportText = document.getElementById('cc-export-text');
-  const ccJsonTextarea = document.getElementById('cc-json-textarea');
-  const ccCopyStatus = document.getElementById('cc-copy-status');
 
   let ccButtons = [
     { id: "wifi", name: "Wi-Fi", subtitle: "HomeNetwork", icon: "wifi", x: 0, y: 0, w: 2, h: 1, active: true, type: "toggle" },
@@ -5582,49 +5830,14 @@ if (val === 'help') {
     renderCCGrid();
   }
 
-  let currentCCDepth = 3.0;
-  let currentCCAnimationId = null;
-
-  function animateCCGlassDepth(startDepth, targetDepth, duration = 300) {
-    const startTime = performance.now();
-    if (currentCCAnimationId) {
-      cancelAnimationFrame(currentCCAnimationId);
-    }
-    
-    function step(now) {
-      const progress = Math.min((now - startTime) / duration, 1);
-      const easeProgress = 1 - Math.pow(1 - progress, 3); // easeOutCubic
-      
-      currentCCDepth = startDepth + (targetDepth - startDepth) * easeProgress;
-      updateAllTileDepths(currentCCDepth);
-      
-      if (progress < 1) {
-        currentCCAnimationId = requestAnimationFrame(step);
-      } else {
-        currentCCAnimationId = null;
-      }
-    }
-    currentCCAnimationId = requestAnimationFrame(step);
-  }
-
-  function updateAllTileDepths(depthVal) {
-    const glassTiles = document.querySelectorAll('.cc-tile-glass');
-    glassTiles.forEach(tile => {
-      tile.setAttribute('depth', depthVal.toFixed(3));
-      if (tile.updateStyles) {
-        tile.updateStyles();
-      }
-    });
-  }
+  let currentCCDepth = 0.05;
+  let targetCCDepth = 0.05;
 
   function setCCPanelVisibility(show) {
+    targetCCDepth = show ? 2.0 : 0.05;
     if (show) {
       ccPanel.classList.add('show');
-      currentCCDepth = 0.05;
-      renderCCGrid();
-      animateCCGlassDepth(0.05, 3.0, 300);
     } else {
-      animateCCGlassDepth(3.0, 0.05, 300);
       ccPanel.classList.remove('show');
     }
   }
@@ -5751,51 +5964,6 @@ if (val === 'help') {
     });
   }
 
-  // Populate Customizer Dropdown
-  function populateCustomizerDropdown() {
-    if (!ccSelectButton) return;
-    ccSelectButton.innerHTML = '';
-    ccButtons.forEach(btn => {
-      const opt = document.createElement('option');
-      opt.value = btn.id;
-      opt.textContent = btn.name;
-      ccSelectButton.appendChild(opt);
-    });
-    updateCustomizerUI();
-  }
-
-  function updateCustomizerUI() {
-    const selectedId = ccSelectButton.value;
-    const btn = ccButtons.find(b => b.id === selectedId);
-    if (btn) {
-      ccInputX.value = btn.x;
-      ccInputY.value = btn.y;
-      ccInputW.value = btn.w;
-      ccInputH.value = btn.h;
-    }
-  }
-
-  // Listeners for customizer inputs
-  function handleCustomizerInputChange() {
-    const selectedId = ccSelectButton.value;
-    const btn = ccButtons.find(b => b.id === selectedId);
-    if (btn) {
-      btn.x = Math.max(0, Math.min(3, parseInt(ccInputX.value) || 0));
-      btn.y = Math.max(0, Math.min(5, parseInt(ccInputY.value) || 0));
-      btn.w = Math.max(1, Math.min(2, parseInt(ccInputW.value) || 1));
-      btn.h = Math.max(1, Math.min(2, parseInt(ccInputH.value) || 1));
-      renderCCGrid();
-    }
-  }
-
-  if (ccSelectButton) {
-    ccSelectButton.addEventListener('change', updateCustomizerUI);
-    ccInputX.addEventListener('input', handleCustomizerInputChange);
-    ccInputY.addEventListener('input', handleCustomizerInputChange);
-    ccInputW.addEventListener('input', handleCustomizerInputChange);
-    ccInputH.addEventListener('input', handleCustomizerInputChange);
-  }
-
   if (settingsBtn) {
     settingsBtn.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -5820,81 +5988,10 @@ if (val === 'help') {
     });
   }
 
-  if (ccToggleCustomizer) {
-    ccToggleCustomizer.addEventListener('click', () => {
-      if (ccCustomizerPanel.style.display === 'flex') {
-        ccCustomizerPanel.style.display = 'none';
-      } else {
-        ccCustomizerPanel.style.display = 'flex';
-        ccExportText.style.display = 'none';
-      }
-    });
-    ccCloseCustomizer.addEventListener('click', () => {
-      ccCustomizerPanel.style.display = 'none';
-    });
-  }
-
-  if (ccCopyLayoutBtn) {
-    ccCopyLayoutBtn.addEventListener('click', () => {
-      const layout = ccButtons.map(b => ({ id: b.id, name: b.name, x: b.x, y: b.y, w: b.w, h: b.h }));
-      const jsonStr = JSON.stringify(layout, null, 2);
-      
-      ccCustomizerPanel.style.display = 'flex';
-      ccExportText.style.display = 'block';
-      ccJsonTextarea.value = jsonStr;
-      
-      navigator.clipboard.writeText(jsonStr).then(() => {
-        ccCopyStatus.style.display = 'block';
-        ccCopyStatus.textContent = "Copied layout to clipboard!";
-        ccCopyStatus.style.opacity = '1';
-        setTimeout(() => { ccCopyStatus.style.opacity = '0'; }, 3000);
-      }).catch(err => {
-        ccCopyStatus.style.display = 'block';
-        ccCopyStatus.textContent = "Select from editor & copy manually!";
-      });
-    });
-  }
-
-  if (ccResetLayoutBtn) {
-    ccResetLayoutBtn.addEventListener('click', () => {
-      ccButtons = JSON.parse(JSON.stringify(defaultCCButtons));
-      renderCCGrid();
-      updateCustomizerUI();
-    });
-  }
-
-  if (ccImportLayoutBtn) {
-    ccImportLayoutBtn.addEventListener('click', () => {
-      const raw = prompt("Paste alignment/position layout JSON data here:");
-      if (raw) {
-        try {
-          const parsed = JSON.parse(raw);
-          if (Array.isArray(parsed)) {
-            parsed.forEach(item => {
-              const btn = ccButtons.find(b => b.id === item.id);
-              if (btn) {
-                if (typeof item.x === 'number') btn.x = Math.max(0, Math.min(3, item.x));
-                if (typeof item.y === 'number') btn.y = Math.max(0, Math.min(5, item.y));
-                if (typeof item.w === 'number') btn.w = Math.max(1, Math.min(2, item.w));
-                if (typeof item.h === 'number') btn.h = Math.max(1, Math.min(2, item.h));
-              }
-            });
-            renderCCGrid();
-            updateCustomizerUI();
-            alert("Layout imported successfully!");
-          }
-        } catch (err) {
-          alert("Invalid layout JSON format.");
-        }
-      }
-    });
-  }
-
   // Click outside to close Control Center
   document.body.addEventListener('click', (e) => {
     if (ccPanel && ccPanel.classList.contains('show')) {
       if (!e.target.isConnected) return; // Ignore components detached by click handles
-      if (e.target.closest && e.target.closest('#cc-customizer-panel')) return;
       if (!ccPanel.contains(e.target) && e.target !== settingsBtn && !settingsBtn.contains(e.target)) {
         setCCPanelVisibility(false);
       }
@@ -5924,7 +6021,6 @@ if (val === 'help') {
 
   // Initial runs
   renderCCGrid();
-  populateCustomizerDropdown();
 
   animate();
 
