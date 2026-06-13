@@ -18,6 +18,7 @@
 <meta name="description" content="A macOS Tahoe-inspired desktop UI built with HTML">
 <meta name="keywords" content="macOS, macOS clone, macOS Tahoe, web desktop, HTML CSS JavaScript UI, macos in html, tahoe in html, macostahoe,">
 <meta name="author" content="Hellomyfriend19">
+<script src="https://unpkg.com/lucide@latest"></script>
 <style>
   @font-face {
     font-family: 'SF Pro Display';
@@ -311,6 +312,7 @@
   body.dark-mode .finder-sidebar-wrapper {
     background-color: transparent !important;
     color: #e0e0e0;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1), 0 2px 10px rgba(0,0,0,0.02);
   }
 
   body.dark-mode .menubar {
@@ -502,18 +504,18 @@
   }
   
   .finder-sidebar-wrapper {
-    width: 270px;
+    width: 220px;
     background: rgba(255, 255, 255, 0.5); /* The rectangle inside */
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     display: flex;
     flex-direction: column;
-    padding: 18px 0 0 0;
+    padding: 12px 0 0 0;
     overflow: hidden;
-    margin: 15px 0 15px 15px;
+    margin: 9px 0 9px 9px;
     border-radius: 16px;
-    height: calc(100% - 30px);
-    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05), 0 2px 10px rgba(0,0,0,0.02);
+    height: calc(100% - 18px);
+    box-shadow: inset 0 0 0 2px rgba(255,255,255,0.5), 0 2px 10px rgba(0,0,0,0.02);
   }
   .sidebar-scroll-wrapper {
     overflow-y: auto;
@@ -777,18 +779,18 @@
     background: transparent;
   }
   .settings-sidebar {
-    width: 270px;
+    width: 220px;
     background: rgba(255, 255, 255, 0.5); /* The rectangle inside */
     backdrop-filter: blur(8px); /* A little background blur for the rectangle */
     -webkit-backdrop-filter: blur(8px);
     display: flex;
     flex-direction: column;
-    padding: 18px 0 0 0;
+    padding: 12px 0 0 0;
     overflow: hidden;
-    margin: 15px 0 15px 15px;
+    margin: 9px 0 9px 9px;
     border-radius: 16px;
-    height: calc(100% - 30px);
-    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05), 0 2px 10px rgba(0,0,0,0.02);
+    height: calc(100% - 18px);
+    box-shadow: inset 0 0 0 2px rgba(255,255,255,0.5), 0 2px 10px rgba(0,0,0,0.02);
   }
   .settings-search {
     display: flex;
@@ -1515,13 +1517,15 @@
     z-index: 10000;
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transition: opacity 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
     transform: scale(0.85); /* Proper pop-in default */
+    filter: blur(15px);
   }
   .about-window.show {
     opacity: 1;
     pointer-events: auto;
     transform: scale(1);
+    filter: blur(0px);
   }
   #about-window .titlebar {
     background: transparent;
@@ -2233,23 +2237,23 @@
 <div class="window" id="finder-window">
   <div class="finder-container">
     <div class="finder-sidebar-wrapper" id="finder-titlebar">
-      <div class="traffic-lights" style="padding-left: 14px; margin-bottom: 25px;">
+      <div class="traffic-lights" style="padding-left: 12px; margin-bottom: 25px;">
         <div class="btn close" id="btn-close"></div>
         <div class="btn minimize" id="btn-minimize"></div>
         <div class="btn maximize" id="btn-maximize"></div>
       </div>
       <div class="sidebar-scroll-wrapper">
         <div class="sidebar-section">Favorites</div>
-        <div class="sidebar-item" data-folder="Setapp">📄 Setapp</div>
-        <div class="sidebar-item" data-folder="Applications">📱 Applications</div>
-        <div class="sidebar-item" data-folder="OneDrive">☁️ OneDrive</div>
-        <div class="sidebar-item" data-folder="My Drive">☁️ My Drive</div>
-        <div class="sidebar-item" data-folder="Camera">📷 Camera</div>
-        <div class="sidebar-item" data-folder="Pixel Screenshots">🖼 Pixel Screenshots</div>
-        <div class="sidebar-item" data-folder="Downloads">⬇️ Downloads</div>
-        <div class="sidebar-item active" data-folder="Bubuvar">🏠 Bubuvar</div>
-        <div class="sidebar-item" data-folder="Desktop">🖥 Desktop</div>
-        <div class="sidebar-item" data-folder="Documents">📄 Documents</div>
+        <div class="sidebar-item" data-folder="Setapp"><i data-lucide="file-text" style="width: 16px; height: 16px;"></i> Setapp</div>
+        <div class="sidebar-item" data-folder="Applications"><i data-lucide="app-window" style="width: 16px; height: 16px;"></i> Applications</div>
+        <div class="sidebar-item" data-folder="OneDrive"><i data-lucide="cloud" style="width: 16px; height: 16px;"></i> OneDrive</div>
+        <div class="sidebar-item" data-folder="My Drive"><i data-lucide="cloud" style="width: 16px; height: 16px;"></i> My Drive</div>
+        <div class="sidebar-item" data-folder="Camera"><i data-lucide="camera" style="width: 16px; height: 16px;"></i> Camera</div>
+        <div class="sidebar-item" data-folder="Pixel Screenshots"><i data-lucide="image" style="width: 16px; height: 16px;"></i> Pixel Screenshots</div>
+        <div class="sidebar-item" data-folder="Downloads"><i data-lucide="download" style="width: 16px; height: 16px;"></i> Downloads</div>
+        <div class="sidebar-item active" data-folder="Bubuvar"><i data-lucide="home" style="width: 16px; height: 16px;"></i> Bubuvar</div>
+        <div class="sidebar-item" data-folder="Desktop"><i data-lucide="monitor" style="width: 16px; height: 16px;"></i> Desktop</div>
+        <div class="sidebar-item" data-folder="Documents"><i data-lucide="file-badge" style="width: 16px; height: 16px;"></i> Documents</div>
         <div class="sidebar-section" style="margin-top: 15px;">Tags</div>
         <div class="sidebar-item tag"><span class="dot" style="background:#007aff"></span>Screenshots</div>
         <div class="sidebar-item tag"><span class="dot" style="background:#af52de"></span>Writing</div>
@@ -2263,20 +2267,20 @@
     <div class="finder-right-area">
       <div class="finder-right-toolbar">
         <div class="nav-arrows" style="margin-left: 0; margin-right: 16px;">
-          <span id="nav-back">⟨</span>
-          <span id="nav-forward">⟩</span>
+          <span id="nav-back"><i data-lucide="chevron-left" style="width:16px;height:16px;"></i></span>
+          <span id="nav-forward"><i data-lucide="chevron-right" style="width:16px;height:16px;"></i></span>
         </div>
         <div class="window-title" id="window-title">Bubuvar</div>
         <div class="toolbar-icons">
-          <span class="view-btn active" data-view="grid">⊞</span>
-          <span class="view-btn" data-view="list">☰</span>
-          <span class="view-btn" data-view="column">◫</span>
-          <span class="view-btn" data-view="gallery">🖼</span>
+          <span class="view-btn active" data-view="grid"><i data-lucide="layout-grid" style="width: 14px; height: 14px;"></i></span>
+          <span class="view-btn" data-view="list"><i data-lucide="list" style="width: 14px; height: 14px;"></i></span>
+          <span class="view-btn" data-view="column"><i data-lucide="columns" style="width: 14px; height: 14px;"></i></span>
+          <span class="view-btn" data-view="gallery"><i data-lucide="gallery-horizontal" style="width: 14px; height: 14px;"></i></span>
           <span style="margin:0 4px;color:#ccc">|</span>
-          <span>⍗</span>
-          <span>🏷</span>
-          <span>⋯</span>
-          <span>🔍</span>
+          <span><i data-lucide="share" style="width: 14px; height: 14px;"></i></span>
+          <span><i data-lucide="tag" style="width: 14px; height: 14px;"></i></span>
+          <span><i data-lucide="more-horizontal" style="width: 14px; height: 14px;"></i></span>
+          <span><i data-lucide="search" style="width: 14px; height: 14px;"></i></span>
         </div>
       </div>
       <div class="content-area" id="content-area"></div>
@@ -2292,19 +2296,19 @@
       <div class="btn maximize" id="safari-btn-maximize"></div>
     </div>
     <div class="safari-nav-btns">
-      <div class="safari-nav-btn" id="safari-btn-back">⟨</div>
-      <div class="safari-nav-btn" id="safari-btn-forward">⟩</div>
-      <div class="safari-nav-btn" id="safari-btn-reload">↻</div>
+      <div class="safari-nav-btn" id="safari-btn-back"><i data-lucide="chevron-left" style="width:16px;height:16px;"></i></div>
+      <div class="safari-nav-btn" id="safari-btn-forward"><i data-lucide="chevron-right" style="width:16px;height:16px;"></i></div>
+      <div class="safari-nav-btn" id="safari-btn-reload"><i data-lucide="rotate-cw" style="width:16px;height:16px;"></i></div>
     </div>
     <div class="safari-address-container">
       <div class="safari-address-bar">
-        <span class="icon" id="safari-address-icon">🔒</span>
+        <span class="icon" id="safari-address-icon"><i data-lucide="lock" style="width:14px;height:14px;display:block"></i></span>
         <input type="text" id="safari-address-input" value="https://wikipedia.org" spellcheck="false" autocomplete="off">
       </div>
     </div>
     <div class="safari-toolbar-right">
-      <div class="btn">⍗</div>
-      <div class="btn">⊞</div>
+      <div class="btn"><i data-lucide="share" style="width:16px;height:16px;"></i></div>
+      <div class="btn"><i data-lucide="copy" style="width:16px;height:16px;"></i></div>
     </div>
   </div>
   <div class="safari-tabs" id="safari-tabs-container">
@@ -2317,7 +2321,7 @@
       <div class="safari-new-tab">
         <div class="safari-nt-title">Favorites</div>
         <div class="safari-nt-search">
-          <span>🔍</span>
+          <i data-lucide="search" style="width: 16px; height: 16px; color: #888;"></i>
           <input type="text" placeholder="Search or enter website name" id="safari-nt-search-input">
         </div>
         <div class="safari-nt-favorites">
@@ -2326,11 +2330,11 @@
             <div class="safari-nt-fav-title">Wikipedia</div>
           </div>
           <div class="safari-nt-fav" data-url="https://github.com">
-            <div class="safari-nt-fav-icon">🐙</div>
+            <div class="safari-nt-fav-icon"><i data-lucide="github"></i></div>
             <div class="safari-nt-fav-title">GitHub</div>
           </div>
           <div class="safari-nt-fav" data-url="https://youtube.com">
-            <div class="safari-nt-fav-icon" style="color:red">▶</div>
+            <div class="safari-nt-fav-icon" style="color:red"><i data-lucide="youtube"></i></div>
             <div class="safari-nt-fav-title">YouTube</div>
           </div>
           <div class="safari-nt-fav" data-url="https://google.com">
@@ -2342,7 +2346,7 @@
     </div>
 
     <div class="safari-overlay safari-error-page" id="safari-error-overlay">
-      <div class="safari-error-icon">⚠️</div>
+      <div class="safari-error-icon"><i data-lucide="triangle-alert" style="width:48px;height:48px;stroke-width:1;"></i></div>
       <div class="safari-error-title">Safari Can't Open the Page</div>
       <div class="safari-error-desc">The page you are trying to view cannot be shown because the site restricts embedding (X-Frame-Options or CSP).</div>
       <button class="safari-error-btn" id="safari-error-btn">Try in new tab</button>
@@ -2409,7 +2413,7 @@
 <div class="window" id="settings-window">
   <div class="settings-container">
     <div class="settings-sidebar" id="settings-titlebar">
-      <div class="traffic-lights" style="padding-left: 14px; margin-bottom: 25px;">
+      <div class="traffic-lights" style="padding-left: 12px; margin-bottom: 25px;">
         <div class="btn close" id="settings-btn-close"></div>
         <div class="btn minimize" id="settings-btn-minimize"></div>
         <div class="btn maximize" id="settings-btn-maximize"></div>
@@ -2435,7 +2439,7 @@
         </div>
         
         <div class="settings-sidebar-section">
-          <div class="settings-sidebar-item active" data-view="general"><img src="https://github.com/Hellomyfriend19/Macostahoe/blob/main/IMG_1713.PNG?raw=true"> General</div>
+          <div class="settings-sidebar-item active" data-view="general"><img src="https://static.wikia.nocookie.net/logopedia/images/a/ac/Settings_2025_II.png/revision/latest/scale-to-width-down/200?cb=20250707103149"> General</div>
           <div class="settings-sidebar-item" data-view="accessibility"><img src="https://www.apple.com/v/accessibility/q/images/vision/accessibility_shortcuts__f8j0izxyuxym_large_2x.png"> Accessibility</div>
           <div class="settings-sidebar-item" data-view="appearance"><img src="https://alfred.app/workflows/alfredapp/switch-appearance/icon.png"> Appearance</div>
           <div class="settings-sidebar-item" data-view="siri"><img src="https://github.com/Hellomyfriend19/Nice/blob/main/SIRI.png?raw=true"> Siri</div>
@@ -2566,9 +2570,9 @@
           <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
             <div style="display: flex; justify-content: space-between; align-items: center;">
               <span style="font-weight: 500; font-size: 14px;">Dock Depth</span>
-              <span id="dock-depth-value" style="font-size: 13px; opacity: 0.7;">3px</span>
+              <span id="dock-depth-value" style="font-size: 13px; opacity: 0.7;">1px</span>
             </div>
-            <input type="range" id="dock-depth-slider" min="0" max="30" step="1" value="3" style="width: 100%;">
+            <input type="range" id="dock-depth-slider" min="0" max="30" step="1" value="1" style="width: 100%;">
           </div>
           <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
             <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -2580,9 +2584,9 @@
           <div style="display: flex; flex-direction: column; gap: 8px;">
             <div style="display: flex; justify-content: space-between; align-items: center;">
               <span style="font-weight: 500; font-size: 14px;">Dock Strength</span>
-              <span id="dock-strength-value" style="font-size: 13px; opacity: 0.7;">185</span>
+              <span id="dock-strength-value" style="font-size: 13px; opacity: 0.7;">115</span>
             </div>
-            <input type="range" id="dock-strength-slider" min="0" max="200" step="5" value="185" style="width: 100%;">
+            <input type="range" id="dock-strength-slider" min="0" max="200" step="5" value="115" style="width: 100%;">
           </div>
         </div>
 
@@ -2657,7 +2661,7 @@
   </div>
 </div>
 
-<glass-element id="dock-glass-wrapper" style="position:fixed; bottom:20px; left:50%; transform:translateX(-50%); z-index:2147483647;" radius="21" depth="3" blur="2" strength="185" background-color="transparent" chromatic-aberration="1" auto-size>
+<glass-element id="dock-glass-wrapper" style="position:fixed; bottom:20px; left:50%; transform:translateX(-50%); z-index:2147483647;" radius="21" depth="1" blur="2" strength="115" background-color="transparent" chromatic-aberration="1" auto-size>
 <div class="dock-container" id="dock" style="margin-bottom:0; background:transparent; backdrop-filter:none; -webkit-backdrop-filter:none; box-shadow:none; border-radius:21px; position:relative;">
   
   <div class="dock-tooltip" id="tooltip">
@@ -2672,7 +2676,7 @@
   <div class="dock-icon" data-name="Apple Music" style="background-image: url('https://github.com/Hellomyfriend19/Nice/blob/main/apple%20music.png?raw=true'); background-size: 85%;"></div>
   <div class="dock-icon" data-name="Word" style="background-image: url('https://cdn.jim-nielsen.com/macos/512/microsoft-word-2025-11-20.png?rf=1024'); background-size: 100%;"></div>
   <div class="dock-icon" data-name="Instagram" style="background-image: url('https://user-images.githubusercontent.com/24403355/33800842-566c09d8-dd17-11e7-88ff-be7f30481d67.png'); background-size: 85%;"></div>
-  <div class="dock-icon" data-name="System Settings" style="background-image: url('https://github.com/Hellomyfriend19/Macostahoe/blob/main/IMG_1713.PNG?raw=true')"></div>
+  <div class="dock-icon" data-name="System Settings" style="background-image: url('https://static.wikia.nocookie.net/logopedia/images/a/ac/Settings_2025_II.png/revision/latest/scale-to-width-down/200?cb=20250707103149'); background-size: 85%;"></div>
   <div class="dock-icon" data-name="Trash" style="background-image: url('https://icons.iconarchive.com/icons/wwalczyszyn/iwindows/256/Recycle-Bin-icon.png')"></div>
 </div>
 </glass-element>
@@ -3350,9 +3354,9 @@ customElements.define('glass-element', GlassElement);
   const fileSystem = {
     'Desktop': [],
     'Bubuvar': [
-      { name: 'File 1.txt', date: 'Today', size: '12 KB', icon: '📄', type: 'file' },
+      { name: 'File 1.txt', date: 'Today', size: '12 KB', icon: '<i data-lucide="file-text" style="width: 24px; height: 24px; color: #555;"></i>', type: 'file' },
       { name: 'Folder A', date: 'Yesterday', size: '--', icon: FOLDER_ICON, type: 'folder' },
-      { name: 'Image.png', date: 'Mar 10', size: '2.4 MB', icon: '🖼', type: 'file' }
+      { name: 'Image.png', date: 'Mar 10', size: '2.4 MB', icon: '<i data-lucide="image" style="width: 24px; height: 24px; color: #555;"></i>', type: 'file' }
     ],
     'Documents': [],
     'Downloads': [],
@@ -3551,7 +3555,7 @@ customElements.define('glass-element', GlassElement);
       const items = fileSystem[currentFolder];
       
       if (items.length === 0) {
-        contentArea.innerHTML = `<div class="empty-state"><div class="icon">📁</div><div>No items</div></div>`;
+        contentArea.innerHTML = `<div class="empty-state"><div class="icon"><i data-lucide="folder-open" style="width: 48px; height: 48px; stroke-width: 1;"></i></div><div>No items</div></div>`;
       } else {
         if (currentView === 'grid' || currentView === 'gallery' || currentView === 'column') {
           let html = '<div class="grid-view">';
@@ -3565,7 +3569,7 @@ customElements.define('glass-element', GlassElement);
         } else if (currentView === 'list') {
           let html = '<table class="list-view"><tr><th>Name</th><th>Date Modified</th><th>Size</th></tr>';
           items.forEach(item => {
-            const iconDisplay = item.type === 'folder' ? '📁' : item.icon;
+            const iconDisplay = item.type === 'folder' ? '<i data-lucide="folder" style="width: 16px; height: 16px; margin-right: 4px; vertical-align: middle;"></i>' : item.icon;
             html += `<tr><td>${iconDisplay} ${item.name}</td><td>${item.date}</td><td>${item.size}</td></tr>`;
           });
           html += '</table>';
@@ -3573,6 +3577,7 @@ customElements.define('glass-element', GlassElement);
         }
       }
       contentArea.style.opacity = 1;
+      lucide.createIcons();
     }, 120);
   }
   sidebarItems.forEach(item => {
@@ -4151,8 +4156,8 @@ customElements.define('glass-element', GlassElement);
       darkSize: "85%"
     },
     'System Settings': {
-      light: "url('https://www.tonymacx86.com/attachments/systemsettings-tahoe-png.595625/')",
-      dark: "url('https://github.com/Hellomyfriend19/Nice/blob/main/Settings_2025_29.webp?raw=true')",
+      light: "url('https://static.wikia.nocookie.net/logopedia/images/a/ac/Settings_2025_II.png/revision/latest/scale-to-width-down/200?cb=20250707103149')",
+      dark: "url('https://static.wikia.nocookie.net/logopedia/images/a/ac/Settings_2025_II.png/revision/latest/scale-to-width-down/200?cb=20250707103149')",
       darkSize: "85%"
     }
   };
@@ -4732,10 +4737,10 @@ if (val === 'help') {
     let html = '';
     safariTabs.forEach(tab => {
       const isActive = tab.id === activeSafariTabId ? 'active' : '';
-      const favicon = tab.isNewTab ? '🧭' : `<img src="https://www.google.com/s2/favicons?domain=${tab.url}" class="favicon" onerror="this.style.display='none'">`;
+      const favicon = tab.isNewTab ? '<i data-lucide="compass" style="width:14px;height:14px;margin-right:6px;"></i>' : `<img src="https://www.google.com/s2/favicons?domain=${tab.url}" class="favicon" onerror="this.style.display='none'">`;
       html += `
         <div class="safari-tab ${isActive}" data-id="${tab.id}">
-          ${tab.isNewTab ? '<span style="margin-right:6px">🧭</span>' : favicon}
+          ${favicon}
           <span class="title">${tab.title}</span>
           <div class="close-btn" data-id="${tab.id}">×</div>
         </div>
@@ -4771,7 +4776,7 @@ if (val === 'help') {
     
     if (tab.isNewTab) {
       safariAddressInput.value = '';
-      safariAddressIcon.textContent = '🔍';
+      safariAddressIcon.innerHTML = '<i data-lucide="search" style="width:14px;height:14px;display:block"></i>';
       safariAddressIcon.classList.remove('spinner-anim');
       safariNewTabOverlay.classList.add('show');
       safariErrorOverlay.classList.remove('show');
@@ -4779,7 +4784,7 @@ if (val === 'help') {
       setTimeout(() => document.getElementById('safari-nt-search-input').focus(), 100);
     } else {
       safariAddressInput.value = tab.url;
-      safariAddressIcon.textContent = tab.url.startsWith('https') ? '🔒' : '🌐';
+      safariAddressIcon.innerHTML = tab.url.startsWith('https') ? '<i data-lucide="lock" style="width:14px;height:14px;display:block"></i>' : '<i data-lucide="globe" style="width:14px;height:14px;display:block"></i>';
       safariAddressIcon.classList.remove('spinner-anim');
       safariNewTabOverlay.classList.remove('show');
       safariErrorOverlay.classList.remove('show');
@@ -4789,20 +4794,23 @@ if (val === 'help') {
       }
     }
     renderSafariTabs();
+    lucide.createIcons();
   }
 
   function loadSafariUrl(url) {
-    safariAddressIcon.textContent = '↻';
+    safariAddressIcon.innerHTML = '<i data-lucide="refresh-cw" style="width:14px;height:14px;display:block"></i>';
     safariAddressIcon.classList.add('spinner-anim');
     safariErrorOverlay.classList.remove('show');
     safariIframe.src = url;
+    lucide.createIcons();
     
     // Fallback error detection (since cross-origin onerror is unreliable)
     // We clear any previous timeout
     if (safariIframe.loadTimeout) clearTimeout(safariIframe.loadTimeout);
     safariIframe.loadTimeout = setTimeout(() => {
       safariAddressIcon.classList.remove('spinner-anim');
-      safariAddressIcon.textContent = url.startsWith('https') ? '🔒' : '🌐';
+      safariAddressIcon.innerHTML = url.startsWith('https') ? '<i data-lucide="lock" style="width:14px;height:14px;display:block"></i>' : '<i data-lucide="globe" style="width:14px;height:14px;display:block"></i>';
+      lucide.createIcons();
     }, 2000);
   }
 
@@ -4810,7 +4818,8 @@ if (val === 'help') {
     const tab = getActiveTab();
     if (tab && !tab.isNewTab) {
       safariAddressIcon.classList.remove('spinner-anim');
-      safariAddressIcon.textContent = tab.url.startsWith('https') ? '🔒' : '🌐';
+      safariAddressIcon.innerHTML = tab.url.startsWith('https') ? '<i data-lucide="lock" style="width:14px;height:14px;display:block"></i>' : '<i data-lucide="globe" style="width:14px;height:14px;display:block"></i>';
+      lucide.createIcons();
       try {
         // Try to read title if same-origin (unlikely but good practice)
         if (safariIframe.contentDocument && safariIframe.contentDocument.title) {
@@ -5124,6 +5133,7 @@ if (val === 'help') {
 
     finderWindow.style.transform = `translate(${winState.dragX}px, ${winState.translateY + winClampedDragY}px) scale(${winState.scaleX}, ${winState.scaleY})`;
     finderWindow.style.opacity = winState.opacity;
+    finderWindow.style.filter = !winState.isOpen && winState.opacity < 0.99 ? `blur(${(1 - winState.opacity) * 15}px)` : 'none';
     finderWindow.style.width = `${winState.width}px`;
     finderWindow.style.height = `${winState.height}px`;
     finderWindow.style.marginLeft = `-${winState.width / 2}px`;
@@ -5171,6 +5181,7 @@ if (val === 'help') {
 
     safariWindow.style.transform = `translate(${safariState.dragX}px, ${safariState.translateY + safClampedDragY}px) scale(${safariState.scaleX}, ${safariState.scaleY})`;
     safariWindow.style.opacity = safariState.opacity;
+    safariWindow.style.filter = !safariState.isOpen && safariState.opacity < 0.99 ? `blur(${(1 - safariState.opacity) * 15}px)` : 'none';
     safariWindow.style.width = `${safariState.width}px`;
     safariWindow.style.height = `${safariState.height}px`;
     safariWindow.style.marginLeft = `-${safariState.width / 2}px`;
@@ -5205,6 +5216,7 @@ if (val === 'help') {
 
     launchpadWindow.style.transform = `translate(${launchpadState.dragX}px, ${launchpadState.dragY}px) scale(${launchpadState.scaleX}, ${launchpadState.scaleY})`;
     launchpadWindow.style.opacity = launchpadState.opacity;
+    launchpadWindow.style.filter = !launchpadState.isOpen && launchpadState.opacity < 0.99 ? `blur(${(1 - launchpadState.opacity) * 15}px)` : 'none';
 
     if (launchpadState.isOpen) {
       launchpadWindow.classList.add('interactive');
@@ -5248,6 +5260,7 @@ if (val === 'help') {
 
     terminalWindow.style.transform = `translate(${terminalState.dragX}px, ${terminalState.translateY + termClampedDragY}px) scale(${terminalState.scaleX}, ${terminalState.scaleY})`;
     terminalWindow.style.opacity = terminalState.opacity;
+    terminalWindow.style.filter = !terminalState.isOpen && terminalState.opacity < 0.99 ? `blur(${(1 - terminalState.opacity) * 15}px)` : 'none';
     terminalWindow.style.width = `${terminalState.width}px`;
     terminalWindow.style.height = `${terminalState.height}px`;
     terminalWindow.style.marginLeft = `-${terminalState.width / 2}px`;
@@ -5295,6 +5308,7 @@ if (val === 'help') {
 
     settingsWindow.style.transform = `translate(${settingsState.dragX}px, ${settingsState.translateY + setClampedDragY}px) scale(${settingsState.scaleX}, ${settingsState.scaleY})`;
     settingsWindow.style.opacity = settingsState.opacity;
+    settingsWindow.style.filter = !settingsState.isOpen && settingsState.opacity < 0.99 ? `blur(${(1 - settingsState.opacity) * 15}px)` : 'none';
     settingsWindow.style.width = `${settingsState.width}px`;
     settingsWindow.style.height = `${settingsState.height}px`;
     settingsWindow.style.marginLeft = `-${settingsState.width / 2}px`;
@@ -5343,6 +5357,7 @@ if (val === 'help') {
 
     wordWindow.style.transform = `translate(${wordState.dragX}px, ${wordState.translateY + wordClampedDragY}px) scale(${wordState.scaleX}, ${wordState.scaleY})`;
     wordWindow.style.opacity = wordState.opacity;
+    wordWindow.style.filter = !wordState.isOpen && wordState.opacity < 0.99 ? `blur(${(1 - wordState.opacity) * 15}px)` : 'none';
     wordWindow.style.width = `${wordState.width}px`;
     wordWindow.style.height = `${wordState.height}px`;
     wordWindow.style.marginLeft = `-${wordState.width / 2}px`;
@@ -6024,6 +6039,7 @@ if (val === 'help') {
 
   animate();
 
+  lucide.createIcons();
   </script>
 </body>
 </html>
