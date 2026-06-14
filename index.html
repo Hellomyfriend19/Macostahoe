@@ -5633,8 +5633,8 @@ if (val === 'help') {
         state.velocity *= 0.70;
         state.currentScale += state.velocity;
       } else {
-        // Completely bounce-free exponential interpolation for standard magnification (super smooth & responsive)
-        state.currentScale += (state.targetScale - state.currentScale) * 0.18;
+        // Fast, direct tracking of mouse position (no laggy smoothing)
+        state.currentScale += (state.targetScale - state.currentScale) * 0.65;
         state.velocity = 0;
       }
 
