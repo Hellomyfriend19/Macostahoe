@@ -271,6 +271,15 @@
     box-shadow: 0 0 2px rgba(0,0,0,0.5);
   }
 
+  .dock-icon.is-dragging-placeholder .icon-image-layer {
+    opacity: 0 !important;
+    visibility: hidden !important;
+  }
+
+  .dock-icon.is-dragging-placeholder::after {
+    display: none !important;
+  }
+
   /* Icon Appearance Options */
   .icon-image-layer {
     position: absolute;
@@ -296,7 +305,7 @@
   
   body.dark-mode #settings-window,
   body.dark-mode #finder-window {
-    background-color: rgba(30, 30, 30, 0.6) !important; /* Window background dark for liquid glass */
+    background-color: #1e1e1e !important; /* Window background dark for liquid glass */
     color: #e0e0e0;
   }
   
@@ -310,7 +319,7 @@
   
   body.dark-mode .settings-sidebar,
   body.dark-mode .finder-sidebar-wrapper {
-    background-color: transparent !important;
+    background-color: #252525 !important;
     color: #e0e0e0;
     box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1), 0 2px 10px rgba(0,0,0,0.02);
   }
@@ -608,43 +617,108 @@
     display: inline-block;
   }
 
-  /* Context Menu */
-  .context-menu {
+  /* Context Menu CSS Variables */
+  :root {
+    --context-menu-bg: rgba(255, 255, 255, 0.76);
+    --context-menu-color: #1d1d1f;
+    --context-menu-item-hover-bg: #007aff;
+    --context-menu-item-hover-color: #ffffff;
+    --context-menu-divider-bg: rgba(0, 0, 0, 0.12);
+    --shutdown-modal-bg: rgba(255, 255, 255, 0.42);
+  }
+  body.dark-mode {
+    --context-menu-bg: rgba(45, 45, 45, 0.7);
+    --context-menu-color: #f5f5f7;
+    --context-menu-item-hover-bg: #007aff;
+    --context-menu-item-hover-color: #ffffff;
+    --context-menu-divider-bg: rgba(255, 255, 255, 0.15);
+    --shutdown-modal-bg: rgba(40, 40, 40, 0.48);
+  }
+
+  /* Glass Dropdowns and Context Menu Styling */
+  #context-menu-glass,
+  #apple-dropdown-glass,
+  #file-dropdown-glass {
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.15), 0 4px 12px rgba(0, 0, 0, 0.08);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    overflow: hidden;
+  }
+  body.dark-mode #context-menu-glass,
+  body.dark-mode #apple-dropdown-glass,
+  body.dark-mode #file-dropdown-glass {
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 20px 48px rgba(0, 0, 0, 0.45), 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+
+  .context-menu,
+  .menu-dropdown {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     position: fixed;
-    background: rgba(255, 255, 255, 0.15); /* Match about window transparency */
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 8px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-    padding: 6px;
-    min-width: 200px;
+    background: transparent;
+    padding: 5px;
+    min-width: 180px;
     z-index: 100000;
-    font-size: 13px;
-    color: #fff;
+    color: var(--context-menu-color) !important;
     opacity: 0;
     pointer-events: none;
     display: none;
+    flex-direction: column;
   }
-  .context-menu.show {
+  .context-menu.show,
+  .menu-dropdown.show {
     opacity: 1;
     pointer-events: auto;
-    display: block;
+    display: flex;
   }
-  .context-menu-item {
-    padding: 4px 10px;
+  .context-menu-item,
+  .menu-dropdown-item {
+    display: flex;
+    align-items: center;
+    padding: 4px 8px; /* Slightly tighter as requested */
+    margin: 1px 0;
     cursor: pointer;
-    border-radius: 4px;
-    color: #fff;
+    border-radius: 7px; /* Elegant roundedness as requested */
+    color: var(--context-menu-color) !important;
+    font-size: 12.5px; /* Slightly smaller as requested */
+    font-weight: 450;
+    line-height: 1.4;
+    transition: background 0.1s ease, color 0.1s ease;
   }
-  .context-menu-item:hover {
-    background: #007aff;
-    color: white;
+  .context-menu-item:hover,
+  .menu-dropdown-item:hover {
+    background: var(--context-menu-item-hover-bg) !important;
+    color: var(--context-menu-item-hover-color) !important;
   }
-  .context-menu-divider {
+  .context-menu-item:hover .ctx-arrow,
+  .menu-dropdown-item:hover .ctx-arrow,
+  .context-menu-item:hover .arrow,
+  .menu-dropdown-item:hover .arrow {
+    color: #ffffff !important;
+  }
+  .context-menu-divider,
+  .menu-dropdown-divider {
     height: 1px;
-    background: rgba(255, 255, 255, 0.1);
-    margin: 4px 0;
+    background: var(--context-menu-divider-bg);
+    margin: 4px 6px;
+  }
+  .ctx-icon-wrapper {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px; /* Slightly smaller as requested */
+    height: 18px;
+    margin-right: 6px;
+    flex-shrink: 0;
+  }
+  .ctx-text {
+    flex: 1;
+  }
+  .ctx-icon-wrapper i, .ctx-icon-wrapper svg {
+    width: 13px; /* Slightly smaller as requested */
+    height: 13px;
+    stroke-width: 2.2;
+    display: block;
   }
 
   /* Modal */
@@ -730,6 +804,84 @@
     background: #007aff;
     color: white;
     border-color: #0062cc;
+  }
+
+  /* Shut Down Modal Styles */
+  #shutdown-confirm-modal {
+    background: transparent !important;
+    pointer-events: none !important;
+  }
+
+  #shutdown-glass-wrapper {
+    pointer-events: auto !important;
+    cursor: default;
+  }
+
+  .shutdown-btn {
+    padding: 5px 16px;
+    min-width: 90px;
+    height: 30px;
+    border-radius: 9999px;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    font-size: 13px;
+    font-weight: 400;
+    cursor: pointer;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    outline: none;
+    transition: background 0.12s, border-color 0.12s, box-shadow 0.12s, color 0.12s;
+  }
+  
+  #shutdown-cancel-btn {
+    background: rgba(0, 0, 0, 0.05);
+    color: #1d1d1f;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+  }
+  #shutdown-cancel-btn:hover {
+    background: rgba(0, 0, 0, 0.08);
+  }
+  
+  #shutdown-confirm-btn.selected-state {
+    background: #007aff !important;
+    color: #ffffff !important;
+    border: 1px solid #0056b3 !important;
+    box-shadow: 0 0 0 1px #007aff !important;
+  }
+  #shutdown-confirm-btn.selected-state:hover {
+    background: #006ddb !important;
+  }
+  
+  #shutdown-confirm-btn:not(.selected-state) {
+    background: rgba(0, 0, 0, 0.05) !important;
+    color: #1d1d1f !important;
+    border: 1px solid rgba(0, 0, 0, 0.12) !important;
+    box-shadow: none !important;
+  }
+  #shutdown-confirm-btn:not(.selected-state):hover {
+    background: rgba(0, 0, 0, 0.08) !important;
+  }
+  
+  body.dark-mode .shutdown-btn {
+    border: 1px solid rgba(255, 255, 255, 0.15);
+  }
+  body.dark-mode #shutdown-cancel-btn {
+    background: rgba(255, 255, 255, 0.1);
+    color: #f5f5f7;
+  }
+  body.dark-mode #shutdown-cancel-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+  }
+  body.dark-mode #shutdown-confirm-btn:not(.selected-state) {
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: #f5f5f7 !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  }
+  body.dark-mode #shutdown-confirm-btn:not(.selected-state):hover {
+    background: rgba(255, 255, 255, 0.15) !important;
+  }
+  body.dark-mode #shutdown-confirm-btn.selected-state {
+    background: #007aff !important;
+    color: #ffffff !important;
+    border: 1px solid #007aff !important;
   }
 
   /* Finder Grid Item Image */
@@ -1460,50 +1612,7 @@
     filter: invert(1) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.25));
   }
   
-  .menu-dropdown {
-    position: absolute;
-    top: 28px;
-    left: 10px;
-    background: rgba(255, 255, 255, 0.15); /* Match about window transparency */
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 8px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-    padding: 6px;
-    min-width: 220px;
-    opacity: 0;
-    pointer-events: none;
-    z-index: 99999;
-    color: #fff;
-    display: none;
-    flex-direction: column;
-  }
-  .menu-dropdown.show {
-    opacity: 1;
-    pointer-events: auto;
-    display: flex;
-  }
-  .menu-dropdown-item {
-    padding: 4px 10px;
-    border-radius: 4px;
-    cursor: default;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .menu-dropdown-item:hover {
-    background: #007aff;
-    color: #fff;
-  }
-  .menu-dropdown-divider {
-    height: 1px;
-    background: rgba(255, 255, 255, 0.1);
-    margin: 6px 0;
-  }
-  .menu-dropdown-item .arrow {
-    font-size: 10px;
-  }
+  /* menu-dropdown-item custom alignments and sub-styles are defined with context-menu above */
 
   /* About This Mac Window */
   .about-window {
@@ -1513,7 +1622,7 @@
     backdrop-filter: blur(25px);
     -webkit-backdrop-filter: blur(25px);
     border-radius: 22px; /* More rounded as requested */
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15), var(--window-stroke);
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.24), 0 4px 16px rgba(0, 0, 0, 0.08), var(--window-stroke);
     z-index: 10000;
     opacity: 0;
     pointer-events: none;
@@ -1623,7 +1732,7 @@
     backdrop-filter: blur(40px) !important;
     -webkit-backdrop-filter: blur(40px) !important;
     color: #f5f5f7 !important;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4), var(--window-stroke) !important;
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.48), 0 4px 16px rgba(0, 0, 0, 0.16), var(--window-stroke) !important;
   }
   body.dark-mode .about-content {
     color: #f5f5f7 !important;
@@ -2104,12 +2213,39 @@
 
 <div class="desktop-icons" id="desktop-icons"></div>
 
-<glass-element id="context-menu-glass" style="position:fixed; z-index:100000; display:none;" radius="8" depth="5" blur="3" strength="40" background-color="rgba(255,255,255,0.15)" chromatic-aberration="1" auto-size>
+<glass-element id="context-menu-glass" style="position:fixed; z-index:100000; display:none;" radius="12" depth="5" blur="3" strength="40" background-color="var(--context-menu-bg)" chromatic-aberration="1" auto-size>
 <div class="context-menu" id="context-menu" style="position:relative; background:transparent; backdrop-filter:none; -webkit-backdrop-filter:none; box-shadow:none; border:none; opacity:1; pointer-events:auto; transform:none; border-radius:0;">
-  <div class="context-menu-item" id="ctx-new-folder">New Folder</div>
+  <div class="context-menu-item" id="ctx-new-folder">
+    <span class="ctx-icon-wrapper"><i data-lucide="folder-pen"></i></span>
+    <span class="ctx-text">New Folder</span>
+  </div>
   <div class="context-menu-divider"></div>
-  <div class="context-menu-item" id="ctx-get-info">Get Info</div>
-  <div class="context-menu-item" id="ctx-change-bg">Change Desktop Background...</div>
+  <div class="context-menu-item" id="ctx-get-info">
+    <span class="ctx-icon-wrapper"><i data-lucide="info"></i></span>
+    <span class="ctx-text">Get Info</span>
+  </div>
+  <div class="context-menu-item" id="ctx-change-bg">
+    <span class="ctx-icon-wrapper"></span>
+    <span class="ctx-text">Change Wallpaper...</span>
+  </div>
+  <div class="context-menu-item" id="ctx-edit-widgets">
+    <span class="ctx-icon-wrapper"></span>
+    <span class="ctx-text">Edit Widgets</span>
+  </div>
+  <div class="context-menu-divider"></div>
+  <div class="context-menu-item" id="ctx-use-stacks">
+    <span class="ctx-icon-wrapper"><i data-lucide="layers"></i></span>
+    <span class="ctx-text">Use Stacks</span>
+  </div>
+  <div class="context-menu-item" id="ctx-sort-by">
+    <span class="ctx-icon-wrapper"><i data-lucide="arrow-up-down"></i></span>
+    <span class="ctx-text">Sort By</span>
+    <span class="ctx-arrow" style="margin-left: auto; color: inherit; font-size: 11px; opacity: 0.6; padding-right: 4px;">&gt;</span>
+  </div>
+  <div class="context-menu-item" id="ctx-view-options">
+    <span class="ctx-icon-wrapper"><i data-lucide="settings"></i></span>
+    <span class="ctx-text">Show View Options</span>
+  </div>
 </div>
 </glass-element>
 
@@ -2143,6 +2279,53 @@
 </glass-element>
 </div>
 
+<div class="modal-overlay" id="shutdown-confirm-modal">
+  <glass-element id="shutdown-glass-wrapper" radius="20" depth="1" blur="15" strength="5" background-color="var(--shutdown-modal-bg)" chromatic-aberration="0" auto-size>
+    <div class="modal shutdown-modal" style="background:transparent; backdrop-filter:none; -webkit-backdrop-filter:none; box-shadow:none; border:none; border-radius:18px; width: 300px; height: 320px; color: var(--context-menu-color); text-shadow: none; display: flex; flex-direction: column;">
+      <div class="shutdown-content" style="padding: 24px; display: flex; flex-direction: column; align-items: flex-start; text-align: left; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; height: 100%; box-sizing: border-box; justify-content: space-between;">
+        
+        <!-- Top section: Icon and text (Left-aligned) -->
+        <div style="display: flex; flex-direction: column; align-items: flex-start; text-align: left; width: 100%;">
+          <!-- Large Shut down icon encased in a gray circle -->
+          <div class="shutdown-icon-circle" style="width: 56px; height: 56px; border-radius: 50%; background: rgba(130, 130, 130, 0.22); display: flex; align-items: center; justify-content: center; margin-bottom: 18px; color: var(--context-menu-color);">
+            <i data-lucide="power" style="width: 28px; height: 28px; stroke-width: 1.8;"></i>
+          </div>
+          
+          <!-- Title under the icon -->
+          <h2 class="shutdown-title" style="font-size: 14px; font-weight: 600; margin: 0 0 8px 0; color: var(--context-menu-color); line-height: 1.35;">
+            Are you sure you want to shut down your computer now?
+          </h2>
+          
+          <!-- Subtitle under that text -->
+          <p class="shutdown-subtitle" style="font-size: 11px; font-weight: 400; margin: 0; color: var(--context-menu-color); opacity: 0.75; line-height: 1.4;">
+            If you do nothing, the computer will shut down automatically in <span id="shutdown-timer-count" style="font-weight: 600;">60</span> seconds.
+          </p>
+        </div>
+
+        <!-- Bottom section: Checkbox, Divider, and Buttons (Left-aligned) -->
+        <div style="display: flex; flex-direction: column; align-items: flex-start; width: 100%;">
+          
+          <!-- Divider -->
+          <div style="width: 100%; height: 1px; background: var(--context-menu-divider-bg); margin-bottom: 14px;"></div>
+
+          <!-- Checkbox with label -->
+          <label class="shutdown-checkbox-label" style="display: inline-flex; align-items: flex-start; gap: 8px; font-size: 11px; cursor: pointer; color: var(--context-menu-color); margin-bottom: 20px; user-select: none; line-height: 1.3;">
+            <input type="checkbox" id="shutdown-reopen-checkbox" checked style="width: 14px; height: 14px; accent-color: #007aff; cursor: pointer; margin: 1px 0 0 0; flex-shrink: 0;" />
+            <span>Reopen windows when logging in</span>
+          </label>
+          
+          <!-- Action Buttons (Left-aligned, pill-shaped) -->
+          <div class="shutdown-buttons" style="display: flex; justify-content: flex-start; gap: 10px; width: 100%;">
+            <button class="shutdown-btn" id="shutdown-cancel-btn" style="flex: 1; border-radius: 9999px;">Cancel</button>
+            <button class="shutdown-btn selected-state" id="shutdown-confirm-btn" style="flex: 1; border-radius: 9999px;">Shut Down</button>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+  </glass-element>
+</div>
+
 <div class="menubar">
   <div class="menubar-left">
     <div class="menu-item apple-icon" id="apple-menu-btn">
@@ -2165,34 +2348,74 @@
   </div>
   
   <!-- Dropdowns -->
-  <glass-element id="apple-dropdown-glass" style="position:absolute; top:28px; left:10px; z-index:99999; display:none;" radius="8" depth="5" blur="3" strength="40" background-color="rgba(255,255,255,0.15)" chromatic-aberration="1" auto-size>
-<div class="menu-dropdown" id="apple-dropdown" style="position:relative; top:0; left:0; background:transparent; backdrop-filter:none; -webkit-backdrop-filter:none; box-shadow:none; border:none; opacity:1; pointer-events:auto; transform:none;">
-    <div class="menu-dropdown-item" id="about-mac">About This Mac</div>
-    <div class="menu-dropdown-divider"></div>
-    <div class="menu-dropdown-item">System Settings...</div>
-    <div class="menu-dropdown-item">App Store...</div>
-    <div class="menu-dropdown-divider"></div>
-    <div class="menu-dropdown-item">Recent Items <span class="arrow">▶</span></div>
-    <div class="menu-dropdown-divider"></div>
-    <div class="menu-dropdown-item">Force Quit...</div>
-    <div class="menu-dropdown-divider"></div>
-    <div class="menu-dropdown-item" id="sleep-mac">Sleep</div>
-    <div class="menu-dropdown-item" id="restart-mac">Restart...</div>
-    <div class="menu-dropdown-item" id="shutdown-mac">Shut Down...</div>
-    <div class="menu-dropdown-divider"></div>
-    <div class="menu-dropdown-item" id="lock-screen-btn">Lock Screen</div>
-    <div class="menu-dropdown-item">Log Out...</div>
-  </div>
-</glass-element>
+  <glass-element id="apple-dropdown-glass" style="position:absolute; top:28px; left:10px; z-index:99999; display:none;" radius="12" depth="5" blur="3" strength="40" background-color="var(--context-menu-bg)" chromatic-aberration="1" auto-size>
+    <div class="menu-dropdown" id="apple-dropdown" style="position:relative; top:0; left:0; background:transparent; backdrop-filter:none; -webkit-backdrop-filter:none; box-shadow:none; border:none; opacity:1; pointer-events:auto; transform:none;">
+      <div class="menu-dropdown-item" id="about-mac">
+        <span class="ctx-icon-wrapper"><i data-lucide="info"></i></span>
+        <span class="ctx-text">About This Mac</span>
+      </div>
+      <div class="menu-dropdown-divider"></div>
+      <div class="menu-dropdown-item" id="apple-system-settings">
+        <span class="ctx-icon-wrapper"><i data-lucide="settings"></i></span>
+        <span class="ctx-text">System Settings...</span>
+      </div>
+      <div class="menu-dropdown-item" id="apple-app-store">
+        <span class="ctx-icon-wrapper"><i data-lucide="shopping-bag"></i></span>
+        <span class="ctx-text">App Store...</span>
+      </div>
+      <div class="menu-dropdown-divider"></div>
+      <div class="menu-dropdown-item" id="apple-recent-items">
+        <span class="ctx-icon-wrapper"><i data-lucide="clock"></i></span>
+        <span class="ctx-text">Recent Items</span>
+        <span class="arrow" style="margin-left: auto; color: inherit; font-size: 10px; opacity: 0.6; padding-right: 4px;">▶</span>
+      </div>
+      <div class="menu-dropdown-divider"></div>
+      <div class="menu-dropdown-item" id="apple-force-quit">
+        <span class="ctx-icon-wrapper"><i data-lucide="square-terminal"></i></span>
+        <span class="ctx-text">Force Quit...</span>
+      </div>
+      <div class="menu-dropdown-divider"></div>
+      <div class="menu-dropdown-item" id="sleep-mac">
+        <span class="ctx-icon-wrapper"><i data-lucide="moon"></i></span>
+        <span class="ctx-text">Sleep</span>
+      </div>
+      <div class="menu-dropdown-item" id="restart-mac">
+        <span class="ctx-icon-wrapper"><i data-lucide="rotate-cw"></i></span>
+        <span class="ctx-text">Restart...</span>
+      </div>
+      <div class="menu-dropdown-item" id="shutdown-mac">
+        <span class="ctx-icon-wrapper"><i data-lucide="power"></i></span>
+        <span class="ctx-text">Shut Down...</span>
+      </div>
+      <div class="menu-dropdown-divider"></div>
+      <div class="menu-dropdown-item" id="lock-screen-btn">
+        <span class="ctx-icon-wrapper"><i data-lucide="lock"></i></span>
+        <span class="ctx-text">Lock Screen</span>
+      </div>
+      <div class="menu-dropdown-item" id="apple-logout">
+        <span class="ctx-icon-wrapper"><i data-lucide="log-out"></i></span>
+        <span class="ctx-text">Log Out...</span>
+      </div>
+    </div>
+  </glass-element>
   
-  <glass-element id="file-dropdown-glass" style="position:absolute; top:28px; left:80px; z-index:99999; display:none;" radius="8" depth="5" blur="3" strength="40" background-color="rgba(255,255,255,0.15)" chromatic-aberration="1" auto-size>
-<div class="menu-dropdown" id="file-dropdown" style="position:relative; top:0; left:0; background:transparent; backdrop-filter:none; -webkit-backdrop-filter:none; box-shadow:none; border:none; opacity:1; pointer-events:auto; transform:none;">
-    <div class="menu-dropdown-item" id="file-new">New Folder</div>
-    <div class="menu-dropdown-divider"></div>
-    <div class="menu-dropdown-item" id="file-save">Save</div>
-    <div class="menu-dropdown-item" id="file-download">Download to PC...</div>
-  </div>
-</glass-element>
+  <glass-element id="file-dropdown-glass" style="position:absolute; top:28px; left:80px; z-index:99999; display:none;" radius="12" depth="5" blur="3" strength="40" background-color="var(--context-menu-bg)" chromatic-aberration="1" auto-size>
+    <div class="menu-dropdown" id="file-dropdown" style="position:relative; top:0; left:0; background:transparent; backdrop-filter:none; -webkit-backdrop-filter:none; box-shadow:none; border:none; opacity:1; pointer-events:auto; transform:none;">
+      <div class="menu-dropdown-item" id="file-new">
+        <span class="ctx-icon-wrapper"><i data-lucide="folder-pen"></i></span>
+        <span class="ctx-text">New Folder</span>
+      </div>
+      <div class="menu-dropdown-divider"></div>
+      <div class="menu-dropdown-item" id="file-save">
+        <span class="ctx-icon-wrapper"><i data-lucide="save"></i></span>
+        <span class="ctx-text">Save</span>
+      </div>
+      <div class="menu-dropdown-item" id="file-download">
+        <span class="ctx-icon-wrapper"><i data-lucide="download"></i></span>
+        <span class="ctx-text">Download to PC...</span>
+      </div>
+    </div>
+  </glass-element>
 </div>
 
 <!-- Control Center Panel -->
@@ -2505,6 +2728,10 @@
             <div class="wallpaper-thumb" style="background-image: url('https://512pixels.net/downloads/macos-wallpapers-6k/15-Sequoia-Sunrise.png');"></div>
             <div class="wallpaper-name">Trees</div>
           </div>
+          <div class="wallpaper-item" data-bg="https://github.com/Hellomyfriend19/Nice/blob/main/26-Tahoe-Light-6K-thumb.jpg?raw=true$0">
+            <div class="wallpaper-thumb" style="background-image: url('https://github.com/Hellomyfriend19/Nice/blob/main/26-Tahoe-Light-6K-thumb.jpg?raw=true$0');"></div>
+            <div class="wallpaper-name">Tahoe Purple</div>
+          </div>
         </div>
       </div>
       
@@ -2661,6 +2888,11 @@
   </div>
 </div>
 
+<div class="dock-tooltip" id="remove-tooltip" style="position: fixed !important; transform: translateX(-50%) scale(0.85); opacity: 0; pointer-events: none; z-index: 2147483647; transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);">
+  <svg class="dock-tooltip-svg" id="remove-tooltip-svg" style="pointer-events: none; overflow: visible;"></svg>
+  <span class="dock-tooltip-text" id="remove-tooltip-text">Remove</span>
+</div>
+
 <glass-element id="dock-glass-wrapper" style="position:fixed; bottom:20px; left:50%; transform:translateX(-50%); z-index:2147483647;" radius="21" depth="1" blur="2" strength="115" background-color="transparent" chromatic-aberration="1" auto-size>
 <div class="dock-container" id="dock" style="margin-bottom:0; background:transparent; backdrop-filter:none; -webkit-backdrop-filter:none; box-shadow:none; border-radius:21px; position:relative;">
   
@@ -2670,7 +2902,7 @@
   </div>
   <div class="dock-icon" data-name="Finder" style="background-image: url('https://upload.wikimedia.org/wikipedia/commons/b/b9/Finder_Icon_macOS_Tahoe.png?_=20250922021914'); background-size: 85%;"></div>
   <div class="dock-icon" data-name="Apps" style="background-image: url('https://i0.wp.com/www.appletips.nl/wp-content/uploads/2021/02/apps-launchpad-glass-icon-appbibliotheek.webp'); background-size: 85%;"></div>
-  <div class="dock-icon" data-name="Safari" style="background-image: url('https://images.icon-icons.com/3053/PNG/512/safari_macos_bigsur_icon_189770.png')"></div>
+  <div class="dock-icon" data-name="Safari" style="background-image: url('https://images.icon-icons.com/3053/PNG/512/safari_macos_bigsur_icon_189770.png'); background-size: 100%;"></div>
   <div class="dock-icon" data-name="Calendar" style="background-image: url('https://github.com/Hellomyfriend19/Nice/blob/main/New%20Project%20(13).png?raw=true'); background-size: 85%;"></div>
   <div class="dock-icon" data-name="Terminal" style="background-image: url('https://upload.wikimedia.org/wikipedia/commons/b/b3/Terminalicon2.png')"></div>
   <div class="dock-icon" data-name="Apple Music" style="background-image: url('https://github.com/Hellomyfriend19/Nice/blob/main/apple%20music.png?raw=true'); background-size: 85%;"></div>
@@ -3099,15 +3331,15 @@ customElements.define('glass-element', GlassElement);
     icon.appendChild(img);
   });
   
-  const icons = Array.from(document.querySelectorAll('.dock-icon'));
+  let icons = Array.from(document.querySelectorAll('.dock-icon'));
   const tooltip = document.getElementById('tooltip');
 
   let baseSize = 48;
   const distanceLimit = 220;
   
   // Spring physics parameters
-  let stiffness = 0.9;
-  let damping = 0.3;
+  let stiffness = 0.15;
+  let damping = 0.85;
 
   // Piecewise interpolation function
   function interpolate(x, input, output) {
@@ -3128,12 +3360,315 @@ customElements.define('glass-element', GlassElement);
   let outputScales = [2.0, 1.4, 1.06, 1.0];
 
   // State for each icon
-  const iconStates = icons.map(icon => ({
+  let iconStates = icons.map(icon => ({
     element: icon,
     currentScale: 1,
     targetScale: 1,
     velocity: 0
   }));
+
+  window.refreshDockStates = function() {
+    icons = Array.from(document.querySelectorAll('.dock-icon'));
+    iconStates = icons.map(icon => {
+      const existing = (iconStates || []).find(s => s.element === icon);
+      return existing || {
+        element: icon,
+        currentScale: 1,
+        targetScale: 1,
+        velocity: 0
+      };
+    });
+  };
+
+  // --- Initialize Remove Tooltip ---
+  const removeTooltip = document.getElementById('remove-tooltip');
+  const removeTooltipSvg = document.getElementById('remove-tooltip-svg');
+  const removeTooltipText = document.getElementById('remove-tooltip-text');
+
+  function renderRemoveTooltip() {
+    if (!removeTooltip || !removeTooltipSvg) return;
+    const isDarkMode = document.body.classList.contains('dark-mode');
+    const fill = isDarkMode ? "rgba(0,0,0,0.7)" : "rgba(255,255,255,0.7)";
+    const strokeColor = isDarkMode ? "rgba(255,255,255,0.15)" : "rgba(255,255,255,0.35)";
+
+    const w = 90; 
+    const h = 33; 
+    const rad = 14; 
+    const aw = 14; 
+    const ah = 8;
+    const tailBaseR = 4;
+    const tailTipR = 2;
+    const pathD = `M ${rad} 0 L ${w-rad} 0 Q ${w} 0 ${w} ${rad} L ${w} ${h-ah-rad} Q ${w} ${h-ah} ${w-rad} ${h-ah} L ${w/2 + aw/2 + tailBaseR} ${h-ah} Q ${w/2 + aw/2} ${h-ah} ${w/2 + aw/2 - tailBaseR/2} ${h-ah + tailBaseR/2} L ${w/2 + tailTipR} ${h - tailTipR} Q ${w/2} ${h} ${w/2 - tailTipR} ${h - tailTipR} L ${w/2 - aw/2 + tailBaseR/2} ${h-ah + tailBaseR/2} Q ${w/2 - aw/2} ${h-ah} ${w/2 - aw/2 - tailBaseR} ${h-ah} L ${rad} ${h-ah} Q 0 ${h-ah} 0 ${h-ah-rad} L 0 ${rad} Q 0 0 ${rad} 0 Z`;
+
+    removeTooltipSvg.innerHTML = `
+      <defs>
+        <radialGradient id="remove-tooltip-stroke-grad" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#fff" stop-opacity="0.35" />
+          <stop offset="100%" stop-color="#fff" stop-opacity="0.15" />
+        </radialGradient>
+      </defs>
+      <clipPath id="remove-tooltip-clip"><path d="${pathD}"/></clipPath>
+      <path d="${pathD}" fill="${fill}" stroke="url(#remove-tooltip-stroke-grad)" stroke-width="1"/>
+    `;
+    removeTooltip.style.clipPath = 'url(#remove-tooltip-clip)';
+    removeTooltip.style.webkitClipPath = 'url(#remove-tooltip-clip)';
+    removeTooltipSvg.style.width = w + 'px';
+    removeTooltipSvg.style.height = h + 'px';
+    removeTooltip.style.width = w + 'px';
+    removeTooltip.style.height = h + 'px';
+  }
+
+  if (removeTooltip && removeTooltipSvg && removeTooltipText) {
+    document.body.appendChild(removeTooltip);
+    renderRemoveTooltip();
+  }
+
+  // --- Drag and Drop Logic for Dock Icons ---
+  let isDraggingIcon = false;
+  let draggedIcon = null;
+  let dragStartMouseX = 0;
+  let dragStartMouseY = 0;
+  let hasDraggedSignificant = false;
+  let dragIconFloating = null;
+
+  // Intercept subsequent click events in capturing phase
+  window.blockNextClick = false;
+  window.addEventListener('click', (e) => {
+    if (window.blockNextClick) {
+      e.stopPropagation();
+      e.preventDefault();
+      window.blockNextClick = false;
+    }
+  }, true);
+
+  // Setup draggable icons on mousedown
+  function initializeDockDragAndDrop() {
+    const dockContainer = document.getElementById('dock');
+    if (!dockContainer) return;
+
+    dockContainer.addEventListener('mousedown', (e) => {
+      const icon = e.target.closest('.dock-icon');
+      if (!icon) return;
+
+      // Undraggable: Finder and Trash
+      const name = icon.getAttribute('data-name');
+      if (name === 'Finder' || name === 'Trash') return;
+
+      draggedIcon = icon;
+      dragStartMouseX = e.clientX;
+      dragStartMouseY = e.clientY;
+      hasDraggedSignificant = false;
+
+      // Listen on window for move/up
+      window.addEventListener('mousemove', handleIconDragMove);
+      window.addEventListener('mouseup', handleIconDragMouseUp);
+    });
+  }
+
+  function handleIconDragMove(e) {
+    if (!draggedIcon) return;
+
+    if (!hasDraggedSignificant) {
+      const dist = Math.hypot(e.clientX - dragStartMouseX, e.clientY - dragStartMouseY);
+      if (dist > 5) {
+        hasDraggedSignificant = true;
+        window.blockNextClick = true;
+        isDraggingIcon = true;
+
+        // Hide regular tooltip
+        if (tooltip) tooltip.classList.remove('show');
+        hoveredIcon = null;
+
+        // Render themed removeTooltip colors
+        renderRemoveTooltip();
+
+        // Create/Show floating follower matching baseSize
+        const activeSize = `${baseSize}px`;
+        if (!dragIconFloating) {
+          dragIconFloating = document.createElement('div');
+          dragIconFloating.id = 'drag-icon-floating';
+          dragIconFloating.style.cssText = `
+            position: fixed;
+            pointer-events: none;
+            z-index: 2147483647;
+            width: ${activeSize};
+            height: ${activeSize};
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            opacity: 0.95;
+            transition: none;
+          `;
+          document.body.appendChild(dragIconFloating);
+        } else {
+          dragIconFloating.style.width = activeSize;
+          dragIconFloating.style.height = activeSize;
+        }
+        const imgLayer = draggedIcon.querySelector('.icon-image-layer');
+        const bgUrl = imgLayer ? imgLayer.style.backgroundImage : draggedIcon.style.backgroundImage;
+        const bgSize = imgLayer ? imgLayer.style.backgroundSize : draggedIcon.style.backgroundSize;
+        dragIconFloating.style.backgroundImage = bgUrl;
+        dragIconFloating.style.backgroundSize = bgSize || 'contain';
+        dragIconFloating.style.display = 'block';
+
+        // Add class to hide icon image inside dock
+        draggedIcon.classList.add('is-dragging-placeholder');
+      }
+    }
+
+    if (hasDraggedSignificant) {
+      const offset = baseSize / 2;
+
+      // Move floating follower centered under the mouse pointer
+      if (dragIconFloating) {
+        dragIconFloating.style.left = `${e.clientX - offset}px`;
+        dragIconFloating.style.top = `${e.clientY - offset}px`;
+        dragIconFloating.style.filter = 'none'; // Remain unchanged (no red, no sepia)
+        dragIconFloating.style.transform = 'scale(1)'; // Size remains the same
+      }
+
+      const appName = draggedIcon.getAttribute('data-name');
+      const isRemovable = (appName !== 'Finder' && appName !== 'Trash');
+
+      // Update removeTooltip position relative to the cursor / floating app
+      if (removeTooltip) {
+        const tooltipHeight = removeTooltip.offsetHeight || 33;
+        removeTooltip.style.left = `${e.clientX}px`;
+        removeTooltip.style.top = `${e.clientY - offset - tooltipHeight - 12}px`;
+      }
+
+      // Check near the top of the screen (App name must NOT turn red, speech bubble follows but stays normal)
+      if (e.clientY <= 120 && isRemovable) {
+        if (removeTooltip) {
+          removeTooltip.style.opacity = '1';
+          removeTooltip.style.transform = 'translateX(-50%) scale(1)';
+        }
+      } else {
+        if (removeTooltip) {
+          removeTooltip.style.opacity = '0';
+          removeTooltip.style.transform = 'translateX(-50%) scale(0.85)';
+        }
+      }
+
+      // Check near dock
+      const isNearDock = e.clientY >= window.innerHeight - 180;
+      const dockContainer = document.getElementById('dock');
+
+      if (isNearDock && e.clientY > 120 && dockContainer) {
+        const visibleIcons = Array.from(dockContainer.querySelectorAll('.dock-icon')).filter(icon => icon.style.display !== 'none' || icon === draggedIcon);
+        const otherIcons = visibleIcons.filter(icon => icon !== draggedIcon);
+        
+        let insertIndex = 0;
+        for (let i = 0; i < otherIcons.length; i++) {
+          const rect = otherIcons[i].getBoundingClientRect();
+          const centerX = rect.left + rect.width / 2;
+          if (e.clientX > centerX) {
+            insertIndex = i + 1;
+          }
+        }
+
+        const targetSibling = otherIcons[insertIndex] || null;
+        if (draggedIcon.nextSibling !== targetSibling || draggedIcon.style.display === 'none') {
+          dockContainer.insertBefore(draggedIcon, targetSibling);
+          draggedIcon.style.display = '';
+          window.refreshDockStates();
+        }
+      } else {
+        // Hide from dock ONLY if removable
+        if (isRemovable) {
+          if (draggedIcon.style.display !== 'none') {
+            draggedIcon.style.display = 'none';
+            window.refreshDockStates();
+          }
+        } else {
+          // If non-removable, keep displayed and force refresh in original place
+          if (draggedIcon.style.display === 'none') {
+            draggedIcon.style.display = '';
+            window.refreshDockStates();
+          }
+        }
+      }
+    }
+  }
+
+  function handleIconDragMouseUp(e) {
+    window.removeEventListener('mousemove', handleIconDragMove);
+    window.removeEventListener('mouseup', handleIconDragMouseUp);
+
+    if (!draggedIcon) return;
+
+    if (hasDraggedSignificant) {
+      const appName = draggedIcon.getAttribute('data-name');
+      const isRemovable = (appName !== 'Finder' && appName !== 'Trash');
+
+      const isNearTop = e.clientY <= 120;
+      const isNearDock = e.clientY >= window.innerHeight - 180;
+      const dockContainer = document.getElementById('dock');
+
+      if (isNearTop && isRemovable) {
+        // Fade away / Remove (only if removable)
+        if (dragIconFloating) {
+          dragIconFloating.style.transition = 'transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease';
+          dragIconFloating.style.transform = 'scale(0)';
+          dragIconFloating.style.opacity = '0';
+        }
+        // Permanently hide inside dock
+        draggedIcon.style.display = 'none';
+        draggedIcon.classList.remove('is-dragging-placeholder');
+        window.refreshDockStates();
+
+        setTimeout(() => {
+          if (dragIconFloating) dragIconFloating.style.display = 'none';
+        }, 300);
+      } else if ((isNearDock || !isRemovable) && dockContainer) {
+        // Drop inside dock
+        draggedIcon.classList.remove('is-dragging-placeholder');
+        draggedIcon.style.display = '';
+        window.refreshDockStates();
+
+        if (dragIconFloating) {
+          const targetRect = draggedIcon.getBoundingClientRect();
+          dragIconFloating.style.transition = 'left 0.25s cubic-bezier(0.16, 1, 0.3, 1), top 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s ease, filter 0.25s ease';
+          dragIconFloating.style.left = `${targetRect.left}px`;
+          dragIconFloating.style.top = `${targetRect.top}px`;
+          dragIconFloating.style.transform = 'scale(1)';
+          
+          setTimeout(() => {
+            if (dragIconFloating) dragIconFloating.style.display = 'none';
+          }, 250);
+        }
+      } else {
+        // Revert to original slot inside dock
+        draggedIcon.classList.remove('is-dragging-placeholder');
+        draggedIcon.style.display = '';
+        window.refreshDockStates();
+
+        if (dragIconFloating) {
+          const targetRect = draggedIcon.getBoundingClientRect();
+          dragIconFloating.style.transition = 'left 0.25s cubic-bezier(0.16, 1, 0.3, 1), top 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s ease';
+          dragIconFloating.style.left = `${targetRect.left}px`;
+          dragIconFloating.style.top = `${targetRect.top}px`;
+          dragIconFloating.style.transform = 'scale(1)';
+
+          setTimeout(() => {
+            if (dragIconFloating) dragIconFloating.style.display = 'none';
+          }, 250);
+        }
+      }
+
+      // Clean up remove tooltip
+      if (removeTooltip) {
+        removeTooltip.style.opacity = '0';
+        removeTooltip.style.transform = 'translateX(-50%) scale(0.85)';
+      }
+    }
+
+    isDraggingIcon = false;
+    draggedIcon = null;
+  }
+
+  // Run initialization
+  initializeDockDragAndDrop();
 
   let mouseX = null;
   let isHovering = false;
@@ -3154,6 +3689,7 @@ customElements.define('glass-element', GlassElement);
 
   icons.forEach(icon => {
     icon.addEventListener('mouseenter', () => {
+      if (isDraggingIcon) return;
       hoveredIcon = icon;
       tooltipText.textContent = icon.getAttribute('data-name');
       tooltip.classList.add('show');
@@ -3401,6 +3937,9 @@ customElements.define('glass-element', GlassElement);
       contextMenu.style.top = `${e.clientY}px`;
     }
     contextMenu.classList.add('show');
+    if (typeof lucide !== 'undefined' && lucide.createIcons) {
+      lucide.createIcons();
+    }
     contextMenu.dispatchEvent(new Event('force-liquid-glass', { bubbles: true }));
   });
 
@@ -3453,6 +3992,18 @@ customElements.define('glass-element', GlassElement);
     setActiveApp('System Settings');
     const generalBtn = document.querySelector('.settings-sidebar-item[data-view="general"]');
     if (generalBtn) generalBtn.click();
+  });
+
+  // Other context menu items click handlers
+  ['ctx-edit-widgets', 'ctx-use-stacks', 'ctx-sort-by', 'ctx-view-options'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.addEventListener('click', () => {
+        contextMenu.classList.remove('show');
+        const cgw_rem = document.getElementById('context-menu-glass');
+        if(cgw_rem) cgw_rem.style.display = 'none';
+      });
+    }
   });
 
   function createFolder() {
@@ -3659,6 +4210,11 @@ customElements.define('glass-element', GlassElement);
     
     lpItem.addEventListener('click', (e) => {
       e.stopPropagation();
+      if (icon.style.display === 'none') {
+        icon.style.display = '';
+        icon.style.opacity = '1';
+        window.refreshDockStates();
+      }
       icon.click();
       launchpadState.targetScaleX = 1.15; launchpadState.targetScaleY = 1.15;
       launchpadState.targetOpacity = 0; launchpadState.isOpen = false;
@@ -3835,8 +4391,6 @@ customElements.define('glass-element', GlassElement);
         settingsState.targetOpacity = 1; 
         settingsState.targetTranslateY = settingsState.isMaximized ? -30 : 0;
         settingsState.isOpen = true; settingsState.isMinimized = false;
-        
-        settingsWindow.style.zIndex = 53;
       } else {
         settingsState.targetScaleX = 0.2; settingsState.targetScaleY = 0.05;
         settingsState.targetTranslateY = 300; settingsState.targetOpacity = 0;
@@ -4129,6 +4683,7 @@ customElements.define('glass-element', GlassElement);
     'Safari': {
       light: "url('https://images.icon-icons.com/3053/PNG/512/safari_macos_bigsur_icon_189770.png')",
       dark: "url('https://github.com/Hellomyfriend19/Nice/blob/main/Safari_2025_29.webp?raw=true')",
+      lightSize: "100%",
       darkSize: "85%"
     },
     'Calendar': {
@@ -4263,7 +4818,8 @@ customElements.define('glass-element', GlassElement);
     document.querySelectorAll('.dock-icon').forEach(icon => {
       let base = icon.dataset.baseBgSize;
       if (!base) {
-         let bgSizeStr = icon.style.backgroundSize;
+         let imgLayer = icon.querySelector('.icon-image-layer');
+         let bgSizeStr = imgLayer ? imgLayer.style.backgroundSize : icon.style.backgroundSize;
          if (bgSizeStr && bgSizeStr.includes('%')) {
             base = parseFloat(bgSizeStr) || 100;
          } else {
@@ -5035,7 +5591,8 @@ if (val === 'help') {
     }
 
     const dockCenterX = dockRect.left + dockRect.width / 2;
-    const totalIcons = icons.length;
+    const visibleIconStates = iconStates.filter(state => state.element.style.display !== 'none');
+    const totalIcons = visibleIconStates.length;
     const unscaledDockWidth = totalIcons * baseSize + (totalIcons - 1) * 10 + 20;
     const startX = dockCenterX - unscaledDockWidth / 2;
 
@@ -5049,9 +5606,18 @@ if (val === 'help') {
     launchpadState.targetDragY = Math.min(launchpadState.targetDragY, halfWinHeight - 250 - dockHeightLimit);
 
     iconStates.forEach(state => {
-      if (isHovering && mouseX !== null) {
-        const index = icons.indexOf(state.element);
-        const unscaledIconCenterX = startX + 10 + index * (baseSize + 10) + baseSize / 2;
+      if (state.element.style.display === 'none') {
+        state.targetScale = 0;
+        state.currentScale = 0;
+        state.velocity = 0;
+        state.element.style.width = '0px';
+        state.element.style.height = '0px';
+        return;
+      }
+
+      const visibleIndex = visibleIconStates.indexOf(state);
+      if (isHovering && mouseX !== null && visibleIndex !== -1) {
+        const unscaledIconCenterX = startX + 10 + visibleIndex * (baseSize + 10) + baseSize / 2;
         const distance = Math.abs(mouseX - unscaledIconCenterX);
         
         state.targetScale = interpolate(distance, inputDistances, outputScales);
@@ -5059,11 +5625,18 @@ if (val === 'help') {
         state.targetScale = 1;
       }
 
-      // Spring physics step
-      const force = (state.targetScale - state.currentScale) * stiffness;
-      state.velocity += force;
-      state.velocity *= damping;
-      state.currentScale += state.velocity;
+      // Spring physics step or smooth interpolation
+      if (isDraggingIcon) {
+        // Smooth layout rearrangement animation while dragging
+        const force = (state.targetScale - state.currentScale) * 0.08;
+        state.velocity += force;
+        state.velocity *= 0.70;
+        state.currentScale += state.velocity;
+      } else {
+        // Completely bounce-free exponential interpolation for standard magnification (super smooth & responsive)
+        state.currentScale += (state.targetScale - state.currentScale) * 0.18;
+        state.velocity = 0;
+      }
 
       // Apply width and height
       const currentSize = baseSize * state.currentScale;
@@ -5466,6 +6039,9 @@ if (val === 'help') {
   });
 
   document.getElementById('file-new').addEventListener('click', () => {
+    fileDropdown.classList.remove('show');
+    document.getElementById('file-dropdown-glass').style.display = 'none';
+    fileMenuBtn.classList.remove('open');
     contextMenuTarget = 'desktop'; // Or current, but let's default to desktop
     if (winState.isOpen && !winState.isMinimized && activeAppName === 'Finder') contextMenuTarget = 'finder';
     newFolderModal.classList.add('show');
@@ -5488,6 +6064,9 @@ if (val === 'help') {
   }
 
   document.getElementById('file-save').addEventListener('click', () => {
+    fileDropdown.classList.remove('show');
+    document.getElementById('file-dropdown-glass').style.display = 'none';
+    fileMenuBtn.classList.remove('open');
     if (activeAppName === 'Word' && wordState.isOpen) {
       const fileName = prompt('Save Document As:', 'Untitled.docx');
       if (fileName) {
@@ -5606,6 +6185,61 @@ if (val === 'help') {
     appleMenuBtn.classList.remove('open');
   });
 
+  // Open System Settings from the apple dropdown
+  const openSystemSettings = () => {
+    appleDropdown.classList.remove('show');
+    document.getElementById('apple-dropdown-glass').style.display = 'none';
+    appleMenuBtn.classList.remove('open');
+    settingsState.targetScaleX = 1; settingsState.targetScaleY = 1;
+    settingsState.targetOpacity = 1; settingsState.isOpen = true; 
+    settingsState.isMinimized = false;
+    setActiveApp('System Settings');
+  };
+
+  document.getElementById('apple-system-settings').addEventListener('click', () => {
+    openSystemSettings();
+    const generalBtn = document.querySelector('.settings-sidebar-item[data-view="general"]');
+    if (generalBtn) generalBtn.click();
+  });
+
+  document.getElementById('apple-app-store').addEventListener('click', () => {
+    appleDropdown.classList.remove('show');
+    document.getElementById('apple-dropdown-glass').style.display = 'none';
+    appleMenuBtn.classList.remove('open');
+    alert("Mac App Store is simulated. Searching for apps...");
+  });
+
+  document.getElementById('apple-logout').addEventListener('click', () => {
+    appleDropdown.classList.remove('show');
+    document.getElementById('apple-dropdown-glass').style.display = 'none';
+    appleMenuBtn.classList.remove('open');
+    // Simulate logout by locking screen
+    const lockBtn = document.getElementById('lock-screen-btn');
+    if (lockBtn) lockBtn.click();
+  });
+
+  document.getElementById('apple-force-quit').addEventListener('click', () => {
+    appleDropdown.classList.remove('show');
+    document.getElementById('apple-dropdown-glass').style.display = 'none';
+    appleMenuBtn.classList.remove('open');
+    // Force Close active window
+    const activeApp = activeAppName;
+    if (activeApp === 'Finder' && finderWindow.classList.contains('show')) {
+      document.getElementById('finder-close').click();
+    } else if (activeApp === 'Safari' && safariWindow.classList.contains('show')) {
+      document.getElementById('safari-close').click();
+    } else if (activeApp === 'System Settings' && settingsWindow.classList.contains('show')) {
+      document.getElementById('settings-close').click();
+    }
+  });
+
+  document.getElementById('apple-recent-items').addEventListener('click', () => {
+    appleDropdown.classList.remove('show');
+    document.getElementById('apple-dropdown-glass').style.display = 'none';
+    appleMenuBtn.classList.remove('open');
+    alert("Recent items: No recently opened applications.");
+  });
+
   document.getElementById('about-close').addEventListener('click', () => {
     document.getElementById('about-window').classList.remove('show');
     document.getElementById('about-glass').style.display = 'none';
@@ -5628,8 +6262,129 @@ if (val === 'help') {
     location.reload();
   });
 
+  // Shut Down Modal state & controls
+  let shutdownTimerInterval = null;
+  let shutdownSecondsRemaining = 60;
+  let isShutdownDragging = false;
+  let shutdownStartX = 0, shutdownStartY = 0;
+  let shutdownDragX = 0, shutdownDragY = 0;
+  let shutdownInitialDragX = 0, shutdownInitialDragY = 0;
+
+  const shutdownConfirmModal = document.getElementById('shutdown-confirm-modal');
+  const shutdownTimerCount = document.getElementById('shutdown-timer-count');
+  const shutdownConfirmBtn = document.getElementById('shutdown-confirm-btn');
+  const shutdownGlassWrapper = document.getElementById('shutdown-glass-wrapper');
+
+  function startShutdownCountdown() {
+    shutdownSecondsRemaining = 60;
+    if (shutdownTimerCount) shutdownTimerCount.textContent = shutdownSecondsRemaining;
+    if (shutdownConfirmBtn) shutdownConfirmBtn.classList.add('selected-state');
+    
+    if (shutdownTimerInterval) {
+      clearInterval(shutdownTimerInterval);
+    }
+    
+    shutdownTimerInterval = setInterval(() => {
+      shutdownSecondsRemaining--;
+      if (shutdownTimerCount) shutdownTimerCount.textContent = shutdownSecondsRemaining;
+      if (shutdownSecondsRemaining <= 0) {
+        clearInterval(shutdownTimerInterval);
+        executeActualShutdown();
+      }
+    }, 1000);
+  }
+
+  function executeActualShutdown() {
+    if (shutdownTimerInterval) {
+      clearInterval(shutdownTimerInterval);
+      shutdownTimerInterval = null;
+    }
+    document.body.innerHTML = '<div style="width:100vw;height:100vh;background:#000;display:flex;align-items:center;justify-content:center;color:#fff;font-family:-apple-system, BlinkMacSystemFont, sans-serif;font-size:16px;">System Shut Down</div>';
+  }
+
+  function openShutdownModal() {
+    // Hide apple dropdown menu
+    appleDropdown.classList.remove('show');
+    const appleDropdownGlass = document.getElementById('apple-dropdown-glass');
+    if (appleDropdownGlass) appleDropdownGlass.style.display = 'none';
+    appleMenuBtn.classList.remove('open');
+
+    // Reset position
+    shutdownDragX = 0;
+    shutdownDragY = 0;
+    if (shutdownGlassWrapper) {
+      shutdownGlassWrapper.style.transform = 'translate(0px, 0px)';
+    }
+
+    // Show modal
+    if (shutdownConfirmModal) {
+      shutdownConfirmModal.classList.add('show');
+      startShutdownCountdown();
+      if (typeof lucide !== 'undefined' && lucide.createIcons) {
+        lucide.createIcons();
+      }
+    }
+  }
+
+  // Bind to Shut Down dropdown option
   document.getElementById('shutdown-mac').addEventListener('click', () => {
-    document.body.innerHTML = '<div style="width:100vw;height:100vh;background:#000;display:flex;align-items:center;justify-content:center;color:#fff;font-family:sans-serif;">System Shut Down</div>';
+    openShutdownModal();
+  });
+
+  // Drag listeners
+  if (shutdownGlassWrapper) {
+    shutdownGlassWrapper.addEventListener('mousedown', (e) => {
+      if (e.target.closest('button') || e.target.closest('input') || e.target.closest('label')) return;
+      isShutdownDragging = true;
+      shutdownStartX = e.clientX;
+      shutdownStartY = e.clientY;
+      shutdownInitialDragX = shutdownDragX;
+      shutdownInitialDragY = shutdownDragY;
+      document.body.style.userSelect = 'none';
+    });
+  }
+
+  document.addEventListener('mousemove', (e) => {
+    if (isShutdownDragging && shutdownGlassWrapper) {
+      shutdownDragX = shutdownInitialDragX + (e.clientX - shutdownStartX);
+      shutdownDragY = shutdownInitialDragY + (e.clientY - shutdownStartY);
+      shutdownGlassWrapper.style.transform = `translate(${shutdownDragX}px, ${shutdownDragY}px)`;
+    }
+  });
+
+  document.addEventListener('mouseup', () => {
+    if (isShutdownDragging) {
+      isShutdownDragging = false;
+      document.body.style.userSelect = '';
+    }
+  });
+
+  // Cancel button
+  document.getElementById('shutdown-cancel-btn').addEventListener('click', () => {
+    if (shutdownConfirmModal) shutdownConfirmModal.classList.remove('show');
+    if (shutdownTimerInterval) {
+      clearInterval(shutdownTimerInterval);
+      shutdownTimerInterval = null;
+    }
+  });
+
+  // Confirm button
+  document.getElementById('shutdown-confirm-btn').addEventListener('click', () => {
+    executeActualShutdown();
+  });
+
+  // Window Focus/Selection logic for Shut Down Modal
+  document.addEventListener('mousedown', (e) => {
+    if (shutdownConfirmModal && shutdownConfirmModal.classList.contains('show')) {
+      const modalBox = shutdownConfirmModal.querySelector('.shutdown-modal');
+      // If click was inside the modal box itself
+      if (modalBox && modalBox.contains(e.target)) {
+        shutdownConfirmBtn.classList.add('selected-state');
+      } else {
+        // If click was outside the modal box (e.g. desktop, other windows, or backdrop)
+        shutdownConfirmBtn.classList.remove('selected-state');
+      }
+    }
   });
 
   const lockScreenBtn = document.getElementById('lock-screen-btn');
@@ -5665,7 +6420,14 @@ if (val === 'help') {
     lockScreenInterval = setInterval(updateLockScreenTime, 1000);
     // hide the menu dropdown
     document.getElementById('context-menu').classList.remove('show');
-    document.querySelector('.menu-dropdown').classList.remove('active');
+    const contextMenuGlass = document.getElementById('context-menu-glass');
+    if (contextMenuGlass) contextMenuGlass.style.display = 'none';
+    
+    appleDropdown.classList.remove('show');
+    const appleDropdownGlass = document.getElementById('apple-dropdown-glass');
+    if (appleDropdownGlass) appleDropdownGlass.style.display = 'none';
+    
+    appleMenuBtn.classList.remove('open');
     
     // Fade out dock and menubar
     const dockContainer = document.querySelector('.dock-container');
