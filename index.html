@@ -3059,8 +3059,14 @@ class GlassElement extends HTMLElement {
         this.render();
         this.setupEventListeners();
         if (window.ResizeObserver) {
-            this._resizeObserver = new ResizeObserver(() => {
-                this.updateStyles();
+            this._resizeObserver = new ResizeObserver((entries) => {
+                if (!Array.isArray(entries) || !entries.length) return;
+                if (this._resizeFrame) {
+                    cancelAnimationFrame(this._resizeFrame);
+                }
+                this._resizeFrame = requestAnimationFrame(() => {
+                    this.updateStyles();
+                });
             });
             this._resizeObserver.observe(this);
         }
@@ -3074,6 +3080,9 @@ class GlassElement extends HTMLElement {
     disconnectedCallback() {
         if (this._resizeObserver) {
             this._resizeObserver.disconnect();
+        }
+        if (this._resizeFrame) {
+            cancelAnimationFrame(this._resizeFrame);
         }
         if (this._tickListener) {
             window.removeEventListener('liquid-glass-tick', this._tickListener);
@@ -5634,7 +5643,7 @@ if (val === 'help') {
         state.currentScale += state.velocity;
       } else {
         // Fast, direct tracking of mouse position (no laggy smoothing)
-        state.currentScale += (state.targetScale - state.currentScale) * 0.65;
+        state.currentScale += (state.targetScale - state.currentScale) * 0.40;
         state.velocity = 0;
       }
 
