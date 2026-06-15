@@ -5137,8 +5137,19 @@ customElements.define('glass-element', GlassElement);
   const existingDarkModeIconsToggle = document.getElementById('dark-mode-icons-toggle');
   if (existingDarkModeIconsToggle) {
      existingDarkModeIconsToggle.addEventListener('change', () => {
-       // reset base sizes to match the new light/dark mode variants!
-       document.querySelectorAll('.dock-icon, .launchpad-item').forEach(el => el.removeAttribute('data-base-bg-size'));
+       // reset base sizes ONLY for icons that have separate light/dark mode variants (in appIcons dictionary)
+       document.querySelectorAll('.dock-icon').forEach(el => {
+         const name = el.getAttribute('data-name');
+         if (appIcons && appIcons[name]) {
+           el.removeAttribute('data-base-bg-size');
+         }
+       });
+       document.querySelectorAll('.launchpad-item').forEach(el => {
+         const lpName = el.querySelector('.launchpad-name');
+         if (lpName && appIcons && appIcons[lpName.textContent]) {
+           el.removeAttribute('data-base-bg-size');
+         }
+       });
        // Delay one frame to let original listener apply styles first
        setTimeout(updateDockIconScale, 0);
      });
