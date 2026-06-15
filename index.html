@@ -206,8 +206,13 @@
     justify-content: center;
     align-items: center;
     filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.2));
+  }
+  .dock-tooltip-glass {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
+    z-index: 0;
   }
   .dock-tooltip-svg {
     position: absolute;
@@ -479,7 +484,38 @@
     user-select: none;
   }
   .traffic-lights { display: flex; gap: 8px; width: 60px; height: 12px; flex-shrink: 0; align-items: center; justify-content: flex-start; }
-  .traffic-lights .btn { min-width: 12px; min-height: 12px; width: 12px; height: 12px; border-radius: 50%; cursor: pointer; flex-shrink: 0; }
+  .traffic-lights .btn {
+    box-sizing: content-box !important;
+    min-width: 12px !important;
+    min-height: 12px !important;
+    width: 12px !important;
+    height: 12px !important;
+    border-radius: 50% !important;
+    cursor: pointer;
+    flex-shrink: 0;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    position: relative;
+    padding: 0 !important;
+    margin: 0 !important;
+    line-height: 0 !important;
+  }
+  .traffic-lights .btn svg {
+    width: 8px !important;
+    height: 8px !important;
+    opacity: 0;
+    transition: opacity 0.12s ease;
+    pointer-events: none;
+    display: block !important;
+    flex-shrink: 0;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  .traffic-lights:hover .btn:not(.disabled) svg {
+    opacity: 1;
+  }
   .btn.close { background: #FF5F57; border: 1px solid #E0443E; }
   .btn.minimize { background: #FFBD2E; border: 1px solid #DEA123; }
   .btn.maximize { background: #28C840; border: 1px solid #1AAB29; }
@@ -625,6 +661,10 @@
     --context-menu-item-hover-color: #ffffff;
     --context-menu-divider-bg: rgba(0, 0, 0, 0.12);
     --shutdown-modal-bg: rgba(255, 255, 255, 0.42);
+    --word-titlebar-bg: rgba(245, 245, 245, 0.7);
+    --safari-titlebar-bg: rgba(236, 236, 236, 0.7);
+    --finder-titlebar-bg: rgba(255, 255, 255, 0.5);
+    --settings-titlebar-bg: rgba(255, 255, 255, 0.5);
   }
   body.dark-mode {
     --context-menu-bg: rgba(45, 45, 45, 0.7);
@@ -633,6 +673,10 @@
     --context-menu-item-hover-color: #ffffff;
     --context-menu-divider-bg: rgba(255, 255, 255, 0.15);
     --shutdown-modal-bg: rgba(40, 40, 40, 0.48);
+    --word-titlebar-bg: rgba(44, 44, 44, 0.7);
+    --safari-titlebar-bg: rgba(44, 44, 44, 0.7);
+    --finder-titlebar-bg: rgba(37, 37, 37, 0.7);
+    --settings-titlebar-bg: rgba(37, 37, 37, 0.7);
   }
 
   /* Glass Dropdowns and Context Menu Styling */
@@ -811,9 +855,15 @@
     background: transparent !important;
     pointer-events: none !important;
   }
-
-  #shutdown-glass-wrapper {
+  #shutdown-confirm-modal.show {
     pointer-events: auto !important;
+  }
+
+  #shutdown-confirm-modal.show #shutdown-glass-wrapper {
+    pointer-events: auto !important;
+  }
+  #shutdown-glass-wrapper {
+    pointer-events: none !important;
     cursor: default;
   }
 
@@ -911,7 +961,7 @@
     flex-direction: row;
     overflow: hidden;
     color: #333;
-    z-index: 50;
+    z-index: 20000;
   }
   #settings-window .titlebar {
     background: transparent;
@@ -1042,6 +1092,9 @@
     padding: 40px 30px;
     overflow-y: auto;
     background: transparent;
+    position: relative;
+    z-index: 2;
+    pointer-events: auto;
   }
   
   /* About Settings View */
@@ -1593,16 +1646,22 @@
     height: 100%;
   }
   .menu-item {
-    padding: 0 10px;
-    height: 100%;
+    padding: 0 12px;
+    height: 22px;
+    margin: 0 2px;
     display: flex;
     align-items: center;
-    border-radius: 4px;
+    border-radius: 11px !important; /* Perfect Pill shape with height 22px */
     cursor: default;
     position: relative;
+    box-sizing: border-box;
+    transition: background 0.08s ease, color 0.08s ease;
   }
-  .menu-item:hover, .menu-item.open {
-    background: rgba(255, 255, 255, 0.2);
+  .menu-item.open {
+    background: rgba(255, 255, 255, 0.22) !important;
+  }
+  .menubar.active-mode .menu-item:hover {
+    background: rgba(255, 255, 255, 0.22) !important;
   }
   .menu-item.active {
     font-weight: 700;
@@ -1848,7 +1907,7 @@
   .cc-grid {
     position: relative;
     width: 312px; /* 4 columns * 72px + 3 gaps * 8px = 312px */
-    height: 376px; /* 6 rows * 56px + 5 gaps * 8px = 376px */
+    height: 472px; /* 6 rows * 72px + 5 gaps * 8px = 472px */
     background: transparent;
   }
   .cc-tile-glass {
@@ -1873,20 +1932,15 @@
   body.dark-mode .cc-tile-inner {
     color: #ffffff;
   }
-  .cc-tile-inner.active .cc-tile-icon-wrapper {
-    background: #007aff !important;
-    color: #ffffff !important;
-    box-shadow: none;
-  }
-  body.dark-mode .cc-tile-inner.active .cc-tile-icon-wrapper {
-    background: #007aff !important;
+  .cc-tile-inner.active:not(.cc-tile-inner-id-music) {
+    background: rgba(0, 122, 255, 0.65) !important;
     color: #ffffff !important;
   }
   .cc-tile-icon-wrapper {
     width: 28px;
     height: 28px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.15);
+    background: transparent !important;
+    border-radius: 0 !important;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1895,12 +1949,12 @@
     transition: all 0.2s ease;
   }
   body.dark-mode .cc-tile-icon-wrapper {
-    background: rgba(255, 255, 255, 0.15);
+    background: transparent !important;
     color: #ffffff;
   }
   .cc-tile-icon-wrapper svg {
-    width: 16px;
-    height: 16px;
+    width: 18px;
+    height: 18px;
   }
   .cc-tile-header {
     display: flex;
@@ -2333,11 +2387,11 @@
     </div>
     <div class="menu-item active" id="active-app-name">Finder</div>
     <div class="menu-item" id="menu-file-btn">File</div>
-    <div class="menu-item">Edit</div>
-    <div class="menu-item">View</div>
-    <div class="menu-item">Go</div>
-    <div class="menu-item">Window</div>
-    <div class="menu-item">Help</div>
+    <div class="menu-item" id="menu-edit-btn">Edit</div>
+    <div class="menu-item" id="menu-view-btn">View</div>
+    <div class="menu-item" id="menu-go-btn">Go</div>
+    <div class="menu-item" id="menu-window-btn">Window</div>
+    <div class="menu-item" id="menu-help-btn">Help</div>
   </div>
   <div class="menubar-right">
     <div class="menu-item"><img src="https://github.com/Hellomyfriend19/Macostahoe/blob/main/battery.png?raw=true" style="height: 22px; filter: brightness(0) invert(1) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.15));" alt="Battery"></div>
@@ -2416,6 +2470,157 @@
       </div>
     </div>
   </glass-element>
+
+  <glass-element id="app-dropdown-glass" style="position:absolute; top:28px; left:60px; z-index:99999; display:none;" radius="12" depth="5" blur="3" strength="40" background-color="var(--context-menu-bg)" chromatic-aberration="1" auto-size>
+    <div class="menu-dropdown" id="app-dropdown" style="position:relative; top:0; left:0; background:transparent; backdrop-filter:none; -webkit-backdrop-filter:none; box-shadow:none; border:none; opacity:1; pointer-events:auto; transform:none;">
+      <div class="menu-dropdown-item" id="app-dropdown-about">
+        <span class="ctx-icon-wrapper"><i data-lucide="info"></i></span>
+        <span class="ctx-text" id="app-dropdown-about-text">About Finder</span>
+      </div>
+      <div class="menu-dropdown-divider"></div>
+      <div class="menu-dropdown-item">
+        <span class="ctx-icon-wrapper"><i data-lucide="settings"></i></span>
+        <span class="ctx-text">Settings...</span>
+      </div>
+      <div class="menu-dropdown-divider"></div>
+      <div class="menu-dropdown-item">
+        <span class="ctx-icon-wrapper"><i data-lucide="eye-off"></i></span>
+        <span class="ctx-text" id="app-dropdown-hide-text">Hide Finder</span>
+      </div>
+      <div class="menu-dropdown-item">
+        <span class="ctx-icon-wrapper"><i data-lucide="eye"></i></span>
+        <span class="ctx-text">Show All</span>
+      </div>
+      <div class="menu-dropdown-divider"></div>
+      <div class="menu-dropdown-item" id="app-dropdown-quit">
+        <span class="ctx-icon-wrapper"><i data-lucide="log-out"></i></span>
+        <span class="ctx-text" id="app-dropdown-quit-text">Quit Finder</span>
+      </div>
+    </div>
+  </glass-element>
+
+  <glass-element id="edit-dropdown-glass" style="position:absolute; top:28px; left:180px; z-index:99999; display:none;" radius="12" depth="5" blur="3" strength="40" background-color="var(--context-menu-bg)" chromatic-aberration="1" auto-size>
+    <div class="menu-dropdown" id="edit-dropdown" style="position:relative; top:0; left:0; background:transparent; backdrop-filter:none; -webkit-backdrop-filter:none; box-shadow:none; border:none; opacity:1; pointer-events:auto; transform:none;">
+      <div class="menu-dropdown-item">
+        <span class="ctx-icon-wrapper"><i data-lucide="undo"></i></span>
+        <span class="ctx-text">Undo</span>
+      </div>
+      <div class="menu-dropdown-item">
+        <span class="ctx-icon-wrapper"><i data-lucide="redo"></i></span>
+        <span class="ctx-text">Redo</span>
+      </div>
+      <div class="menu-dropdown-divider"></div>
+      <div class="menu-dropdown-item">
+        <span class="ctx-icon-wrapper"><i data-lucide="scissors"></i></span>
+        <span class="ctx-text">Cut</span>
+      </div>
+      <div class="menu-dropdown-item">
+        <span class="ctx-icon-wrapper"><i data-lucide="copy"></i></span>
+        <span class="ctx-text">Copy</span>
+      </div>
+      <div class="menu-dropdown-item">
+        <span class="ctx-icon-wrapper"><i data-lucide="clipboard"></i></span>
+        <span class="ctx-text">Paste</span>
+      </div>
+      <div class="menu-dropdown-divider"></div>
+      <div class="menu-dropdown-item">
+        <span class="ctx-icon-wrapper"><i data-lucide="square"></i></span>
+        <span class="ctx-text">Select All</span>
+      </div>
+    </div>
+  </glass-element>
+
+  <glass-element id="view-dropdown-glass" style="position:absolute; top:28px; left:230px; z-index:99999; display:none;" radius="12" depth="5" blur="3" strength="40" background-color="var(--context-menu-bg)" chromatic-aberration="1" auto-size>
+    <div class="menu-dropdown" id="view-dropdown" style="position:relative; top:0; left:0; background:transparent; backdrop-filter:none; -webkit-backdrop-filter:none; box-shadow:none; border:none; opacity:1; pointer-events:auto; transform:none;">
+      <div class="menu-dropdown-item" id="menu-view-fullscreen">
+        <span class="ctx-icon-wrapper"><i data-lucide="expand"></i></span>
+        <span class="ctx-text">Enter Full Screen</span>
+      </div>
+      <div class="menu-dropdown-item">
+        <span class="ctx-icon-wrapper"><i data-lucide="sidebar"></i></span>
+        <span class="ctx-text">Show Sidebar</span>
+      </div>
+      <div class="menu-dropdown-divider"></div>
+      <div class="menu-dropdown-item">
+        <span class="ctx-icon-wrapper"><i data-lucide="zoom-in"></i></span>
+        <span class="ctx-text">Zoom In</span>
+      </div>
+      <div class="menu-dropdown-item">
+        <span class="ctx-icon-wrapper"><i data-lucide="zoom-out"></i></span>
+        <span class="ctx-text">Zoom Out</span>
+      </div>
+      <div class="menu-dropdown-item">
+        <span class="ctx-icon-wrapper"><i data-lucide="minimize-2"></i></span>
+        <span class="ctx-text">Actual Size</span>
+      </div>
+    </div>
+  </glass-element>
+
+  <glass-element id="go-dropdown-glass" style="position:absolute; top:28px; left:280px; z-index:99999; display:none;" radius="12" depth="5" blur="3" strength="40" background-color="var(--context-menu-bg)" chromatic-aberration="1" auto-size>
+    <div class="menu-dropdown" id="go-dropdown" style="position:relative; top:0; left:0; background:transparent; backdrop-filter:none; -webkit-backdrop-filter:none; box-shadow:none; border:none; opacity:1; pointer-events:auto; transform:none;">
+      <div class="menu-dropdown-item">
+        <span class="ctx-icon-wrapper"><i data-lucide="arrow-left"></i></span>
+        <span class="ctx-text">Back</span>
+      </div>
+      <div class="menu-dropdown-item">
+        <span class="ctx-icon-wrapper"><i data-lucide="arrow-right"></i></span>
+        <span class="ctx-text">Forward</span>
+      </div>
+      <div class="menu-dropdown-divider"></div>
+      <div class="menu-dropdown-item" id="menu-go-apps">
+        <span class="ctx-icon-wrapper"><i data-lucide="grid"></i></span>
+        <span class="ctx-text">Applications</span>
+      </div>
+      <div class="menu-dropdown-item">
+        <span class="ctx-icon-wrapper"><i data-lucide="monitor"></i></span>
+        <span class="ctx-text">Desktop</span>
+      </div>
+      <div class="menu-dropdown-item">
+        <span class="ctx-icon-wrapper"><i data-lucide="folder"></i></span>
+        <span class="ctx-text">Documents</span>
+      </div>
+      <div class="menu-dropdown-item">
+        <span class="ctx-icon-wrapper"><i data-lucide="download"></i></span>
+        <span class="ctx-text">Downloads</span>
+      </div>
+    </div>
+  </glass-element>
+
+  <glass-element id="window-dropdown-glass" style="position:absolute; top:28px; left:330px; z-index:99999; display:none;" radius="12" depth="5" blur="3" strength="40" background-color="var(--context-menu-bg)" chromatic-aberration="1" auto-size>
+    <div class="menu-dropdown" id="window-dropdown" style="position:relative; top:0; left:0; background:transparent; backdrop-filter:none; -webkit-backdrop-filter:none; box-shadow:none; border:none; opacity:1; pointer-events:auto; transform:none;">
+      <div class="menu-dropdown-item">
+        <span class="ctx-icon-wrapper"><i data-lucide="minus"></i></span>
+        <span class="ctx-text">Minimize</span>
+      </div>
+      <div class="menu-dropdown-item">
+        <span class="ctx-icon-wrapper"><i data-lucide="maximize"></i></span>
+        <span class="ctx-text">Zoom</span>
+      </div>
+      <div class="menu-dropdown-divider"></div>
+      <div class="menu-dropdown-item">
+        <span class="ctx-icon-wrapper"><i data-lucide="layers"></i></span>
+        <span class="ctx-text">Bring All to Front</span>
+      </div>
+    </div>
+  </glass-element>
+
+  <glass-element id="help-dropdown-glass" style="position:absolute; top:28px; left:380px; z-index:99999; display:none;" radius="12" depth="5" blur="3" strength="40" background-color="var(--context-menu-bg)" chromatic-aberration="1" auto-size>
+    <div class="menu-dropdown" id="help-dropdown" style="position:relative; top:0; left:0; background:transparent; backdrop-filter:none; -webkit-backdrop-filter:none; box-shadow:none; border:none; opacity:1; pointer-events:auto; transform:none;">
+      <div class="menu-dropdown-item">
+        <span class="ctx-icon-wrapper"><i data-lucide="search"></i></span>
+        <span class="ctx-text">Search</span>
+      </div>
+      <div class="menu-dropdown-item">
+        <span class="ctx-icon-wrapper"><i data-lucide="help-circle"></i></span>
+        <span class="ctx-text">Mac Tahoe Help</span>
+      </div>
+      <div class="menu-dropdown-divider"></div>
+      <div class="menu-dropdown-item">
+        <span class="ctx-icon-wrapper"><i data-lucide="alert-triangle"></i></span>
+        <span class="ctx-text">Send Feedback</span>
+      </div>
+    </div>
+  </glass-element>
 </div>
 
 <!-- Control Center Panel -->
@@ -2431,9 +2636,9 @@
 <div class="window about-window" id="about-window" style="position:relative; top:0; left:0; margin:0;">
   <div class="titlebar" style="height: 32px; position: relative;">
     <div class="traffic-lights" style="position: absolute; top: 16px; left: 14px; gap: 8px;">
-      <div class="btn close" id="about-close"></div>
-      <div class="btn minimize disabled"></div>
-      <div class="btn maximize disabled"></div>
+      <div class="btn close" id="about-close"><svg viewBox="0 0 24 24" fill="none" stroke="rgb(122, 60, 58)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></div>
+      <div class="btn minimize disabled"><svg viewBox="0 0 24 24" fill="none" stroke="rgb(123, 104, 43)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg></div>
+      <div class="btn maximize disabled"><svg viewBox="0 0 24 24" fill="none" stroke="rgb(54, 102, 59)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg></div>
     </div>
   </div>
   <div class="about-content">
@@ -2459,11 +2664,12 @@
 
 <div class="window" id="finder-window">
   <div class="finder-container">
-    <div class="finder-sidebar-wrapper" id="finder-titlebar">
+    <div class="finder-sidebar-wrapper" id="finder-titlebar" style="position:relative; background:transparent !important; backdrop-filter:none !important; -webkit-backdrop-filter:none !important; z-index:1;">
+      <glass-element style="position:absolute; top:0; left:0; width:100%; height:100%; z-index:-1; pointer-events:none;" radius="12" radius-config="left" depth="3" blur="8" strength="30" background-color="var(--finder-titlebar-bg)" chromatic-aberration="1" auto-size="false"></glass-element>
       <div class="traffic-lights" style="padding-left: 12px; margin-bottom: 25px;">
-        <div class="btn close" id="btn-close"></div>
-        <div class="btn minimize" id="btn-minimize"></div>
-        <div class="btn maximize" id="btn-maximize"></div>
+        <div class="btn close" id="btn-close"><svg viewBox="0 0 24 24" fill="none" stroke="rgb(122, 60, 58)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></div>
+        <div class="btn minimize" id="btn-minimize"><svg viewBox="0 0 24 24" fill="none" stroke="rgb(123, 104, 43)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg></div>
+        <div class="btn maximize" id="btn-maximize"><svg viewBox="0 0 24 24" fill="none" stroke="rgb(54, 102, 59)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg></div>
       </div>
       <div class="sidebar-scroll-wrapper">
         <div class="sidebar-section">Favorites</div>
@@ -2512,11 +2718,12 @@
 </div>
 
 <div class="window" id="safari-window">
-  <div class="safari-toolbar" id="safari-titlebar">
+  <div class="safari-toolbar" id="safari-titlebar" style="background:transparent; backdrop-filter:none; -webkit-backdrop-filter:none; position:relative; z-index:1; border-bottom:0px;">
+    <glass-element style="position:absolute; top:0; left:0; width:100%; height:100%; z-index:-1; pointer-events:none;" radius="12" radius-config="top" depth="2" blur="8" strength="30" background-color="var(--safari-titlebar-bg)" chromatic-aberration="1" auto-size="false"></glass-element>
     <div class="traffic-lights">
-      <div class="btn close" id="safari-btn-close"></div>
-      <div class="btn minimize" id="safari-btn-minimize"></div>
-      <div class="btn maximize" id="safari-btn-maximize"></div>
+      <div class="btn close" id="safari-btn-close"><svg viewBox="0 0 24 24" fill="none" stroke="rgb(122, 60, 58)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></div>
+      <div class="btn minimize" id="safari-btn-minimize"><svg viewBox="0 0 24 24" fill="none" stroke="rgb(123, 104, 43)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg></div>
+      <div class="btn maximize" id="safari-btn-maximize"><svg viewBox="0 0 24 24" fill="none" stroke="rgb(54, 102, 59)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg></div>
     </div>
     <div class="safari-nav-btns">
       <div class="safari-nav-btn" id="safari-btn-back"><i data-lucide="chevron-left" style="width:16px;height:16px;"></i></div>
@@ -2578,11 +2785,12 @@
 </div>
 
 <div class="window" id="word-window">
-  <div class="titlebar" id="word-titlebar">
+  <div class="titlebar" id="word-titlebar" style="background:transparent; backdrop-filter:none; -webkit-backdrop-filter:none; position:relative; z-index:1; border-bottom:0px;">
+    <glass-element style="position:absolute; top:0; left:0; width:100%; height:100%; z-index:-1; pointer-events:none;" radius="12" radius-config="top" depth="2" blur="8" strength="30" background-color="var(--word-titlebar-bg)" chromatic-aberration="1" auto-size="false"></glass-element>
     <div class="traffic-lights">
-      <div class="btn close" id="word-btn-close"></div>
-      <div class="btn minimize" id="word-btn-minimize"></div>
-      <div class="btn maximize" id="word-btn-maximize"></div>
+      <div class="btn close" id="word-btn-close"><svg viewBox="0 0 24 24" fill="none" stroke="rgb(122, 60, 58)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></div>
+      <div class="btn minimize" id="word-btn-minimize"><svg viewBox="0 0 24 24" fill="none" stroke="rgb(123, 104, 43)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg></div>
+      <div class="btn maximize" id="word-btn-maximize"><svg viewBox="0 0 24 24" fill="none" stroke="rgb(54, 102, 59)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg></div>
     </div>
     <div class="window-title">Microsoft Word</div>
   </div>
@@ -2612,11 +2820,12 @@
 
 <div id="terminal-window" class="window" style="width:600px; height:400px; display:none; flex-direction:column; overflow:hidden;">
   <div class="window-inner" style="position:relative; width:100%; height:100%; display:flex; flex-direction:column; background:transparent; backdrop-filter:none; -webkit-backdrop-filter:none; box-shadow:none; border-radius:0; border:none; padding:0; overflow:hidden;">
-    <div class="titlebar" id="terminal-titlebar" style="position: relative; display: flex; align-items: center;">
+    <div class="titlebar" id="terminal-titlebar" style="position: relative; display: flex; align-items: center; background:transparent !important; backdrop-filter:none !important; -webkit-backdrop-filter:none !important; border-bottom:0px; z-index:1;">
+      <glass-element style="position:absolute; top:0; left:0; width:100%; height:100%; z-index:-1; pointer-events:none;" radius="12" radius-config="top" depth="2" blur="8" strength="30" background-color="var(--term-ribbon-tint)" chromatic-aberration="1" auto-size="false"></glass-element>
       <div class="traffic-lights" style="margin-right: 0;">
-        <div class="btn close" id="terminal-btn-close"></div>
-        <div class="btn minimize" id="terminal-btn-minimize"></div>
-        <div class="btn maximize" id="terminal-btn-maximize"></div>
+        <div class="btn close" id="terminal-btn-close"><svg viewBox="0 0 24 24" fill="none" stroke="rgb(122, 60, 58)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></div>
+        <div class="btn minimize" id="terminal-btn-minimize"><svg viewBox="0 0 24 24" fill="none" stroke="rgb(123, 104, 43)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg></div>
+        <div class="btn maximize" id="terminal-btn-maximize"><svg viewBox="0 0 24 24" fill="none" stroke="rgb(54, 102, 59)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg></div>
       </div>
       <div style="position: absolute; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 8px; z-index: 1;" id="terminal-title-container">
         <div style="width: 16px; height: 16px; background-image: url('https://www.macworld.com/wp-content/uploads/2023/12/folder-icon-macos.png'); background-size: contain; background-repeat: no-repeat; background-position: center; flex-shrink: 0;" id="terminal-folder-icon"></div>
@@ -2635,11 +2844,12 @@
 
 <div class="window" id="settings-window">
   <div class="settings-container">
-    <div class="settings-sidebar" id="settings-titlebar">
+    <div class="settings-sidebar" id="settings-titlebar" style="position:relative; background:transparent !important; backdrop-filter:none !important; -webkit-backdrop-filter:none !important; z-index:1;">
+      <glass-element style="position:absolute; top:0; left:0; width:100%; height:100%; z-index:-1; pointer-events:none;" radius="12" radius-config="left" depth="3" blur="8" strength="30" background-color="var(--settings-titlebar-bg)" chromatic-aberration="1" auto-size="false"></glass-element>
       <div class="traffic-lights" style="padding-left: 12px; margin-bottom: 25px;">
-        <div class="btn close" id="settings-btn-close"></div>
-        <div class="btn minimize" id="settings-btn-minimize"></div>
-        <div class="btn maximize" id="settings-btn-maximize"></div>
+        <div class="btn close" id="settings-btn-close"><svg viewBox="0 0 24 24" fill="none" stroke="rgb(122, 60, 58)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></div>
+        <div class="btn minimize" id="settings-btn-minimize"><svg viewBox="0 0 24 24" fill="none" stroke="rgb(123, 104, 43)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg></div>
+        <div class="btn maximize" id="settings-btn-maximize"><svg viewBox="0 0 24 24" fill="none" stroke="rgb(54, 102, 59)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg></div>
       </div>
       
       <div class="sidebar-scroll-wrapper">
@@ -2796,6 +3006,13 @@
           </div>
           <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
             <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-weight: 500; font-size: 14px;">Dock Hover Smoothness</span>
+              <span id="dock-smoothness-value" style="font-size: 13px; opacity: 0.7;">0.63</span>
+            </div>
+            <input type="range" id="dock-smoothness-slider" min="0.05" max="1.0" step="0.01" value="0.63" style="width: 100%;">
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
               <span style="font-weight: 500; font-size: 14px;">Dock Depth</span>
               <span id="dock-depth-value" style="font-size: 13px; opacity: 0.7;">1px</span>
             </div>
@@ -2877,9 +3094,9 @@
     <div class="launchpad-titlebar">
       <!-- Hidden traffic lights to maintain script functionality -->
       <div class="traffic-lights" style="display: none !important;">
-        <div class="btn close" id="launchpad-btn-close"></div>
-        <div class="btn minimize" id="launchpad-btn-minimize"></div>
-        <div class="btn maximize disabled" id="launchpad-btn-maximize"></div>
+        <div class="btn close" id="launchpad-btn-close"><svg viewBox="0 0 24 24" fill="none" stroke="rgb(122, 60, 58)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></div>
+        <div class="btn minimize" id="launchpad-btn-minimize"><svg viewBox="0 0 24 24" fill="none" stroke="rgb(123, 104, 43)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg></div>
+        <div class="btn maximize disabled" id="launchpad-btn-maximize"><svg viewBox="0 0 24 24" fill="none" stroke="rgb(54, 102, 59)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg></div>
       </div>
       <img src="https://github.com/Hellomyfriend19/Macostahoe/blob/main/app%20store%20icon.png?raw=true" alt="Applications" style="width: 36px; height: 36px; margin-right: 0px; object-fit: contain;">
       <input type="text" id="launchpad-search" class="launchpad-search-input" placeholder="Applications" autocomplete="off">
@@ -2889,6 +3106,7 @@
 </div>
 
 <div class="dock-tooltip" id="remove-tooltip" style="position: fixed !important; transform: translateX(-50%) scale(0.85); opacity: 0; pointer-events: none; z-index: 2147483647; transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);">
+  <div class="dock-tooltip-glass" id="remove-tooltip-glass"></div>
   <svg class="dock-tooltip-svg" id="remove-tooltip-svg" style="pointer-events: none; overflow: visible;"></svg>
   <span class="dock-tooltip-text" id="remove-tooltip-text">Remove</span>
 </div>
@@ -2897,6 +3115,7 @@
 <div class="dock-container" id="dock" style="margin-bottom:0; background:transparent; backdrop-filter:none; -webkit-backdrop-filter:none; box-shadow:none; border-radius:21px; position:relative;">
   
   <div class="dock-tooltip" id="tooltip">
+    <div class="dock-tooltip-glass" id="tooltip-glass"></div>
     <svg class="dock-tooltip-svg" id="tooltip-svg" style="pointer-events: none;"></svg>
     <span class="dock-tooltip-text" id="tooltip-text"></span>
   </div>
@@ -3105,13 +3324,14 @@ class GlassElement extends HTMLElement {
     get width() { return parseInt(this.getAttribute('width')) || 200; }
     get height() { return parseInt(this.getAttribute('height')) || 200; }
     get radius() { return parseInt(this.getAttribute('radius')) || 50; }
+    get radiusConfig() { return this.getAttribute('radius-config') || 'all'; }
     get baseDepth() { return parseInt(this.getAttribute('depth')) || 10; }
     get blur() { return parseInt(this.getAttribute('blur')) || 2; }
     get strength() { return parseInt(this.getAttribute('strength')) || 100; }
     get chromaticAberration() { return parseInt(this.getAttribute('chromatic-aberration')) || 0; }
     get debug() { return this.getAttribute('debug') === 'true'; }
     get backgroundColor() { return this.getAttribute('background-color') || 'rgba(255,255,255,0.4)'; }
-    get autoSize() { return this.hasAttribute('auto-size'); }
+    get autoSize() { return this.hasAttribute('auto-size') && this.getAttribute('auto-size') !== 'false'; }
     get minWidth() { return parseInt(this.getAttribute('min-width')) || 0; }
     get minHeight() { return parseInt(this.getAttribute('min-height')) || 0; }
     get depth() { return this.baseDepth; }
@@ -3125,7 +3345,16 @@ class GlassElement extends HTMLElement {
     }
     applyDynamicStyles(element) {
         const { getDisplacementMap } = window.DisplacementUtils;
-        element.style.borderRadius = `${this.radius}px`;
+        
+        if (this.radiusConfig === 'top') {
+            element.style.borderRadius = `${this.radius}px ${this.radius}px 0 0`;
+        } else if (this.radiusConfig === 'left') {
+            element.style.borderRadius = `${this.radius}px 0 0 ${this.radius}px`;
+        } else if (this.radiusConfig === 'none') {
+            element.style.borderRadius = `0px`;
+        } else {
+            element.style.borderRadius = `${this.radius}px`;
+        }
         
         let actualWidth = 0;
         let actualHeight = 0;
@@ -3291,6 +3520,7 @@ customElements.define('glass-element', GlassElement);
   
   window.liquidGlassStrength = 1.0;
   window.dockLiquidGlassBlur = 2;
+  window.dockHoverSmoothness = 0.63;
   const dock = document.getElementById('dock');
   
   function updateDockGlassTheme() {
@@ -3419,8 +3649,11 @@ customElements.define('glass-element', GlassElement);
       <clipPath id="remove-tooltip-clip"><path d="${pathD}"/></clipPath>
       <path d="${pathD}" fill="${fill}" stroke="url(#remove-tooltip-stroke-grad)" stroke-width="1"/>
     `;
-    removeTooltip.style.clipPath = 'url(#remove-tooltip-clip)';
-    removeTooltip.style.webkitClipPath = 'url(#remove-tooltip-clip)';
+    const glass = document.getElementById('remove-tooltip-glass');
+    if (glass) {
+      glass.style.clipPath = 'url(#remove-tooltip-clip)';
+      glass.style.webkitClipPath = 'url(#remove-tooltip-clip)';
+    }
     removeTooltipSvg.style.width = w + 'px';
     removeTooltipSvg.style.height = h + 'px';
     removeTooltip.style.width = w + 'px';
@@ -3732,8 +3965,11 @@ customElements.define('glass-element', GlassElement);
         <clipPath id="tooltip-clip"><path d="${pathD}"/></clipPath>
         <path d="${pathD}" fill="${fill}" stroke="url(#tooltip-stroke-grad)" stroke-width="1"/>
       `;
-      tooltip.style.clipPath = 'url(#tooltip-clip)';
-      tooltip.style.webkitClipPath = 'url(#tooltip-clip)';
+      const glass = document.getElementById('tooltip-glass');
+      if (glass) {
+        glass.style.clipPath = 'url(#tooltip-clip)';
+        glass.style.webkitClipPath = 'url(#tooltip-clip)';
+      }
       tooltipSvg.style.width = w + 'px';
       tooltipSvg.style.height = h + 'px';
       tooltip.style.width = w + 'px';
@@ -4411,8 +4647,8 @@ customElements.define('glass-element', GlassElement);
   let isSettingsDragging = false;
   let settingsStartX, settingsStartY, settingsInitialDragX, settingsInitialDragY;
 
-  settingsWindow.addEventListener('mousedown', (e) => {
-    if (e.target.closest('.traffic-lights') || e.target.closest('.sidebar-scroll-wrapper') || e.target.closest('.settings-content input') || e.target.closest('.settings-content button') || e.target.closest('.settings-content .wallpaper-grid')) return;
+  settingsTitlebar.addEventListener('mousedown', (e) => {
+    if (e.target.closest('.traffic-lights') || e.target.closest('.sidebar-scroll-wrapper') || e.target.closest('input') || e.target.closest('button')) return;
     isSettingsDragging = true;
     settingsStartX = e.clientX;
     settingsStartY = e.clientY;
@@ -4511,6 +4747,16 @@ customElements.define('glass-element', GlassElement);
         outputScales[1] = 1.0 + (mag - 1.0) * 0.4;
         outputScales[2] = 1.0 + (mag - 1.0) * 0.0666;
       }
+    });
+  }
+
+  const dockSmoothnessSlider = document.getElementById('dock-smoothness-slider');
+  const dockSmoothnessValue = document.getElementById('dock-smoothness-value');
+  if (dockSmoothnessSlider) {
+    dockSmoothnessSlider.addEventListener('input', (e) => {
+      const val = parseFloat(e.target.value);
+      dockSmoothnessValue.textContent = val.toFixed(2);
+      window.dockHoverSmoothness = val;
     });
   }
 
@@ -4797,7 +5043,8 @@ customElements.define('glass-element', GlassElement);
         icon.style.width = `${baseSize}px`;
         icon.style.height = `${baseSize}px`;
       });
-      document.getElementById('dock').style.height = `${baseSize + 20}px`;
+      const dockEl = document.getElementById('dock');
+      if (dockEl) dockEl.style.height = `${baseSize + 20}px`;
     });
   }
 
@@ -5643,7 +5890,8 @@ if (val === 'help') {
         state.currentScale += state.velocity;
       } else {
         // Fast, direct tracking of mouse position (no laggy smoothing)
-        state.currentScale += (state.targetScale - state.currentScale) * 0.40;
+        const smoothness = typeof window.dockHoverSmoothness !== 'undefined' ? window.dockHoverSmoothness : 0.63;
+        state.currentScale += (state.targetScale - state.currentScale) * smoothness;
         state.velocity = 0;
       }
 
@@ -5937,23 +6185,25 @@ if (val === 'help') {
     const wordMinDragY = -halfWinHeight + wordState.height / 2 + 28;
     const wordClampedDragY = Math.max(wordMinDragY, Math.min(wordState.dragY, wordMaxDragY));
 
-    wordWindow.style.transform = `translate(${wordState.dragX}px, ${wordState.translateY + wordClampedDragY}px) scale(${wordState.scaleX}, ${wordState.scaleY})`;
-    wordWindow.style.opacity = wordState.opacity;
-    wordWindow.style.filter = !wordState.isOpen && wordState.opacity < 0.99 ? `blur(${(1 - wordState.opacity) * 15}px)` : 'none';
-    wordWindow.style.width = `${wordState.width}px`;
-    wordWindow.style.height = `${wordState.height}px`;
-    wordWindow.style.marginLeft = `-${wordState.width / 2}px`;
-    wordWindow.style.marginTop = `-${wordState.height / 2}px`;
+    if (wordWindow) {
+      wordWindow.style.transform = `translate(${wordState.dragX}px, ${wordState.translateY + wordClampedDragY}px) scale(${wordState.scaleX}, ${wordState.scaleY})`;
+      wordWindow.style.opacity = wordState.opacity;
+      wordWindow.style.filter = !wordState.isOpen && wordState.opacity < 0.99 ? `blur(${(1 - wordState.opacity) * 15}px)` : 'none';
+      wordWindow.style.width = `${wordState.width}px`;
+      wordWindow.style.height = `${wordState.height}px`;
+      wordWindow.style.marginLeft = `-${wordState.width / 2}px`;
+      wordWindow.style.marginTop = `-${wordState.height / 2}px`;
 
-    if (wordState.isOpen) {
-      wordWindow.classList.add('interactive');
-      wordIcon && wordIcon.classList.add('active');
-      wordWindow.style.display = 'flex';
-    } else {
-      wordWindow.classList.remove('interactive');
-      wordIcon && wordIcon.classList.remove('active');
-      if (wordState.opacity < 0.01) wordWindow.style.display = 'none';
-      else wordWindow.style.display = 'flex';
+      if (wordState.isOpen) {
+        wordWindow.classList.add('interactive');
+        wordIcon && wordIcon.classList.add('active');
+        wordWindow.style.display = 'flex';
+      } else {
+        wordWindow.classList.remove('interactive');
+        wordIcon && wordIcon.classList.remove('active');
+        if (wordState.opacity < 0.01) wordWindow.style.display = 'none';
+        else wordWindow.style.display = 'flex';
+      }
     }
 
     const isAnimating = 
@@ -6006,7 +6256,10 @@ if (val === 'help') {
   const updateTime = () => {
     const now = new Date();
     const options = { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' };
-    document.getElementById('menubar-time').textContent = now.toLocaleString('en-US', options).replace(',', '');
+    const mbTime = document.getElementById('menubar-time');
+    if (mbTime) {
+      mbTime.textContent = now.toLocaleString('en-US', options).replace(',', '');
+    }
   };
   setInterval(updateTime, 1000);
   updateTime();
@@ -6017,39 +6270,152 @@ if (val === 'help') {
   const fileMenuBtn = document.getElementById('menu-file-btn');
   const fileDropdown = document.getElementById('file-dropdown');
 
-  appleMenuBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    appleMenuBtn.classList.toggle('open');
-    appleDropdown.classList.toggle('show');
-    document.getElementById('apple-dropdown-glass').style.display = appleDropdown.classList.contains('show') ? 'block' : 'none';
-    if (fileDropdown.classList.contains('show')) {
-      fileMenuBtn.classList.remove('open');
-      fileDropdown.classList.remove('show');
-    document.getElementById('file-dropdown-glass').style.display = 'none';
+  // Unified Menu Management System
+  const menubarElement = document.querySelector('.menubar');
+  let activeMenu = null;
+
+  const menus = [
+    { btnId: 'apple-menu-btn', glassId: 'apple-dropdown-glass', dropdownId: 'apple-dropdown' },
+    { btnId: 'active-app-name', glassId: 'app-dropdown-glass', dropdownId: 'app-dropdown' },
+    { btnId: 'menu-file-btn', glassId: 'file-dropdown-glass', dropdownId: 'file-dropdown' },
+    { btnId: 'menu-edit-btn', glassId: 'edit-dropdown-glass', dropdownId: 'edit-dropdown' },
+    { btnId: 'menu-view-btn', glassId: 'view-dropdown-glass', dropdownId: 'view-dropdown' },
+    { btnId: 'menu-go-btn', glassId: 'go-dropdown-glass', dropdownId: 'go-dropdown' },
+    { btnId: 'menu-window-btn', glassId: 'window-dropdown-glass', dropdownId: 'window-dropdown' },
+    { btnId: 'menu-help-btn', glassId: 'help-dropdown-glass', dropdownId: 'help-dropdown' }
+  ];
+
+  function updateMenubarActiveState() {
+    if (activeMenu) {
+      menubarElement.classList.add('active-mode');
+    } else {
+      menubarElement.classList.remove('active-mode');
     }
-    if (appleDropdown.classList.contains('show')) {
-      appleDropdown.dispatchEvent(new Event('force-liquid-glass', { bubbles: true }));
+  }
+
+  function openMenu(menu) {
+    if (activeMenu === menu) return;
+    if (activeMenu) {
+      closeMenu(activeMenu);
     }
+    
+    activeMenu = menu;
+    const btn = document.getElementById(menu.btnId);
+    if (btn) btn.classList.add('open');
+    
+    if (menu.btnId === 'active-app-name') {
+      const appName = activeAppName || 'Finder';
+      const aboutText = document.getElementById('app-dropdown-about-text');
+      const hideText = document.getElementById('app-dropdown-hide-text');
+      const quitText = document.getElementById('app-dropdown-quit-text');
+      if (aboutText) aboutText.textContent = `About ${appName}`;
+      if (hideText) hideText.textContent = `Hide ${appName}`;
+      if (quitText) quitText.textContent = `Quit ${appName}`;
+    }
+    
+    const glass = document.getElementById(menu.glassId);
+    const dropdown = document.getElementById(menu.dropdownId);
+    if (glass && dropdown) {
+      const btnRect = btn.getBoundingClientRect();
+      const menubarRect = menubarElement.getBoundingClientRect();
+      const leftOffset = btnRect.left - menubarRect.left;
+      
+      glass.style.left = `${leftOffset}px`;
+      glass.style.display = 'block';
+      dropdown.classList.add('show');
+      dropdown.dispatchEvent(new Event('force-liquid-glass', { bubbles: true }));
+    }
+    
+    updateMenubarActiveState();
+  }
+
+  function closeMenu(menu) {
+    const btn = document.getElementById(menu.btnId);
+    if (btn) btn.classList.remove('open');
+    
+    const glass = document.getElementById(menu.glassId);
+    const dropdown = document.getElementById(menu.dropdownId);
+    if (dropdown) dropdown.classList.remove('show');
+    if (glass) glass.style.display = 'none';
+    
+    if (activeMenu === menu) {
+      activeMenu = null;
+    }
+    updateMenubarActiveState();
+  }
+
+  function closeAllMenus() {
+    if (activeMenu) {
+      closeMenu(activeMenu);
+    }
+  }
+
+  menus.forEach(menu => {
+    const btn = document.getElementById(menu.btnId);
+    if (!btn) return;
+    
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (activeMenu === menu) {
+        closeMenu(menu);
+      } else {
+        openMenu(menu);
+      }
+    });
+    
+    btn.addEventListener('mouseenter', () => {
+      if (activeMenu && activeMenu !== menu) {
+        openMenu(menu);
+      }
+    });
   });
 
-  fileMenuBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    fileMenuBtn.classList.toggle('open');
-    fileDropdown.classList.toggle('show');
-    document.getElementById('file-dropdown-glass').style.display = fileDropdown.classList.contains('show') ? 'block' : 'none';
-    if (appleDropdown.classList.contains('show')) {
-      appleMenuBtn.classList.remove('open');
-      appleDropdown.classList.remove('show');
-    document.getElementById('apple-dropdown-glass').style.display = 'none';
-    }
-    if (fileDropdown.classList.contains('show')) {
-      fileDropdown.dispatchEvent(new Event('force-liquid-glass', { bubbles: true }));
-    }
+  // Toggle fullscreen via View menu
+  const fullscreenBtn = document.getElementById('menu-view-fullscreen');
+  if (fullscreenBtn) {
+    fullscreenBtn.addEventListener('click', () => {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+        fullscreenBtn.querySelector('.ctx-text').textContent = "Exit Full Screen";
+      } else {
+        document.exitFullscreen().catch(() => {});
+        fullscreenBtn.querySelector('.ctx-text').textContent = "Enter Full Screen";
+      }
+    });
+  }
+
+  // Applications toggle launchpad via Go menu
+  const goAppsBtn = document.getElementById('menu-go-apps');
+  if (goAppsBtn) {
+    goAppsBtn.addEventListener('click', () => {
+      const appIcon = document.querySelector('.dock-icon[data-name="Apps"]');
+      if (appIcon) {
+        appIcon.click();
+      } else if (typeof launchpadState !== 'undefined') {
+        if (!launchpadState.isOpen) {
+          launchpadState.targetScaleX = 1; launchpadState.targetScaleY = 1;
+          launchpadState.targetOpacity = 1; 
+          launchpadState.isOpen = true;
+          const launchpadWindow = document.getElementById('launchpad-window');
+          if (launchpadWindow) launchpadWindow.style.display = 'flex';
+        }
+      }
+    });
+  }
+
+  // auto close menus when dropdown items are selected
+  document.querySelectorAll('.menu-dropdown-item').forEach(item => {
+    item.addEventListener('click', (e) => {
+      setTimeout(() => {
+        closeAllMenus();
+      }, 120);
+    });
   });
 
   document.getElementById('file-new').addEventListener('click', () => {
     fileDropdown.classList.remove('show');
-    document.getElementById('file-dropdown-glass').style.display = 'none';
+    const fileGlass = document.getElementById('file-dropdown-glass');
+    if (fileGlass) fileGlass.style.display = 'none';
     fileMenuBtn.classList.remove('open');
     contextMenuTarget = 'desktop'; // Or current, but let's default to desktop
     if (winState.isOpen && !winState.isMinimized && activeAppName === 'Finder') contextMenuTarget = 'finder';
@@ -6074,7 +6440,8 @@ if (val === 'help') {
 
   document.getElementById('file-save').addEventListener('click', () => {
     fileDropdown.classList.remove('show');
-    document.getElementById('file-dropdown-glass').style.display = 'none';
+    const fileGlass = document.getElementById('file-dropdown-glass');
+    if (fileGlass) fileGlass.style.display = 'none';
     fileMenuBtn.classList.remove('open');
     if (activeAppName === 'Word' && wordState.isOpen) {
       const fileName = prompt('Save Document As:', 'Untitled.docx');
@@ -6112,9 +6479,10 @@ if (val === 'help') {
   const saveFileInput = document.getElementById('save-file-input');
 
   document.getElementById('file-download').addEventListener('click', () => {
+    const fileGlass = document.getElementById('file-dropdown-glass');
     if (activeAppName === 'Word' && wordState.isOpen) {
        fileDropdown.classList.remove('show');
-    document.getElementById('file-dropdown-glass').style.display = 'none';
+       if (fileGlass) fileGlass.style.display = 'none';
        fileMenuBtn.classList.remove('open');
        saveFileModal.classList.add('show');
        const modalInner = saveFileModal.querySelector('.modal');
@@ -6124,7 +6492,7 @@ if (val === 'help') {
        saveFileInput.select();
     } else {
        fileDropdown.classList.remove('show');
-    document.getElementById('file-dropdown-glass').style.display = 'none';
+       if (fileGlass) fileGlass.style.display = 'none';
        fileMenuBtn.classList.remove('open');
     }
   });
@@ -6169,40 +6537,42 @@ if (val === 'help') {
   });
 
   document.body.addEventListener('click', (e) => {
-    if (!appleDropdown.contains(e.target) && e.target !== appleMenuBtn && !appleMenuBtn.contains(e.target)) {
-      appleDropdown.classList.remove('show');
-    document.getElementById('apple-dropdown-glass').style.display = 'none';
-      appleMenuBtn.classList.remove('open');
-    }
-    if (!fileDropdown.contains(e.target) && e.target !== fileMenuBtn && !fileMenuBtn.contains(e.target)) {
-      fileDropdown.classList.remove('show');
-    document.getElementById('file-dropdown-glass').style.display = 'none';
-      fileMenuBtn.classList.remove('open');
+    if (activeMenu) {
+      const btn = document.getElementById(activeMenu.btnId);
+      const glass = document.getElementById(activeMenu.glassId);
+      if (btn && glass && !btn.contains(e.target) && !glass.contains(e.target)) {
+        closeAllMenus();
+      }
     }
   });
 
   document.getElementById('about-mac').addEventListener('click', () => {
     const aboutWindow = document.getElementById('about-window');
-    document.getElementById('about-glass').style.display = 'block';
+    const aboutGlass = document.getElementById('about-glass');
+    if (aboutGlass) aboutGlass.style.display = 'block';
     
     // Force a CSS reflow to ensure the browser registers the transition from scale(0.85) to scale(1)
-    void aboutWindow.offsetWidth;
-    
-    aboutWindow.classList.add('show');
+    if (aboutWindow) {
+      void aboutWindow.offsetWidth;
+      aboutWindow.classList.add('show');
+    }
     appleDropdown.classList.remove('show');
-    document.getElementById('apple-dropdown-glass').style.display = 'none';
+    const appleGlass = document.getElementById('apple-dropdown-glass');
+    if (appleGlass) appleGlass.style.display = 'none';
     appleMenuBtn.classList.remove('open');
   });
 
   // Open System Settings from the apple dropdown
   const openSystemSettings = () => {
     appleDropdown.classList.remove('show');
-    document.getElementById('apple-dropdown-glass').style.display = 'none';
+    const appleGlass = document.getElementById('apple-dropdown-glass');
+    if (appleGlass) appleGlass.style.display = 'none';
     appleMenuBtn.classList.remove('open');
     settingsState.targetScaleX = 1; settingsState.targetScaleY = 1;
     settingsState.targetOpacity = 1; settingsState.isOpen = true; 
     settingsState.isMinimized = false;
     setActiveApp('System Settings');
+    bringWindowToFront('settings-window', 'System Settings');
   };
 
   document.getElementById('apple-system-settings').addEventListener('click', () => {
@@ -6213,14 +6583,16 @@ if (val === 'help') {
 
   document.getElementById('apple-app-store').addEventListener('click', () => {
     appleDropdown.classList.remove('show');
-    document.getElementById('apple-dropdown-glass').style.display = 'none';
+    const appleGlass = document.getElementById('apple-dropdown-glass');
+    if (appleGlass) appleGlass.style.display = 'none';
     appleMenuBtn.classList.remove('open');
     alert("Mac App Store is simulated. Searching for apps...");
   });
 
   document.getElementById('apple-logout').addEventListener('click', () => {
     appleDropdown.classList.remove('show');
-    document.getElementById('apple-dropdown-glass').style.display = 'none';
+    const appleGlass = document.getElementById('apple-dropdown-glass');
+    if (appleGlass) appleGlass.style.display = 'none';
     appleMenuBtn.classList.remove('open');
     // Simulate logout by locking screen
     const lockBtn = document.getElementById('lock-screen-btn');
@@ -6229,29 +6601,33 @@ if (val === 'help') {
 
   document.getElementById('apple-force-quit').addEventListener('click', () => {
     appleDropdown.classList.remove('show');
-    document.getElementById('apple-dropdown-glass').style.display = 'none';
+    const appleGlass = document.getElementById('apple-dropdown-glass');
+    if (appleGlass) appleGlass.style.display = 'none';
     appleMenuBtn.classList.remove('open');
     // Force Close active window
     const activeApp = activeAppName;
-    if (activeApp === 'Finder' && finderWindow.classList.contains('show')) {
+    if (activeApp === 'Finder' && finderWindow && finderWindow.classList.contains('show')) {
       document.getElementById('finder-close').click();
-    } else if (activeApp === 'Safari' && safariWindow.classList.contains('show')) {
+    } else if (activeApp === 'Safari' && safariWindow && safariWindow.classList.contains('show')) {
       document.getElementById('safari-close').click();
-    } else if (activeApp === 'System Settings' && settingsWindow.classList.contains('show')) {
+    } else if (activeApp === 'System Settings' && settingsWindow && settingsWindow.classList.contains('show')) {
       document.getElementById('settings-close').click();
     }
   });
 
   document.getElementById('apple-recent-items').addEventListener('click', () => {
     appleDropdown.classList.remove('show');
-    document.getElementById('apple-dropdown-glass').style.display = 'none';
+    const appleGlass = document.getElementById('apple-dropdown-glass');
+    if (appleGlass) appleGlass.style.display = 'none';
     appleMenuBtn.classList.remove('open');
     alert("Recent items: No recently opened applications.");
   });
 
   document.getElementById('about-close').addEventListener('click', () => {
-    document.getElementById('about-window').classList.remove('show');
-    document.getElementById('about-glass').style.display = 'none';
+    const aboutWindow = document.getElementById('about-window');
+    if (aboutWindow) aboutWindow.classList.remove('show');
+    const aboutGlass = document.getElementById('about-glass');
+    if (aboutGlass) aboutGlass.style.display = 'none';
   });
 
   document.getElementById('sleep-mac').addEventListener('click', () => {
@@ -6507,20 +6883,21 @@ if (val === 'help') {
 
   function getCCIcon(iconName) {
     const icons = {
-      wifi: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"></path><path d="M1.42 9a16 16 0 0 1 21.16 0"></path><path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path><line x1="12" y1="20" x2="12.01" y2="20"></line></svg>`,
-      bluetooth: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="6.5 6.5 17.5 17.5 12 23 12 1 17.5 6.5 6.5 17.5"></polygon></svg>`,
-      airdrop: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M12 2a15.3 15.3 0 0 1 4 7l-1.5 1.5M12 2a15.3 15.3 0 0 0-4 7l1.5 1.5M12 22a15.3 15.3 0 0 0 4-7l-1.5-1.5M12 22a15.3 15.3 0 0 1-4 7l1.5-1.5"></path></svg>`,
-      focus: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>`,
-      brightness: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>`,
-      volume: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>`,
-      mirror: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>`,
-      battery: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="6" width="18" height="12" rx="2" ry="2"></rect><line x1="23" y1="11" x2="23" y2="13"></line><line x1="5" y1="10" x2="5" y2="14"></line><line x1="9" y1="10" x2="9" y2="14"></line><line x1="13" y1="10" x2="13" y2="14"></line></svg>`,
-      keyboard: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2" ry="2"></rect><line x1="6" y1="8" x2="6" y2="8"></line><line x1="10" y1="8" x2="10" y2="8"></line><line x1="14" y1="8" x2="14" y2="8"></line><line x1="18" y1="8" x2="18" y2="8"></line><line x1="6" y1="12" x2="6" y2="12"></line><line x1="10" y1="12" x2="10" y2="12"></line><line x1="14" y1="12" x2="14" y2="12"></line><line x1="18" y1="12" x2="18" y2="12"></line><line x1="7" y1="16" x2="17" y2="16"></line></svg>`,
-      dark_mode: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path></svg>`,
-      night_shift: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path><circle cx="12" cy="12" r="4"></circle></svg>`,
-      music: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>`
+      wifi: "wifi",
+      bluetooth: "bluetooth",
+      airdrop: "radio",
+      focus: "moon",
+      brightness: "sun",
+      volume: "volume-2",
+      mirror: "monitor-play",
+      battery: "battery",
+      keyboard: "keyboard",
+      dark_mode: "moon",
+      night_shift: "sun-moon",
+      music: "music"
     };
-    return icons[iconName] || icons.wifi;
+    const lucideName = icons[iconName] || "wifi";
+    return `<i data-lucide="${lucideName}" style="width: 18px; height: 18px; stroke-width: 2.5;"></i>`;
   }
 
   function toggleCCButton(btn) {
@@ -6641,7 +7018,7 @@ if (val === 'help') {
       }
 
       const cellW = 72;
-      const cellH = 56;
+      const cellH = 72;
       const gap = 8;
 
       const leftPx = btn.x * (cellW + gap);
@@ -6651,7 +7028,14 @@ if (val === 'help') {
 
       const tile = document.createElement('glass-element');
       tile.className = `cc-tile-glass cc-tile-id-${btn.id}`;
-      tile.setAttribute('radius', btn.id === 'music' ? '18' : '28');
+      
+      let tileRadius = '18';
+      if (btn.id === 'sound' || btn.id === 'brightness') {
+        tileRadius = '8';
+      } else if (btn.id === 'music') {
+        tileRadius = '18';
+      }
+      tile.setAttribute('radius', tileRadius);
       tile.setAttribute('depth', currentCCDepth.toFixed(3));
       tile.setAttribute('blur', '2');
       tile.setAttribute('strength', '185');
@@ -6668,7 +7052,7 @@ if (val === 'help') {
       tile.style.cursor = 'pointer';
 
       const inner = document.createElement('div');
-      inner.className = `cc-tile-inner ${btn.active ? 'active' : ''}`;
+      inner.className = `cc-tile-inner cc-tile-inner-id-${btn.id} ${btn.active ? 'active' : ''}`;
 
       if (btn.type === 'slider') {
         inner.innerHTML = `
@@ -6700,16 +7084,16 @@ if (val === 'help') {
             </div>
             <div class="cc-music-controls">
               <button class="cc-music-btn" id="cc-music-prev" title="Previous">
-                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6L18 6v12z"/></svg>
+                <i data-lucide="skip-back" style="width: 14px; height: 14px;"></i>
               </button>
               <button class="cc-music-btn" id="cc-music-play" title="Play/Pause">
                 ${btn.active ? 
-                  `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>` : 
-                  `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>`
+                  `<i data-lucide="pause" style="width: 14px; height: 14px; fill: currentColor;"></i>` : 
+                  `<i data-lucide="play" style="width: 14px; height: 14px; fill: currentColor;"></i>`
                 }
               </button>
               <button class="cc-music-btn" id="cc-music-next" title="Next">
-                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6zm9-12v12h2V6z"/></svg>
+                <i data-lucide="skip-forward" style="width: 14px; height: 14px;"></i>
               </button>
             </div>
           </div>
@@ -6723,7 +7107,7 @@ if (val === 'help') {
           tile.setAttribute('title', `${btn.name}: ${btn.subtitle}`);
           inner.innerHTML = `
             <div style="display: flex; align-items: center; justify-content: center; width: 100%; height: 100%;">
-              <div class="cc-tile-icon-wrapper" style="width: 32px; height: 32px; border-radius: 50%;">
+              <div class="cc-tile-icon-wrapper" style="width: 32px; height: 32px; background: transparent; border-radius: 0;">
                 ${getCCIcon(btn.icon)}
               </div>
             </div>
@@ -6731,7 +7115,7 @@ if (val === 'help') {
         } else {
           inner.innerHTML = `
             <div class="cc-tile-header" style="height:100%; width:100%; justify-content: flex-start; align-items: center; gap: 8px; padding: 10px; box-sizing: border-box; display: flex;">
-              <div class="cc-tile-icon-wrapper">${getCCIcon(btn.icon)}</div>
+              <div class="cc-tile-icon-wrapper" style="background: transparent; border-radius: 0;">${getCCIcon(btn.icon)}</div>
               <div class="cc-tile-details" style="display: flex; flex-direction: column; justify-content: center;">
                 <div class="cc-tile-title">${btn.name}</div>
                 <div class="cc-tile-subtitle">${btn.subtitle}</div>
@@ -6748,6 +7132,10 @@ if (val === 'help') {
       tile.appendChild(inner);
       gridContainer.appendChild(tile);
     });
+
+    if (typeof lucide !== 'undefined' && lucide.createIcons) {
+      lucide.createIcons();
+    }
   }
 
   if (settingsBtn) {
@@ -6761,16 +7149,7 @@ if (val === 'help') {
       }
 
       // close other dropdowns
-      if (appleDropdown.classList.contains('show')) {
-        appleMenuBtn.classList.remove('open');
-        appleDropdown.classList.remove('show');
-        document.getElementById('apple-dropdown-glass').style.display = 'none';
-      }
-      if (fileDropdown.classList.contains('show')) {
-        fileMenuBtn.classList.remove('open');
-        fileDropdown.classList.remove('show');
-        document.getElementById('file-dropdown-glass').style.display = 'none';
-      }
+      closeAllMenus();
     });
   }
 
