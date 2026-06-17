@@ -3106,9 +3106,9 @@
           <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
             <div style="display: flex; justify-content: space-between; align-items: center;">
               <span style="font-weight: 500; font-size: 14px;">Dock Container</span>
-              <span id="sq-dock-val" style="font-size: 13px; opacity: 0.7;">32px</span>
+              <span id="sq-dock-val" style="font-size: 13px; opacity: 0.7;">21px</span>
             </div>
-            <input type="range" class="sq-slider" data-prop="dock" min="0" max="80" step="1" value="32" style="width: 100%;">
+            <input type="range" class="sq-slider" data-prop="dock" min="0" max="80" step="1" value="21" style="width: 100%;">
           </div>
           <!-- 10. Dock Icons -->
           <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
@@ -3303,7 +3303,7 @@
     launchpad: 49,
     about: 40,
     popups: 23,
-    dock: 32,
+    dock: 21,
     dockIcons: 60,
     launchpadIcons: 60
   };
@@ -3311,7 +3311,7 @@
   try {
     if (savedSettings) {
       parsed = JSON.parse(savedSettings);
-      if (parsed && (parsed.finder === 12 || parsed.finder === 0.08 || parsed.dock === 21 || parsed.dock === 40 || parsed.dockIcons === 10 || parsed.popups === 10 || parsed.popups === 14)) {
+      if (parsed && (parsed.finder === 12 || parsed.finder === 0.08 || parsed.dock === 32 || parsed.dock === 40 || parsed.dockIcons === 10 || parsed.popups === 10 || parsed.popups === 14)) {
         parsed = defaultSettings;
       }
     }
@@ -3544,20 +3544,37 @@
     if (saveFileGlass) popupAndMenuGlasses.push(saveFileGlass);
 
     popupAndMenuGlasses.forEach(glass => {
-      if (glass && glass.shadowRoot) {
-        const globBox = glass.shadowRoot.querySelector('.glass-box');
-        if (globBox) {
-          window.applySquircle(globBox, { getRoundness: () => window.squircleSettings.popups, isWindow: true });
+      if (glass) {
+        // Reset host glass from any light DOM clip-path to restore perfect SVG liquid glass on .glass-box inside
+        glass.style.clipPath = 'none';
+        glass.classList.remove('squirclified');
+        if (glass.shadowRoot) {
+          const globBox = glass.shadowRoot.querySelector('.glass-box');
+          if (globBox) {
+            window.applySquircle(globBox, { getRoundness: () => window.squircleSettings.popups, isWindow: true });
+          }
         }
       }
     });
 
-    // 11. Dock Container background (applied to the glass-box inside the glass-element shadowRoot so that icons can overflow and expand without clipping)
+    // 11. Dock Container background: 
+    // We update the radius attribute of the dockWrapper glass-element itself, and set the border-radius on the #dock container inside it.
+    // This allows the element to render perfectly with standard border-radius, without clipping the icons, and supports dynamic roundness adjustment!
     const dockWrapper = document.getElementById('dock-glass-wrapper');
-    if (dockWrapper && dockWrapper.shadowRoot) {
-      const globGlass = dockWrapper.shadowRoot.querySelector('.glass-box');
-      if (globGlass) {
-        window.applySquircle(globGlass, { getRoundness: () => window.squircleSettings.dock });
+    if (dockWrapper) {
+      const dockRoundness = window.squircleSettings ? window.squircleSettings.dock : 21;
+      dockWrapper.setAttribute('radius', dockRoundness.toString());
+      const dockInner = document.getElementById('dock');
+      if (dockInner) {
+        dockInner.style.borderRadius = `${dockRoundness}px`;
+      }
+      dockWrapper.style.clipPath = 'none';
+      if (dockWrapper.shadowRoot) {
+        const globGlass = dockWrapper.shadowRoot.querySelector('.glass-box');
+        if (globGlass) {
+          globGlass.style.clipPath = 'none';
+          globGlass.classList.remove('squirclified');
+        }
       }
     }
 
@@ -3568,21 +3585,34 @@
       const id = matches ? matches[1] : '';
       let roundnessVal = 18;
       if (id === 'music') {
-        roundnessVal = 40;
+        roundnessVal = 18;
       } else if (id === 'sound' || id === 'brightness') {
-        roundnessVal = 32;
+        roundnessVal = 12;
       } else {
         const widthPx = tile.getBoundingClientRect().width || 58;
         const heightPx = tile.getBoundingClientRect().height || 58;
         roundnessVal = Math.min(widthPx, heightPx) / 2 || 29;
       }
 
+      // Reset host tile from any light DOM clip-path so the SVG filters in Safari/Chrome can render properly on .glass-box inside!
+      tile.style.clipPath = 'none';
+      tile.classList.remove('squirclified');
+      tile.setAttribute('radius', roundnessVal.toString());
+
       if (tile.shadowRoot) {
         const globBox = tile.shadowRoot.querySelector('.glass-box');
         if (globBox) {
-          window.applySquircle(globBox, { getRoundness: () => roundnessVal });
+          globBox.style.clipPath = 'none';
+          globBox.classList.remove('squirclified');
+          if (globBox.__squircleObs) {
+            globBox.__squircleObs.disconnect();
+            delete globBox.__squircleObs;
+          }
+          delete globBox.__squircleOptions;
+          window.squirclifiedElements.delete(globBox);
         }
       }
+
       const inner = tile.querySelector('.cc-tile-inner');
       if (inner) {
         window.applySquircle(inner, { getRoundness: () => roundnessVal });
@@ -7508,11 +7538,11 @@ if (val === 'help') {
       let tileRadius = '18';
       let roundnessVal = 18;
       if (btn.id === 'music') {
-        roundnessVal = 40;
-        tileRadius = '40';
+        roundnessVal = 18;
+        tileRadius = '18';
       } else if (btn.id === 'sound' || btn.id === 'brightness') {
-        roundnessVal = 32;
-        tileRadius = '32';
+        roundnessVal = 12;
+        tileRadius = '12';
       } else {
         roundnessVal = Math.min(widthPx, heightPx) / 2;
         tileRadius = roundnessVal.toString();
@@ -7615,15 +7645,25 @@ if (val === 'help') {
       tile.appendChild(inner);
       gridContainer.appendChild(tile);
 
-      // Squirclify the actual visible backgrounds (.glass-box inside shadow DOM) of these tiles
+      // Squirclify the actual visible backgrounds (.glass-box inside shadow DOM) of these tiles to preserve backdrop-filters
       if (window.applySquircle) {
+        tile.style.clipPath = 'none';
+        tile.classList.remove('squirclified');
+        tile.setAttribute('radius', roundnessVal.toString());
+
         if (tile.shadowRoot) {
           const globBox = tile.shadowRoot.querySelector('.glass-box');
           if (globBox) {
-            window.applySquircle(globBox, { getRoundness: () => roundnessVal });
+            globBox.style.clipPath = 'none';
+            globBox.classList.remove('squirclified');
+            if (globBox.__squircleObs) {
+              globBox.__squircleObs.disconnect();
+              delete globBox.__squircleObs;
+            }
+            delete globBox.__squircleOptions;
+            window.squirclifiedElements.delete(globBox);
           }
         }
-        
         // Also squirclify the inner background container so its active state conforms nicely
         window.applySquircle(inner, { getRoundness: () => roundnessVal });
       }
