@@ -683,16 +683,18 @@
   #context-menu-glass,
   #apple-dropdown-glass,
   #file-dropdown-glass {
-    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.15), 0 4px 12px rgba(0, 0, 0, 0.08);
-    border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    overflow: hidden;
+    box-shadow: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    overflow: visible !important;
   }
   body.dark-mode #context-menu-glass,
   body.dark-mode #apple-dropdown-glass,
   body.dark-mode #file-dropdown-glass {
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    box-shadow: 0 20px 48px rgba(0, 0, 0, 0.45), 0 4px 12px rgba(0, 0, 0, 0.2);
+    box-shadow: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    overflow: visible !important;
   }
 
   .context-menu,
@@ -1876,7 +1878,7 @@
     position: absolute;
     top: 32px;
     right: 10px;
-    width: 336px; /* 312px grid width + 24px padding */
+    width: 280px; /* 256px grid width + 24px padding = 280px */
     background: transparent;
     border: none;
     box-shadow: none;
@@ -1906,8 +1908,8 @@
   }
   .cc-grid {
     position: relative;
-    width: 312px; /* 4 columns * 72px + 3 gaps * 8px = 312px */
-    height: 472px; /* 6 rows * 72px + 5 gaps * 8px = 472px */
+    width: 256px; /* 4 columns * 58px + 3 gaps * 8px = 256px */
+    height: 388px; /* 6 rows * 58px + 5 gaps * 8px = 388px */
     background: transparent;
   }
   .cc-tile-glass {
@@ -1937,8 +1939,8 @@
     color: #ffffff !important;
   }
   .cc-tile-icon-wrapper {
-    width: 28px;
-    height: 28px;
+    width: 24px;
+    height: 24px;
     background: transparent !important;
     border-radius: 0 !important;
     display: flex;
@@ -1953,13 +1955,13 @@
     color: #ffffff;
   }
   .cc-tile-icon-wrapper svg {
-    width: 18px;
-    height: 18px;
+    width: 14px;
+    height: 14px;
   }
   .cc-tile-header {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
   }
   .cc-tile-details {
     display: flex;
@@ -1967,7 +1969,7 @@
     justify-content: center;
   }
   .cc-tile-title {
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 600;
     color: #ffffff;
     line-height: 1.25;
@@ -1976,7 +1978,7 @@
     color: #ffffff;
   }
   .cc-tile-subtitle {
-    font-size: 9px;
+    font-size: 8px;
     color: rgba(255, 255, 255, 0.7);
     line-height: 1.2;
     margin-top: 1px;
@@ -2058,35 +2060,35 @@
   .cc-music-info {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
   }
   .cc-music-cover {
-    width: 42px;
-    height: 42px;
-    border-radius: 8px;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
     background: linear-gradient(135deg, #ff2d55, #ff5e3a);
     display: flex;
     align-items: center;
     justify-content: center;
     color: #fff;
-    font-size: 20px;
+    font-size: 14px;
     font-weight: bold;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
   }
   .cc-music-texts {
     display: flex;
     flex-direction: column;
-    width: calc(100% - 52px);
+    width: calc(100% - 40px);
   }
   .cc-music-title {
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 600;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
   .cc-music-artist {
-    font-size: 9px;
+    font-size: 8px;
     color: #86868b;
     white-space: nowrap;
     overflow: hidden;
@@ -2983,9 +2985,9 @@
           <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
             <div style="display: flex; justify-content: space-between; align-items: center;">
               <span style="font-weight: 500; font-size: 14px;">Dock Corner Radius</span>
-              <span id="dock-radius-value" style="font-size: 13px; opacity: 0.7;">21px</span>
+              <span id="dock-radius-value" style="font-size: 13px; opacity: 0.7;">32px</span>
             </div>
-            <input type="range" id="dock-radius-slider" min="0" max="50" step="1" value="21" style="width: 100%;">
+            <input type="range" id="dock-radius-slider" min="0" max="60" step="1" value="32" style="width: 100%;">
           </div>
           <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
             <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -3031,6 +3033,98 @@
               <span id="dock-strength-value" style="font-size: 13px; opacity: 0.7;">115</span>
             </div>
             <input type="range" id="dock-strength-slider" min="0" max="200" step="5" value="115" style="width: 100%;">
+          </div>
+        </div>
+
+        <h3 style="margin: 24px 0 12px 0; font-weight: 600; font-size: 16px;">Squircle Roundedness</h3>
+        <div style="background: rgba(0, 0, 0, 0.05); padding: 20px; border-radius: 12px; border: 1px solid rgba(0, 0, 0, 0.1); margin-bottom: 20px;">
+          <!-- 1. Finder -->
+          <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-weight: 500; font-size: 14px;">Finder Window</span>
+              <span id="sq-finder-val" style="font-size: 13px; opacity: 0.7;">40px</span>
+            </div>
+            <input type="range" class="sq-slider" data-prop="finder" min="0" max="80" step="1" value="40" style="width: 100%;">
+          </div>
+          <!-- 2. Safari -->
+          <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-weight: 500; font-size: 14px;">Safari Window</span>
+              <span id="sq-safari-val" style="font-size: 13px; opacity: 0.7;">40px</span>
+            </div>
+            <input type="range" class="sq-slider" data-prop="safari" min="0" max="80" step="1" value="40" style="width: 100%;">
+          </div>
+          <!-- 3. Word -->
+          <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-weight: 500; font-size: 14px;">Word Window</span>
+              <span id="sq-word-val" style="font-size: 13px; opacity: 0.7;">4px</span>
+            </div>
+            <input type="range" class="sq-slider" data-prop="word" min="0" max="80" step="1" value="4" style="width: 100%;">
+          </div>
+          <!-- 4. Terminal -->
+          <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-weight: 500; font-size: 14px;">Terminal Window</span>
+              <span id="sq-terminal-val" style="font-size: 13px; opacity: 0.7;">33px</span>
+            </div>
+            <input type="range" class="sq-slider" data-prop="terminal" min="0" max="80" step="1" value="33" style="width: 100%;">
+          </div>
+          <!-- 5. System Settings -->
+          <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-weight: 500; font-size: 14px;">System Settings Window</span>
+              <span id="sq-settings-val" style="font-size: 13px; opacity: 0.7;">40px</span>
+            </div>
+            <input type="range" class="sq-slider" data-prop="settings" min="0" max="80" step="1" value="40" style="width: 100%;">
+          </div>
+          <!-- 6. Launchpad -->
+          <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-weight: 500; font-size: 14px;">Launchpad Window</span>
+              <span id="sq-launchpad-val" style="font-size: 13px; opacity: 0.7;">49px</span>
+            </div>
+            <input type="range" class="sq-slider" data-prop="launchpad" min="0" max="80" step="1" value="49" style="width: 100%;">
+          </div>
+          <!-- 7. About This Mac -->
+          <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-weight: 500; font-size: 14px;">About Window</span>
+              <span id="sq-about-val" style="font-size: 13px; opacity: 0.7;">40px</span>
+            </div>
+            <input type="range" class="sq-slider" data-prop="about" min="0" max="80" step="1" value="40" style="width: 100%;">
+          </div>
+          <!-- 8. Popups/Dialogs/Menus -->
+          <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-weight: 500; font-size: 14px;">Popups &amp; Menus</span>
+              <span id="sq-popups-val" style="font-size: 13px; opacity: 0.7;">23px</span>
+            </div>
+            <input type="range" class="sq-slider" data-prop="popups" min="0" max="80" step="1" value="23" style="width: 100%;">
+          </div>
+          <!-- 9. Dock container -->
+          <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-weight: 500; font-size: 14px;">Dock Container</span>
+              <span id="sq-dock-val" style="font-size: 13px; opacity: 0.7;">32px</span>
+            </div>
+            <input type="range" class="sq-slider" data-prop="dock" min="0" max="80" step="1" value="32" style="width: 100%;">
+          </div>
+          <!-- 10. Dock Icons -->
+          <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-weight: 500; font-size: 14px;">Dock Icons</span>
+              <span id="sq-dockIcons-val" style="font-size: 13px; opacity: 0.7;">60px</span>
+            </div>
+            <input type="range" class="sq-slider" data-prop="dockIcons" min="0" max="80" step="1" value="60" style="width: 100%;">
+          </div>
+          <!-- 11. Launchpad Icons -->
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-weight: 500; font-size: 14px;">Launchpad Icons</span>
+              <span id="sq-launchpadIcons-val" style="font-size: 13px; opacity: 0.7;">60px</span>
+            </div>
+            <input type="range" class="sq-slider" data-prop="launchpadIcons" min="0" max="80" step="1" value="60" style="width: 100%;">
           </div>
         </div>
 
@@ -3192,6 +3286,326 @@
   </filter>
 </svg>
 
+<script type="module">
+  import { clipSquircle, backgroundSquircle } from "html-squircle";
+
+  // Expose core function handles globally
+  window.clipSquircle = clipSquircle;
+  window.backgroundSquircle = backgroundSquircle;
+
+  const savedSettings = localStorage.getItem('squircle-settings');
+  const defaultSettings = {
+    finder: 40,
+    safari: 40,
+    word: 4,
+    terminal: 33,
+    settings: 40,
+    launchpad: 49,
+    about: 40,
+    popups: 23,
+    dock: 32,
+    dockIcons: 60,
+    launchpadIcons: 60
+  };
+  let parsed = null;
+  try {
+    if (savedSettings) {
+      parsed = JSON.parse(savedSettings);
+      if (parsed && (parsed.finder === 12 || parsed.finder === 0.08 || parsed.dock === 21 || parsed.dock === 40 || parsed.dockIcons === 10 || parsed.popups === 10 || parsed.popups === 14)) {
+        parsed = defaultSettings;
+      }
+    }
+  } catch (e) {}
+  window.squircleSettings = parsed || defaultSettings;
+
+  window.saveSquircleSettings = function() {
+    localStorage.setItem('squircle-settings', JSON.stringify(window.squircleSettings));
+  };
+
+  window.squirclifiedElements = new Set();
+
+  const squircleCache = {};
+
+  // Custom high-performance cache key lookup to prevent GC-thrashing during active animations
+  window.cachedClipSquircle = function(options) {
+    const roundVal = options.roundness !== undefined ? options.roundness : 0.2;
+    const key = `${options.width}_${options.height}_${roundVal}_${options.curveLength !== undefined ? options.curveLength : ''}`;
+    if (squircleCache[key]) return squircleCache[key];
+    const res = clipSquircle({
+      width: options.width,
+      height: options.height,
+      roundness: roundVal,
+      curveLength: options.curveLength
+    });
+    squircleCache[key] = res;
+    return res;
+  };
+
+  window.recalculateSquircle = function(el) {
+    if (!el) return;
+    const w = el.offsetWidth;
+    const h = el.offsetHeight;
+    if (w > 0 && h > 0) {
+      try {
+        const options = el.__squircleOptions || {};
+        let cLen = 12;
+        if (typeof options.getRoundness === 'function') {
+          cLen = options.getRoundness();
+        } else if (options.roundness !== undefined) {
+          cLen = options.roundness;
+        }
+
+        const clipVal = window.cachedClipSquircle({
+          width: w,
+          height: h,
+          roundness: 0.2, // Perfect superellipse ratio
+          curveLength: cLen
+        });
+        el.style.clipPath = clipVal;
+
+        if (options.isWindow) {
+          el.style.boxShadow = 'none';
+          el.style.filter = 'drop-shadow(0 20px 50px rgba(0, 0, 0, 0.4))';
+        }
+
+        // Add class to hide standard rect CSS outlines
+        el.classList.add('squirclified');
+
+        // Draw dynamic SVG stroke overlay to solve outline/stroke cuts and alignment issues
+        if (el.classList.contains('glass-box') && el.parentNode) {
+          const pathMatch = clipVal.match(/path\(['"]([^'"]+)['"]\)/);
+          const pathData = pathMatch ? pathMatch[1] : '';
+          
+          if (pathData) {
+            let svgStroke = el.parentNode.querySelector('.glass-squircle-stroke');
+            if (!svgStroke) {
+              svgStroke = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+              svgStroke.classList.add('glass-squircle-stroke');
+              svgStroke.setAttribute('style', 'position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; overflow: visible;');
+              
+              const pathEl = document.createElementNS("http://www.w3.org/2000/svg", "path");
+              pathEl.classList.add('stroke-path');
+              pathEl.setAttribute('fill', 'none');
+              svgStroke.appendChild(pathEl);
+              
+              el.parentNode.insertBefore(svgStroke, el.nextSibling);
+            }
+            
+            const pathEl = svgStroke.querySelector('.stroke-path');
+            if (pathEl) {
+              pathEl.setAttribute('d', pathData);
+              const isDark = document.body.classList.contains('dark-mode');
+              const glassHost = el.getRootNode().host;
+              const isDock = glassHost && glassHost.id === 'dock-glass-wrapper';
+              
+              if (isDock) {
+                // Dock stroke on top of the shape itself, crisp high-priority blending
+                pathEl.setAttribute('stroke', isDark ? 'rgba(255, 255, 255, 0.22)' : 'rgba(255, 255, 255, 0.45)');
+                pathEl.setAttribute('stroke-width', '1.25');
+                svgStroke.style.mixBlendMode = 'overlay';
+              } else {
+                // Popups and menus standard transparent white stroke following squircle contour perfectly
+                pathEl.setAttribute('stroke', isDark ? 'rgba(255, 255, 255, 0.16)' : 'rgba(255, 255, 255, 0.35)');
+                pathEl.setAttribute('stroke-width', '1.0');
+                svgStroke.style.mixBlendMode = 'normal';
+              }
+            }
+          }
+        }
+      } catch (e) {
+        console.error("Squircle calculate err:", e);
+      }
+    }
+  };
+
+  window.updateAllSquircles = function() {
+    window.squirclifiedElements.forEach(el => {
+      if (document.body.contains(el)) {
+        window.recalculateSquircle(el);
+      } else {
+        window.squirclifiedElements.delete(el);
+      }
+    });
+  };
+
+  // Generic dynamic squircle binder using ResizeObserver
+  window.applySquircle = function(el, options = {}) {
+    if (!el) return;
+    
+    el.__squircleOptions = options;
+    window.squirclifiedElements.add(el);
+
+    if (el.__squircleObs) {
+      window.recalculateSquircle(el);
+      return;
+    }
+
+    const obs = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        window.recalculateSquircle(el);
+      }
+    });
+
+    obs.observe(el);
+    el.__squircleObs = obs;
+
+    // Fast sync initial frame
+    window.recalculateSquircle(el);
+  };
+
+  // Continuous discovery pass for dynamic rectangles (windows, dock elements, cards)
+  function scanAndSquirclify() {
+    // 1. Finder window
+    const finder = document.getElementById('finder-window');
+    if (finder) {
+      window.applySquircle(finder, { getRoundness: () => window.squircleSettings.finder, isWindow: true });
+    }
+
+    // 2. Safari window
+    const safari = document.getElementById('safari-window');
+    if (safari) {
+      window.applySquircle(safari, { getRoundness: () => window.squircleSettings.safari, isWindow: true });
+    }
+
+    // 3. Word window
+    const word = document.getElementById('word-window');
+    if (word) {
+      window.applySquircle(word, { getRoundness: () => window.squircleSettings.word, isWindow: true });
+    }
+
+    // 4. Terminal window
+    const terminal = document.getElementById('terminal-window');
+    if (terminal) {
+      window.applySquircle(terminal, { getRoundness: () => window.squircleSettings.terminal, isWindow: true });
+    }
+
+    // 5. System Settings window
+    const settings = document.getElementById('settings-window');
+    if (settings) {
+      window.applySquircle(settings, { getRoundness: () => window.squircleSettings.settings, isWindow: true });
+    }
+
+    // 6. Launchpad window
+    const launchpad = document.getElementById('launchpad-window');
+    if (launchpad) {
+      window.applySquircle(launchpad, { getRoundness: () => window.squircleSettings.launchpad, isWindow: true });
+    }
+
+    // 7. About window
+    const about = document.getElementById('about-window');
+    if (about) {
+      window.applySquircle(about, { getRoundness: () => window.squircleSettings.about, isWindow: true });
+    }
+
+    // 8. Dock Icons
+    document.querySelectorAll('.dock-icon').forEach(icon => {
+      const imgLayer = icon.querySelector('.icon-image-layer');
+      if (imgLayer) {
+        icon.style.clipPath = 'none';
+        window.applySquircle(imgLayer, { getRoundness: () => window.squircleSettings.dockIcons });
+      } else {
+        window.applySquircle(icon, { getRoundness: () => window.squircleSettings.dockIcons });
+      }
+    });
+
+    // 9. Launchpad Icons
+    document.querySelectorAll('.launchpad-icon').forEach(icon => {
+      const imgLayer = icon.querySelector('.icon-image-layer');
+      if (imgLayer) {
+        icon.style.clipPath = 'none';
+        window.applySquircle(imgLayer, { getRoundness: () => window.squircleSettings.launchpadIcons });
+      } else {
+        window.applySquircle(icon, { getRoundness: () => window.squircleSettings.launchpadIcons });
+      }
+    });
+
+    // 10. Popups / Dialogs / Menus
+    document.querySelectorAll('.control-center-panel').forEach(cc => {
+      window.applySquircle(cc, { getRoundness: () => window.squircleSettings.popups, isWindow: true });
+    });
+
+    // Squirclify the actual visible backgrounds (.glass-box inside shadow DOM) of all popups, dropdown headers, context menus and modals
+    const popupAndMenuGlasses = [
+      document.getElementById('context-menu-glass'),
+      document.getElementById('apple-dropdown-glass'),
+      document.getElementById('file-dropdown-glass'),
+      document.getElementById('app-dropdown-glass'),
+      document.getElementById('edit-dropdown-glass'),
+      document.getElementById('view-dropdown-glass'),
+      document.getElementById('go-dropdown-glass'),
+      document.getElementById('window-dropdown-glass'),
+      document.getElementById('help-dropdown-glass'),
+      document.getElementById('shutdown-glass-wrapper')
+    ];
+    // Modals
+    const newFolderGlass = document.querySelector('#new-folder-modal glass-element');
+    if (newFolderGlass) popupAndMenuGlasses.push(newFolderGlass);
+    const saveFileGlass = document.querySelector('#save-file-modal glass-element');
+    if (saveFileGlass) popupAndMenuGlasses.push(saveFileGlass);
+
+    popupAndMenuGlasses.forEach(glass => {
+      if (glass && glass.shadowRoot) {
+        const globBox = glass.shadowRoot.querySelector('.glass-box');
+        if (globBox) {
+          window.applySquircle(globBox, { getRoundness: () => window.squircleSettings.popups, isWindow: true });
+        }
+      }
+    });
+
+    // 11. Dock Container background (applied to the glass-box inside the glass-element shadowRoot so that icons can overflow and expand without clipping)
+    const dockWrapper = document.getElementById('dock-glass-wrapper');
+    if (dockWrapper && dockWrapper.shadowRoot) {
+      const globGlass = dockWrapper.shadowRoot.querySelector('.glass-box');
+      if (globGlass) {
+        window.applySquircle(globGlass, { getRoundness: () => window.squircleSettings.dock });
+      }
+    }
+
+    // 12. Control Center Tiles
+    document.querySelectorAll('.cc-tile-glass').forEach(tile => {
+      // Extract target id from class names (e.g. cc-tile-id-wifi)
+      const matches = tile.className.match(/cc-tile-id-([\w-]+)/);
+      const id = matches ? matches[1] : '';
+      let roundnessVal = 18;
+      if (id === 'music') {
+        roundnessVal = 40;
+      } else if (id === 'sound' || id === 'brightness') {
+        roundnessVal = 32;
+      } else {
+        const widthPx = tile.getBoundingClientRect().width || 58;
+        const heightPx = tile.getBoundingClientRect().height || 58;
+        roundnessVal = Math.min(widthPx, heightPx) / 2 || 29;
+      }
+
+      if (tile.shadowRoot) {
+        const globBox = tile.shadowRoot.querySelector('.glass-box');
+        if (globBox) {
+          window.applySquircle(globBox, { getRoundness: () => roundnessVal });
+        }
+      }
+      const inner = tile.querySelector('.cc-tile-inner');
+      if (inner) {
+        window.applySquircle(inner, { getRoundness: () => roundnessVal });
+      }
+    });
+
+    // Explicitly guarantee the older dock element clip path is disabled so dock icons can expand beyond/out-of-bounds freely
+    const rawDock = document.getElementById('dock');
+    if (rawDock) {
+      rawDock.style.clipPath = 'none';
+      window.squirclifiedElements.delete(rawDock);
+    }
+  }
+
+  // Hook into lifecycle
+  setInterval(scanAndSquirclify, 300);
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', scanAndSquirclify);
+  } else {
+    scanAndSquirclify();
+  }
+</script>
+
 <script>
 // ============ displacement-utils.js ============
 function getDisplacementMap({ height, width, radius, depth }) {
@@ -3346,7 +3760,9 @@ class GlassElement extends HTMLElement {
     applyDynamicStyles(element) {
         const { getDisplacementMap } = window.DisplacementUtils;
         
-        if (this.radiusConfig === 'top') {
+        if (element.__squircleOptions) {
+            element.style.borderRadius = '0px';
+        } else if (this.radiusConfig === 'top') {
             element.style.borderRadius = `${this.radius}px ${this.radius}px 0 0`;
         } else if (this.radiusConfig === 'left') {
             element.style.borderRadius = `${this.radius}px 0 0 ${this.radius}px`;
@@ -3361,7 +3777,8 @@ class GlassElement extends HTMLElement {
         
         if (this.autoSize) {
             // Read bounds without initial mutation if possible to reduce layout thrashing
-            const rectBefore = element.getBoundingClientRect();
+            const measurer = element.closest('.glass-container') || element;
+            const rectBefore = measurer.getBoundingClientRect();
             let tempW = Math.max(Math.ceil(rectBefore.width), this.minWidth, 50);
             let tempH = Math.max(Math.ceil(rectBefore.height), this.minHeight, 30);
             if (rectBefore.width === 0) {
@@ -3460,13 +3877,21 @@ class GlassElement extends HTMLElement {
                     overflow: hidden;
                     pointer-events: none;
                 }
-                .glass-box {
-                    background: rgba(255,255,255,0.4);
+                .glass-container {
                     position: relative;
                     width: 100%;
                     height: 100%;
                     box-sizing: border-box;
                     ${this.autoSize ? `display: inline-block; width: fit-content; min-width: ${this.minWidth}px; min-height: ${this.minHeight}px;` : ''}
+                }
+                .glass-box {
+                    background: rgba(255,255,255,0.4);
+                    position: absolute;
+                    inset: 0;
+                    width: 100%;
+                    height: 100%;
+                    box-sizing: border-box;
+                    pointer-events: none;
                 }
                 .glass-box::before {
                     content: "";
@@ -3481,6 +3906,10 @@ class GlassElement extends HTMLElement {
                     pointer-events: none;
                     mix-blend-mode: var(--glass-blend, normal);
                     z-index: 1;
+                }
+                .glass-box.squirclified::before,
+                .glass-box.squirclified::after {
+                    display: none !important;
                 }
                  .glass-box::after {
                     content: "";
@@ -3498,11 +3927,13 @@ class GlassElement extends HTMLElement {
                     width: 100%;
                     height: 100%;
                     box-sizing: border-box;
+                    overflow: visible;
                     ${this.autoSize ? 'padding: var(--glass-padding, 0px);' : ''}
                 }
             </style>
             <div id="svg-filter-container"></div>
-            <div class="glass-box">
+            <div class="glass-container">
+                <div class="glass-box"></div>
                 <div class="content"><slot></slot></div>
             </div>`;
         const glassBox = this.shadowRoot.querySelector('.glass-box');
@@ -5154,6 +5585,40 @@ customElements.define('glass-element', GlassElement);
        setTimeout(updateDockIconScale, 0);
      });
   }
+
+  // --- Squircle Sliders JS Initialization & Realtime update ---
+  const squircleSliders = document.querySelectorAll('.sq-slider');
+  squircleSliders.forEach(slider => {
+    const prop = slider.getAttribute('data-prop');
+    
+    // Set initial slider visual value from window.squircleSettings
+    if (window.squircleSettings && window.squircleSettings[prop] !== undefined) {
+      slider.value = window.squircleSettings[prop];
+      const valLabel = document.getElementById(`sq-${prop}-val`);
+      if (valLabel) {
+        valLabel.textContent = `${window.squircleSettings[prop]}px`;
+      }
+    }
+
+    // Bind real-time input event for 60fps instant reaction
+    slider.addEventListener('input', (e) => {
+      const val = parseInt(e.target.value, 10);
+      if (window.squircleSettings) {
+        window.squircleSettings[prop] = val;
+        window.saveSquircleSettings();
+      }
+      
+      const valLabel = document.getElementById(`sq-${prop}-val`);
+      if (valLabel) {
+        valLabel.textContent = `${val}px`;
+      }
+
+      // Trigger instant shape updates for all squirclified DOM elements
+      if (typeof window.updateAllSquircles === 'function') {
+        window.updateAllSquircles();
+      }
+    });
+  });
 
   const wallpaperItems = document.querySelectorAll('.wallpaper-item');
   const bgLayer1 = document.getElementById('bg-layer-1');
@@ -7028,8 +7493,8 @@ if (val === 'help') {
         btn.h = 1;
       }
 
-      const cellW = 72;
-      const cellH = 72;
+      const cellW = 58;
+      const cellH = 58;
       const gap = 8;
 
       const leftPx = btn.x * (cellW + gap);
@@ -7041,11 +7506,18 @@ if (val === 'help') {
       tile.className = `cc-tile-glass cc-tile-id-${btn.id}`;
       
       let tileRadius = '18';
-      if (btn.id === 'sound' || btn.id === 'brightness') {
-        tileRadius = '8';
-      } else if (btn.id === 'music') {
-        tileRadius = '18';
+      let roundnessVal = 18;
+      if (btn.id === 'music') {
+        roundnessVal = 40;
+        tileRadius = '40';
+      } else if (btn.id === 'sound' || btn.id === 'brightness') {
+        roundnessVal = 32;
+        tileRadius = '32';
+      } else {
+        roundnessVal = Math.min(widthPx, heightPx) / 2;
+        tileRadius = roundnessVal.toString();
       }
+      
       tile.setAttribute('radius', tileRadius);
       tile.setAttribute('depth', currentCCDepth.toFixed(3));
       tile.setAttribute('blur', '2');
@@ -7067,14 +7539,14 @@ if (val === 'help') {
 
       if (btn.type === 'slider') {
         inner.innerHTML = `
-          <div class="cc-tile-header" style="width:100%; justify-content: flex-start; align-items: center; gap: 8px; padding: 8px 10px 4px 10px; box-sizing: border-box; display: flex;">
-            <div class="cc-tile-icon-wrapper" style="width: 24px; height: 24px;">${getCCIcon(btn.icon)}</div>
+          <div class="cc-tile-header" style="width:100%; justify-content: flex-start; align-items: center; gap: 6px; padding: 6px 8px 1px 8px; box-sizing: border-box; display: flex;">
+            <div class="cc-tile-icon-wrapper" style="width: 20px; height: 20px;">${getCCIcon(btn.icon)}</div>
             <div class="cc-tile-details" style="display: flex; flex-direction: column; justify-content: center;">
               <div class="cc-tile-title" style="font-size: 10px;">${btn.name}</div>
-              <div class="cc-tile-subtitle" style="font-size: 9px; color: rgba(255, 255, 255, 0.7);">${btn.subtitle}</div>
+              <div class="cc-tile-subtitle" style="font-size: 8px; color: rgba(255, 255, 255, 0.7);">${btn.subtitle}</div>
             </div>
           </div>
-          <div class="cc-slider-container" style="padding: 0 10px 8px 10px; box-sizing: border-box; width: 100%; display: flex;">
+          <div class="cc-slider-container" style="padding: 0 8px 6px 8px; box-sizing: border-box; width: 100%; display: flex;">
             <input type="range" class="cc-slider" min="10" max="100" value="${btn.value || 50}" data-id="${btn.id}" style="width: 100%;">
           </div>
         `;
@@ -7085,26 +7557,26 @@ if (val === 'help') {
         });
       } else if (btn.type === 'music') {
         inner.innerHTML = `
-          <div class="cc-music-container" style="padding: 10px; height: 100%; display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box;">
-            <div class="cc-music-info">
-              <div class="cc-music-cover">♫</div>
-              <div class="cc-music-texts">
-                <div class="cc-music-title">${btn.song || ''}</div>
-                <div class="cc-music-artist">${btn.artist || ''}</div>
+          <div class="cc-music-container" style="padding: 8px; height: 100%; display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box;">
+            <div class="cc-music-info" style="display: flex; align-items: center; gap: 8px;">
+              <div class="cc-music-cover" style="width: 32px; height: 32px; border-radius: 6px; font-size: 14px; flex-shrink: 0;">♫</div>
+              <div class="cc-music-texts" style="width: calc(100% - 40px); display: flex; flex-direction: column;">
+                <div class="cc-music-title" style="font-size: 10px; font-weight: 600;">${btn.song || ''}</div>
+                <div class="cc-music-artist" style="font-size: 8px; color: rgba(255, 255, 255, 0.7);">${btn.artist || ''}</div>
               </div>
             </div>
-            <div class="cc-music-controls">
-              <button class="cc-music-btn" id="cc-music-prev" title="Previous">
-                <i data-lucide="skip-back" style="width: 14px; height: 14px;"></i>
+            <div class="cc-music-controls" style="display: flex; align-items: center; justify-content: center; gap: 12px; background: rgba(0, 0, 0, 0.05); border-radius: 8px; padding: 4px;">
+              <button class="cc-music-btn" id="cc-music-prev" title="Previous" style="background: none; border: none; color: currentColor; cursor: pointer; padding: 2px;">
+                <i data-lucide="skip-back" style="width: 12px; height: 12px;"></i>
               </button>
-              <button class="cc-music-btn" id="cc-music-play" title="Play/Pause">
+              <button class="cc-music-btn" id="cc-music-play" title="Play/Pause" style="background: none; border: none; color: currentColor; cursor: pointer; padding: 2px;">
                 ${btn.active ? 
-                  `<i data-lucide="pause" style="width: 14px; height: 14px; fill: currentColor;"></i>` : 
-                  `<i data-lucide="play" style="width: 14px; height: 14px; fill: currentColor;"></i>`
+                  `<i data-lucide="pause" style="width: 12px; height: 12px; fill: currentColor;"></i>` : 
+                  `<i data-lucide="play" style="width: 12px; height: 12px; fill: currentColor;"></i>`
                 }
               </button>
-              <button class="cc-music-btn" id="cc-music-next" title="Next">
-                <i data-lucide="skip-forward" style="width: 14px; height: 14px;"></i>
+              <button class="cc-music-btn" id="cc-music-next" title="Next" style="background: none; border: none; color: currentColor; cursor: pointer; padding: 2px;">
+                <i data-lucide="skip-forward" style="width: 12px; height: 12px;"></i>
               </button>
             </div>
           </div>
@@ -7118,18 +7590,18 @@ if (val === 'help') {
           tile.setAttribute('title', `${btn.name}: ${btn.subtitle}`);
           inner.innerHTML = `
             <div style="display: flex; align-items: center; justify-content: center; width: 100%; height: 100%;">
-              <div class="cc-tile-icon-wrapper" style="width: 32px; height: 32px; background: transparent; border-radius: 0;">
+              <div class="cc-tile-icon-wrapper" style="width: 24px; height: 24px; background: transparent; border-radius: 0;">
                 ${getCCIcon(btn.icon)}
               </div>
             </div>
           `;
         } else {
           inner.innerHTML = `
-            <div class="cc-tile-header" style="height:100%; width:100%; justify-content: flex-start; align-items: center; gap: 8px; padding: 10px; box-sizing: border-box; display: flex;">
-              <div class="cc-tile-icon-wrapper" style="background: transparent; border-radius: 0;">${getCCIcon(btn.icon)}</div>
+            <div class="cc-tile-header" style="height:100%; width:100%; justify-content: flex-start; align-items: center; gap: 6px; padding: 6px 8px; box-sizing: border-box; display: flex;">
+              <div class="cc-tile-icon-wrapper" style="background: transparent; border-radius: 0; width: 24px; height: 24px;">${getCCIcon(btn.icon)}</div>
               <div class="cc-tile-details" style="display: flex; flex-direction: column; justify-content: center;">
-                <div class="cc-tile-title">${btn.name}</div>
-                <div class="cc-tile-subtitle">${btn.subtitle}</div>
+                <div class="cc-tile-title" style="font-size: 10px; font-weight: 600;">${btn.name}</div>
+                <div class="cc-tile-subtitle" style="font-size: 8px; color: rgba(255, 255, 255, 0.7);">${btn.subtitle}</div>
               </div>
             </div>
           `;
@@ -7142,6 +7614,19 @@ if (val === 'help') {
 
       tile.appendChild(inner);
       gridContainer.appendChild(tile);
+
+      // Squirclify the actual visible backgrounds (.glass-box inside shadow DOM) of these tiles
+      if (window.applySquircle) {
+        if (tile.shadowRoot) {
+          const globBox = tile.shadowRoot.querySelector('.glass-box');
+          if (globBox) {
+            window.applySquircle(globBox, { getRoundness: () => roundnessVal });
+          }
+        }
+        
+        // Also squirclify the inner background container so its active state conforms nicely
+        window.applySquircle(inner, { getRoundness: () => roundnessVal });
+      }
     });
 
     if (typeof lucide !== 'undefined' && lucide.createIcons) {
