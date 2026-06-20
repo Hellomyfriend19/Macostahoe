@@ -3023,9 +3023,9 @@
           <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
             <div style="display: flex; justify-content: space-between; align-items: center;">
               <span style="font-weight: 500; font-size: 14px;">Dock Depth</span>
-              <span id="dock-depth-value" style="font-size: 13px; opacity: 0.7;">1px</span>
+              <span id="dock-depth-value" style="font-size: 13px; opacity: 0.7;">5px</span>
             </div>
-            <input type="range" id="dock-depth-slider" min="0" max="30" step="1" value="1" style="width: 100%;">
+            <input type="range" id="dock-depth-slider" min="0" max="30" step="1" value="5" style="width: 100%;">
           </div>
           <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
             <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -3037,9 +3037,9 @@
           <div style="display: flex; flex-direction: column; gap: 8px;">
             <div style="display: flex; justify-content: space-between; align-items: center;">
               <span style="font-weight: 500; font-size: 14px;">Dock Strength</span>
-              <span id="dock-strength-value" style="font-size: 13px; opacity: 0.7;">115</span>
+              <span id="dock-strength-value" style="font-size: 13px; opacity: 0.7;">120</span>
             </div>
-            <input type="range" id="dock-strength-slider" min="0" max="200" step="5" value="115" style="width: 100%;">
+            <input type="range" id="dock-strength-slider" min="0" max="200" step="5" value="120" style="width: 100%;">
           </div>
         </div>
 
@@ -3212,7 +3212,7 @@
   <span class="dock-tooltip-text" id="remove-tooltip-text">Remove</span>
 </div>
 
-<glass-element id="dock-glass-wrapper" style="position:fixed; bottom:20px; left:50%; transform:translateX(-50%); z-index:2147483647;" radius="21" depth="1" blur="2" strength="115" background-color="transparent" chromatic-aberration="1" auto-size>
+<glass-element id="dock-glass-wrapper" style="position:fixed; bottom:20px; left:50%; transform:translateX(-50%); z-index:2147483647;" radius="21" depth="5" blur="2" strength="120" background-color="transparent" chromatic-aberration="1" auto-size>
 <div class="dock-container" id="dock" style="margin-bottom:0; background:transparent; backdrop-filter:none; -webkit-backdrop-filter:none; box-shadow:none; border-radius:21px; position:relative;">
   
   <div class="dock-tooltip" id="tooltip">
@@ -3937,10 +3937,33 @@
     const dpr = window.devicePixelRatio || 1;
     const radiusVal = (window.squircleSettings ? window.squircleSettings[windowId.replace('-window','')] : 24) || 24;
     const radius = radiusVal * dpr;
-    cctx.roundRect(0, 0, combinedCanvas.width, combinedCanvas.height, radius);
-    cctx.fill();
-    cctx.save();
-    cctx.clip();
+
+    try {
+      const clipVal = window.cachedClipSquircle({
+        width: combinedCanvas.width,
+        height: combinedCanvas.height,
+        roundness: 0.2, // Perfect superellipse ratio
+        curveLength: radius
+      });
+      const pathMatch = clipVal.match(/path\(['"]([^'"]+)['"]\)/);
+      if (pathMatch && pathMatch[1]) {
+        const p = new Path2D(pathMatch[1]);
+        cctx.fill(p);
+        cctx.save();
+        cctx.clip(p);
+      } else {
+        cctx.roundRect(0, 0, combinedCanvas.width, combinedCanvas.height, radius);
+        cctx.fill();
+        cctx.save();
+        cctx.clip();
+      }
+    } catch (err) {
+      cctx.roundRect(0, 0, combinedCanvas.width, combinedCanvas.height, radius);
+      cctx.fill();
+      cctx.save();
+      cctx.clip();
+    }
+
     cctx.drawImage(capturedCanvas, 0, 0);
     cctx.restore();
 
