@@ -2975,6 +2975,13 @@
               <span class="toggle-slider"></span>
             </label>
           </div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <span style="font-weight: 500; font-size: 14px;">Genie Minimize Effect</span>
+            <label class="toggle-switch">
+              <input type="checkbox" id="genie-minimize-toggle" checked>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
           <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
             <div style="display: flex; justify-content: space-between; align-items: center;">
               <span style="font-weight: 500; font-size: 14px;">Dock Size</span>
@@ -3222,6 +3229,8 @@
   <div class="dock-icon" data-name="Word" style="background-image: url('https://cdn.jim-nielsen.com/macos/512/microsoft-word-2025-11-20.png?rf=1024'); background-size: 100%;"></div>
   <div class="dock-icon" data-name="Instagram" style="background-image: url('https://user-images.githubusercontent.com/24403355/33800842-566c09d8-dd17-11e7-88ff-be7f30481d67.png'); background-size: 85%;"></div>
   <div class="dock-icon" data-name="System Settings" style="background-image: url('https://static.wikia.nocookie.net/logopedia/images/a/ac/Settings_2025_II.png/revision/latest/scale-to-width-down/200?cb=20250707103149'); background-size: 85%;"></div>
+  <div class="dock-separator" style="width: 1px; height: 32px; background: rgba(255, 255, 255, 0.25); margin: 0 4px; display: none;" id="dock-minimized-separator"></div>
+  <div id="dock-minimized-container" style="display: flex; align-items: center; gap: 8px;"></div>
   <div class="dock-icon" data-name="Trash" style="background-image: url('https://icons.iconarchive.com/icons/wwalczyszyn/iwindows/256/Recycle-Bin-icon.png')"></div>
 </div>
 </glass-element>
@@ -3288,10 +3297,708 @@
 
 <script type="module">
   import { clipSquircle, backgroundSquircle } from "html-squircle";
+  import html2canvas from "html2canvas";
 
-  // Expose core function handles globally
   window.clipSquircle = clipSquircle;
   window.backgroundSquircle = backgroundSquircle;
+  window.html2canvas = html2canvas;
+
+  // macOS Genie State
+  window.genieMinimizeEnabled = true;
+  window.minimizedWindows = [];
+  window.windowCaptureCache = {};
+  window.windowCapturePromises = {}; // Tracks active background captures to prevent dual-processing lock!
+
+  /**
+   * Pre-captures a window to cache. Runs on hover or mouse down.
+   * Safely guards against overlapping capture calls.
+   */
+  window.preCaptureWindow = function(windowId) {
+    const windowElement = document.getElementById(windowId);
+    if (!windowElement) return;
+
+    // Do not capture hidden or minimized windows
+    const rect = windowElement.getBoundingClientRect();
+    if (rect.width === 0 || rect.height === 0 || windowElement.style.visibility === 'hidden' || windowElement.style.opacity === '0') {
+      return;
+    }
+
+    // Reuse active background promise if one is already running
+    if (window.windowCapturePromises[windowId]) {
+      return window.windowCapturePromises[windowId];
+    }
+
+    const capturePromise = (async () => {
+      try {
+        await new Promise(resolve => setTimeout(resolve, 80));
+        const canvas = await window.captureWindow(windowElement);
+        window.windowCaptureCache[windowId] = canvas;
+        return canvas;
+      } catch (err) {
+        console.warn("Pre-capture failed for", windowId, err);
+        return null;
+      } finally {
+        delete window.windowCapturePromises[windowId];
+      }
+    })();
+
+    window.windowCapturePromises[windowId] = capturePromise;
+    return capturePromise;
+  };
+
+  /**
+   * Capture an HTML window element instantly (under 5ms) via SVG foreignObject serialization.
+   * Captures text, SVG icons, background colors, and active DOM states in real-time.
+   * Leverages mock html/body wrapper structures to perfectly preserve CSS variables,
+   * dark/light themes, and Tailwind v4 configurations without performance penatlies.
+   */
+  window.captureWindow = async function(windowElement) {
+    try {
+      // Always capture the window using its untransformed layout size (offsetWidth / offsetHeight)
+      // to avoid texture magnification, aspect ratio stretching, or text reflow issues when the window is scaled.
+      const rect = windowElement.getBoundingClientRect();
+      const width = windowElement.offsetWidth || rect.width || 800;
+      const height = windowElement.offsetHeight || rect.height || 500;
+      const dpr = window.devicePixelRatio || 1;
+
+      // Collect all active global stylesheet rules to preserve styles inside the SVG container
+      let styles = '';
+      for (const sheet of document.styleSheets) {
+        try {
+          const rules = sheet.cssRules || sheet.rules;
+          if (rules) {
+            for (const rule of rules) {
+              const ruleText = rule.cssText;
+              // Skip remote font imports / url rules to avoid Tainted Canvas or rendering blocks
+              if (ruleText.includes('url(') && (ruleText.includes('http://') || ruleText.includes('https://') || ruleText.includes('//'))) {
+                continue;
+              }
+              styles += ruleText + '\n';
+            }
+          }
+        } catch (e) {
+          // Safe fallback for cross-domain stylesheets
+        }
+      }
+
+      // Clone the element and strip absolute offset/transform properties to make sure it renders at (0,0) inside the SVG
+      const clone = windowElement.cloneNode(true);
+      clone.style.setProperty('position', 'relative', 'important');
+      clone.style.setProperty('top', '0px', 'important');
+      clone.style.setProperty('left', '0px', 'important');
+      clone.style.setProperty('transform', 'none', 'important');
+      clone.style.setProperty('margin', '0px', 'important');
+      clone.style.setProperty('margin-left', '0px', 'important');
+      clone.style.setProperty('margin-top', '0px', 'important');
+      clone.style.setProperty('margin-right', '0px', 'important');
+      clone.style.setProperty('margin-bottom', '0px', 'important');
+      clone.style.setProperty('width', width + 'px', 'important');
+      clone.style.setProperty('height', height + 'px', 'important');
+      clone.style.setProperty('max-width', 'none', 'important');
+      clone.style.setProperty('max-height', 'none', 'important');
+      clone.style.setProperty('min-width', '0px', 'important');
+      clone.style.setProperty('min-height', '0px', 'important');
+      clone.style.setProperty('box-sizing', 'border-box', 'important');
+
+      // 1. Programmatically replace any <iframe> with a safe visual placeholder to avoid cross-origin and SVG rendering blockages
+      const iframes = clone.querySelectorAll('iframe');
+      iframes.forEach(iframe => {
+        const placeholder = document.createElement('div');
+        placeholder.className = iframe.className;
+        placeholder.id = iframe.id;
+        placeholder.style.cssText = iframe.style.cssText;
+        placeholder.style.background = '#1a1a1a';
+        placeholder.style.color = '#888';
+        placeholder.style.display = 'flex';
+        placeholder.style.flexDirection = 'column';
+        placeholder.style.alignItems = 'center';
+        placeholder.style.justifyContent = 'center';
+        placeholder.style.border = '1px dashed #333';
+        placeholder.innerHTML = `
+          <div style="font-weight:600; font-size:14px; margin-bottom: 4px;">Web View Preview</div>
+          <div style="font-size:11px; opacity:0.7;">Active web page content sandbox</div>
+        `;
+        if (iframe.parentNode) {
+          iframe.parentNode.replaceChild(placeholder, iframe);
+        }
+      });
+
+      // 2. Clone canvas drawing states into the cloned node to ensure dynamic canvas views look high-fidelity during morphing
+      const canvases = windowElement.querySelectorAll('canvas');
+      const clonedCanvases = clone.querySelectorAll('canvas');
+      for (let i = 0; i < canvases.length; i++) {
+        const srcCanvas = canvases[i];
+        const destCanvas = clonedCanvases[i];
+        if (destCanvas) {
+          try {
+            const ctxDest = destCanvas.getContext('2d');
+            destCanvas.width = srcCanvas.width;
+            destCanvas.height = srcCanvas.height;
+            ctxDest.drawImage(srcCanvas, 0, 0);
+          } catch (e) {
+            console.warn("Could not clone canvas content:", e);
+          }
+        }
+      }
+      
+      // Sync form values (textareas, inputs, select) to ensure they render inside SVG
+      const selectAndSyncValues = (src, dest) => {
+        const inputs = src.querySelectorAll('input, select, textarea');
+        const clonedInputs = dest.querySelectorAll('input, select, textarea');
+        for (let i = 0; i < inputs.length; i++) {
+          const original = inputs[i];
+          const cloned = clonedInputs[i];
+          if (!cloned) continue;
+          if (original.tagName === 'SELECT') {
+            cloned.value = original.value;
+            const options = cloned.querySelectorAll('option');
+            options.forEach(opt => {
+              if (opt.value === original.value) {
+                opt.setAttribute('selected', 'selected');
+              } else {
+                opt.removeAttribute('selected');
+              }
+            });
+          } else if (original.tagName === 'TEXTAREA') {
+            cloned.value = original.value;
+            cloned.textContent = original.value;
+          } else if (original.type === 'radio' || original.type === 'checkbox') {
+            cloned.checked = original.checked;
+            if (original.checked) {
+              cloned.setAttribute('checked', 'checked');
+            } else {
+              cloned.removeAttribute('checked');
+            }
+          } else {
+            cloned.setAttribute('value', original.value);
+            cloned.value = original.value;
+          }
+        }
+      };
+      selectAndSyncValues(windowElement, clone);
+
+      // Serialize the cloned subtree into XHTML strictly using XMLSerializer.
+      // This automatically closes all self-closing tags and produces parsing-bulletproof XML structures.
+      const serializer = new XMLSerializer();
+      const cleanHTML = serializer.serializeToString(clone);
+
+      const htmlClass = document.documentElement.className || '';
+      const htmlStyle = document.documentElement.getAttribute('style') || '';
+      const bodyClass = document.body.className || '';
+      const bodyStyle = document.body.getAttribute('style') || '';
+
+      // Build SVG string containing a foreignObject container matching the element structure
+      // We scale the SVG coordinate viewBox to allow high-DPR crisp output
+      const svgString = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="${width * dpr}" height="${height * dpr}" viewBox="0 0 ${width} ${height}">
+          <foreignObject width="${width}" height="${height}">
+            <html xmlns="http://www.w3.org/1999/xhtml" class="${htmlClass}" style="${htmlStyle}; width: 100% !important; height: 100% !important; margin: 0px !important; padding: 0px !important;">
+              <head>
+                <style>
+                  ${styles}
+                </style>
+              </head>
+              <body class="${bodyClass}" style="${bodyStyle}; width: 100% !important; height: 100% !important; margin: 0px !important; padding: 0px !important; background: transparent !important;">
+                <div style="width: ${width}px; height: ${height}px; margin: 0px !important; padding: 0px !important; position: relative !important;">
+                  ${cleanHTML}
+                </div>
+              </body>
+            </html>
+          </foreignObject>
+        </svg>
+      `;
+
+      return new Promise((resolve) => {
+        const img = new Image();
+        img.crossOrigin = "anonymous";
+        
+        const blob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          canvas.width = width * dpr;
+          canvas.height = height * dpr;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width * dpr, height * dpr);
+          URL.revokeObjectURL(url);
+          resolve(canvas);
+        };
+        
+        img.onerror = (err) => {
+          console.warn("SVG foreignObject capture failed, trying fallback:", err);
+          URL.revokeObjectURL(url);
+          resolve(window.captureFallback(windowElement, width * dpr, height * dpr));
+        };
+        
+        img.src = url;
+      });
+    } catch (err) {
+      console.warn("Capture engine error:", err);
+      return window.captureFallback(windowElement, 500, 400);
+    }
+  };
+
+  window.captureFallback = function(windowElement, width, height) {
+    const fallback = document.createElement('canvas');
+    fallback.width = width;
+    fallback.height = height;
+    const ctx = fallback.getContext('2d');
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.15)';
+    ctx.roundRect(0, 0, width, height, 12);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+    ctx.stroke();
+    return fallback;
+  };
+
+  /**
+   * Renders an affine texture-mapped triangle onto the canvas.
+   * Implements a Centroid Expansion Trick to completely seal sub-pixel rendering seams.
+   */
+  window.drawAffineTriangle = function(
+    ctx,
+    texture,
+    u0, v0,
+    u1, v1,
+    u2, v2,
+    x0, y0,
+    x1, y1,
+    x2, y2
+  ) {
+    ctx.save();
+    
+    // Centroid expansion trick: push mapping corners by 0.55px to cover antialiasing gaps
+    const cx = (x0 + x1 + x2) / 3;
+    const cy = (y0 + y1 + y2) / 3;
+    const expand = 0.55; 
+    
+    const dx0 = x0 - cx; const dy0 = y0 - cy;
+    const len0 = Math.sqrt(dx0*dx0 + dy0*dy0) || 1;
+    const ex0 = x0 + (dx0 / len0) * expand;
+    const ey0 = y0 + (dy0 / len0) * expand;
+
+    const dx1 = x1 - cx; const dy1 = y1 - cy;
+    const len1 = Math.sqrt(dx1*dx1 + dy1*dy1) || 1;
+    const ex1 = x1 + (dx1 / len1) * expand;
+    const ey1 = y1 + (dy1 / len1) * expand;
+
+    const dx2 = x2 - cx; const dy2 = y2 - cy;
+    const len2 = Math.sqrt(dx2*dx2 + dy2*dy2) || 1;
+    const ex2 = x2 + (dx2 / len2) * expand;
+    const ey2 = y2 + (dy2 / len2) * expand;
+
+    // Clip to expanded boundaries
+    ctx.beginPath();
+    ctx.moveTo(ex0, ey0);
+    ctx.lineTo(ex1, ey1);
+    ctx.lineTo(ex2, ey2);
+    ctx.closePath();
+    ctx.clip();
+
+    const delta = u0 * (v1 - v2) + u1 * (v2 - v0) + u2 * (v0 - v1);
+
+    if (Math.abs(delta) > 0.0001) {
+      const a = (x0 * (v1 - v2) + x1 * (v2 - v0) + x2 * (v0 - v1)) / delta;
+      const c = (u0 * (x1 - x2) + u1 * (x2 - x0) + u2 * (x0 - x1)) / delta;
+      const e = x0 - a * u0 - c * v0;
+
+      const b = (y0 * (v1 - v2) + y1 * (v2 - v0) + y2 * (v0 - v1)) / delta;
+      const d = (u0 * (y1 - y2) + u1 * (y2 - y0) + u2 * (y0 - y1)) / delta;
+      const f = y0 - b * u0 - d * v0;
+
+      ctx.transform(a, b, c, d, e, f);
+      ctx.drawImage(texture, 0, 0);
+    }
+    ctx.restore();
+  };
+
+  /**
+   * Computes fluid, physical Genie coordinate mapping between the Window and target Dock item.
+   */
+  window.getWarpedPoint = function(u, v, t, windowRect, dockRect) {
+    const startX = windowRect.x + u * windowRect.w;
+    const startY = windowRect.y + v * windowRect.h;
+
+    const endX = dockRect.x + u * dockRect.w;
+    const endY = dockRect.y + v * dockRect.h;
+
+    // Stagger rows: bottom bounds start slipping down first, top follows
+    const delayFactor = (1.0 - v) * 0.3;
+    const rowT = Math.max(0, Math.min(1.0, (t - delayFactor) / 0.7));
+    
+    // High-fidelity ease-in-out cubic curve
+    const rowEase = rowT < 0.5 ? 4 * rowT * rowT * rowT : 1 - Math.pow(-2 * rowT + 2, 3) / 2;
+
+    const windowCenterX = windowRect.x + windowRect.w / 2;
+    const dockCenterX = dockRect.x + dockRect.w / 2;
+    const slideAxisX = windowCenterX + (dockCenterX - windowCenterX) * rowEase;
+
+    // Warp height positioning
+    const curY = startY + (endY - startY) * rowEase;
+
+    // Shape the curved funnel neck
+    const startOffset = startX - windowCenterX;
+    const endOffset = (u - 0.5) * dockRect.w;
+    const currentOffset = startOffset * Math.pow(1.0 - rowEase, 2.2) + endOffset * rowEase;
+
+    return { x: slideAxisX + currentOffset, y: curY };
+  };
+
+  /**
+   * Runs the animation canvas loop using a highly responsive 5x5 grid (50 triangles total).
+   */
+  window.runGenieAnimation = function({
+    direction,
+    windowId,
+    appName,
+    stateObj,
+    texture,
+    startRect,
+    endRect,
+    onComplete
+  }) {
+    const canvas = document.createElement('canvas');
+    canvas.style.position = 'fixed';
+    canvas.style.top = '0';
+    canvas.style.left = '0';
+    canvas.style.width = '100vw';
+    canvas.style.height = '100vh';
+    canvas.style.pointerEvents = 'none';
+    canvas.style.zIndex = '2147483640';
+    document.body.appendChild(canvas);
+
+    const ctx = canvas.getContext('2d');
+    const COLUMNS = 5;
+    const ROWS = 5;
+
+    const dpr = window.devicePixelRatio || 1;
+    const updateSize = () => {
+      canvas.width = window.innerWidth * dpr;
+      canvas.height = window.innerHeight * dpr;
+      ctx.scale(dpr, dpr);
+    };
+    updateSize();
+    window.addEventListener('resize', updateSize);
+
+    let startTime = null;
+    const duration = 750; // Slower/more dramatic timeline (750ms)
+
+    function animate(now) {
+      if (!startTime) startTime = now;
+      const elapsed = now - startTime;
+      let progress = elapsed / duration;
+      if (progress > 1) progress = 1;
+
+      ctx.clearRect(0, 0, canvas.width / dpr, canvas.height / dpr);
+
+      const windowRect = (direction === 'minimize') ? startRect : endRect;
+      const dockRect = (direction === 'minimize') ? endRect : startRect;
+      const t_warp = (direction === 'minimize') ? progress : (1 - progress);
+
+      for (let c = 0; c < COLUMNS; c++) {
+        for (let r = 0; r < ROWS; r++) {
+          const u0 = c / COLUMNS;
+          const v0 = r / ROWS;
+          const u1 = (c + 1) / COLUMNS;
+          const v1 = r / ROWS;
+          const u2 = c / COLUMNS;
+          const v2 = (r + 1) / ROWS;
+          const u3 = (c + 1) / COLUMNS;
+          const v3 = (r + 1) / ROWS;
+
+          const pt0 = window.getWarpedPoint(u0, v0, t_warp, windowRect, dockRect);
+          const pt1 = window.getWarpedPoint(u1, v1, t_warp, windowRect, dockRect);
+          const pt2 = window.getWarpedPoint(u2, v2, t_warp, windowRect, dockRect);
+          const pt3 = window.getWarpedPoint(u3, v3, t_warp, windowRect, dockRect);
+
+          const tu0 = u0 * texture.width;
+          const tv0 = v0 * texture.height;
+          const tu1 = u1 * texture.width;
+          const tv1 = v1 * texture.height;
+          const tu2 = u2 * texture.width;
+          const tv2 = v2 * texture.height;
+          const tu3 = u3 * texture.width;
+          const tv3 = v3 * texture.height;
+
+          window.drawAffineTriangle(
+            ctx, texture,
+            tu0, tv0, tu1, tv1, tu2, tv2,
+            pt0.x, pt0.y, pt1.x, pt1.y, pt2.x, pt2.y
+          );
+
+          window.drawAffineTriangle(
+            ctx, texture,
+            tu1, tv1, tu3, tv3, tu2, tv2,
+            pt1.x, pt1.y, pt3.x, pt3.y, pt2.x, pt2.y
+          );
+        }
+      }
+
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      } else {
+        window.removeEventListener('resize', updateSize);
+        if (canvas.parentNode) {
+          canvas.parentNode.removeChild(canvas);
+        }
+        if (onComplete) onComplete();
+      }
+    }
+
+    requestAnimationFrame(animate);
+  };
+
+  /**
+   * Render the minimized windows in the macOS Dock section next to Trash.
+   */
+  window.renderMinimizedDock = function() {
+    const container = document.getElementById('dock-minimized-container');
+    const separator = document.getElementById('dock-minimized-separator');
+    if (!container) return;
+
+    container.innerHTML = '';
+    if (separator) separator.style.display = 'none';
+    container.style.display = 'none';
+
+    if (window.refreshDockStates) {
+      window.refreshDockStates();
+    }
+  };
+
+  /**
+   * Action to restore (un-minimize) a window with reverse Genie.
+   */
+  window.restoreWindow = function(minWin) {
+    const windowElement = minWin.element;
+    const stateObj = minWin.winState;
+    if (stateObj.isMovingGenie) return;
+
+    // Try to find the actual main app icon in the Dock!
+    let startRect = null;
+    const appIcon = document.querySelector(`.dock-icon[data-name="${minWin.appName}"]`);
+    if (appIcon) {
+      const iRect = appIcon.getBoundingClientRect();
+      if (iRect.width > 0) {
+        startRect = { x: iRect.left, y: iRect.top, w: iRect.width, h: iRect.height };
+      }
+    }
+
+    // Fallback to dock minimized container if not found
+    if (!startRect) {
+      const container = document.getElementById('dock-minimized-container');
+      if (container) {
+        const iconToRestore = container.querySelector(`.dock-icon[data-name="${minWin.appName} (Minimized)"]`);
+        if (iconToRestore) {
+          const iRect = iconToRestore.getBoundingClientRect();
+          if (iRect.width > 0) {
+            startRect = { x: iRect.left, y: iRect.top, w: iRect.width, h: iRect.height };
+          }
+        }
+      }
+    }
+
+    window.minimizedWindows = window.minimizedWindows.filter(w => w !== minWin);
+    window.renderMinimizedDock();
+
+    // Show window silently (opacity 0) to align positions in layout
+    windowElement.style.visibility = 'visible';
+    windowElement.style.opacity = '0';
+
+    // Set target window states
+    stateObj.isOpen = true;
+    stateObj.isMinimized = false;
+    stateObj.targetOpacity = 1;
+    stateObj.targetScaleX = 1;
+    stateObj.targetScaleY = 1;
+    stateObj.targetTranslateY = 0;
+
+    // Force values for accurate coordinates capture
+    stateObj.opacity = 0;
+    stateObj.scaleX = 1;
+    stateObj.scaleY = 1;
+    stateObj.translateY = 0;
+
+    const targetRect = windowElement.getBoundingClientRect();
+
+    // If we couldn't find any app icon or container fallback, use the separator or trash area fallback
+    if (!startRect) {
+      const trashIcon = document.querySelector('.dock-icon[data-name="Trash"]');
+      const separator = document.getElementById('dock-minimized-separator');
+      if (separator && separator.style.display !== 'none') {
+        const sRect = separator.getBoundingClientRect();
+        // Place a mock 44x44 start area right next to the separator where the container expands
+        startRect = { x: sRect.left + 8, y: sRect.top - 6, w: 44, h: 44 };
+      } else if (trashIcon) {
+        const tRect = trashIcon.getBoundingClientRect();
+        startRect = { x: tRect.left - 30, y: tRect.top, w: 44, h: 44 };
+      } else {
+        startRect = { x: window.innerWidth / 2, y: window.innerHeight - 50, w: 44, h: 44 };
+      }
+    }
+
+    stateObj.isMovingGenie = true;
+
+    window.runGenieAnimation({
+      direction: 'restore',
+      windowId: minWin.id,
+      appName: minWin.appName,
+      stateObj: stateObj,
+      texture: minWin.texture,
+      startRect: startRect,
+      endRect: {
+        x: targetRect.left,
+        y: targetRect.top,
+        w: targetRect.width,
+        h: targetRect.height
+      },
+      onComplete: () => {
+        windowElement.style.pointerEvents = '';
+        windowElement.style.opacity = '1';
+        windowElement.style.visibility = 'visible';
+        
+        stateObj.opacity = 1;
+        stateObj.scaleX = 1;
+        stateObj.scaleY = 1;
+        stateObj.translateY = 0;
+        stateObj.isMovingGenie = false;
+
+        if (window.bringWindowToFront) {
+          window.bringWindowToFront(minWin.id, minWin.appName);
+        }
+      }
+    });
+  };
+
+  /**
+   * Action to trigger minimize sequence.
+   */
+  window.triggerMinimize = async function(windowId, appName, stateObj) {
+    if (stateObj.isMovingGenie) return;
+
+    const windowElement = document.getElementById(windowId);
+    if (!windowElement) return;
+
+    const windowRect = windowElement.getBoundingClientRect();
+
+    let targetRect = null;
+    const appIcon = document.querySelector(`.dock-icon[data-name="${appName}"]`);
+    if (appIcon) {
+      const iRect = appIcon.getBoundingClientRect();
+      if (iRect.width > 0) {
+        targetRect = { x: iRect.left, y: iRect.top, width: iRect.width, height: iRect.height };
+      }
+    }
+
+    if (!targetRect) {
+      const trashIcon = document.querySelector('.dock-icon[data-name="Trash"]');
+      const separator = document.getElementById('dock-minimized-separator');
+      if (separator && separator.style.display !== 'none') {
+        const sRect = separator.getBoundingClientRect();
+        // Enforce a stable 44x44 target square positioned exactly where the new dock icon will open up
+        targetRect = {
+          x: sRect.left + 8,
+          y: sRect.top - 6,
+          width: 44,
+          height: 44
+        };
+      } else if (trashIcon) {
+        const trashRect = trashIcon.getBoundingClientRect();
+        targetRect = { x: trashRect.left - 50, y: trashRect.top, width: 44, height: 44 };
+      } else {
+        targetRect = { x: window.innerWidth / 2, y: window.innerHeight - 50, width: 44, height: 44 };
+      }
+    }
+
+    stateObj.isMovingGenie = true;
+
+    // Use pre-captured canvas if available, otherwise check if there is an active background promise, otherwise fallback to on-demand capture
+    let capturedCanvas = window.windowCaptureCache ? window.windowCaptureCache[windowId] : null;
+    if (!capturedCanvas && window.windowCapturePromises && window.windowCapturePromises[windowId]) {
+      capturedCanvas = await window.windowCapturePromises[windowId];
+    }
+    if (!capturedCanvas) {
+      capturedCanvas = await window.captureWindow(windowElement);
+    } else {
+      if (window.windowCaptureCache) {
+        delete window.windowCaptureCache[windowId];
+      }
+    }
+
+    const combinedCanvas = document.createElement('canvas');
+    combinedCanvas.width = capturedCanvas.width;
+    combinedCanvas.height = capturedCanvas.height;
+    const cctx = combinedCanvas.getContext('2d');
+
+    const isDark = document.body.classList.contains('dark-mode');
+    cctx.fillStyle = isDark ? 'rgba(30,30,30,0.85)' : 'rgba(255,255,255,0.75)';
+
+    cctx.beginPath();
+    const dpr = window.devicePixelRatio || 1;
+    const radiusVal = (window.squircleSettings ? window.squircleSettings[windowId.replace('-window','')] : 24) || 24;
+    const radius = radiusVal * dpr;
+    cctx.roundRect(0, 0, combinedCanvas.width, combinedCanvas.height, radius);
+    cctx.fill();
+    cctx.save();
+    cctx.clip();
+    cctx.drawImage(capturedCanvas, 0, 0);
+    cctx.restore();
+
+    windowElement.style.pointerEvents = 'none';
+    windowElement.style.opacity = '0';
+    windowElement.style.visibility = 'hidden';
+
+    stateObj.isOpen = true; // Stay in open state in memory
+    stateObj.isMinimized = true;
+    stateObj.targetOpacity = 0;
+    stateObj.targetScaleX = 0.2;
+    stateObj.targetScaleY = 0.05;
+    stateObj.targetTranslateY = 300;
+
+    window.runGenieAnimation({
+      direction: 'minimize',
+      windowId,
+      appName,
+      stateObj,
+      texture: combinedCanvas,
+      startRect: {
+        x: windowRect.left,
+        y: windowRect.top,
+        w: windowRect.width,
+        h: windowRect.height
+      },
+      endRect: {
+        x: targetRect.left || targetRect.x,
+        y: targetRect.top || targetRect.y,
+        w: targetRect.width || 44,
+        h: targetRect.height || 44
+      },
+      onComplete: () => {
+        stateObj.isMovingGenie = false;
+
+        const minInfo = {
+          id: windowId,
+          appName: appName,
+          texture: combinedCanvas,
+          winState: stateObj,
+          element: windowElement
+        };
+
+        window.minimizedWindows.push(minInfo);
+        window.renderMinimizedDock();
+      }
+    });
+  };
+
+  /**
+   * Un-minimize specified window helper.
+   */
+  window.restoreWindowById = function(windowId) {
+    const minWin = window.minimizedWindows.find(w => w.id === windowId);
+    if (minWin) {
+      window.restoreWindow(minWin);
+    }
+  };
 
   const savedSettings = localStorage.getItem('squircle-settings');
   const defaultSettings = {
@@ -3629,10 +4336,54 @@
 
   // Hook into lifecycle
   setInterval(scanAndSquirclify, 300);
+
+  /**
+   * Pre-capture minimization handler setup
+   */
+  window.setupMinimizeControlsPrecapture = function() {
+    const selectorMap = [
+      { elementId: 'btn-minimize', windowId: 'finder-window' },
+      { elementId: 'safari-btn-minimize', windowId: 'safari-window' },
+      { elementId: 'word-btn-minimize', windowId: 'word-window' },
+      { elementId: 'terminal-btn-minimize', windowId: 'terminal-window' },
+      { elementId: 'settings-btn-minimize', windowId: 'settings-window' },
+      { elementId: 'launchpad-btn-minimize', windowId: 'launchpad-window' }
+    ];
+
+    selectorMap.forEach(item => {
+      const btn = document.getElementById(item.elementId);
+      if (btn) {
+        // Pre-capture on mouse hover
+        btn.addEventListener('mouseenter', () => {
+          window.preCaptureWindow(item.windowId);
+        });
+        const parentTrafficLight = btn.closest('.traffic-lights');
+        if (parentTrafficLight) {
+          parentTrafficLight.addEventListener('mouseenter', () => {
+            window.preCaptureWindow(item.windowId);
+          });
+        }
+        // Pre-capture on mouse click-down
+        btn.addEventListener('mousedown', () => {
+          window.preCaptureWindow(item.windowId);
+        });
+      }
+    });
+
+    // Run initial pre-capture on default desktop visible windows
+    setTimeout(() => {
+      window.preCaptureWindow('finder-window');
+    }, 1500);
+  };
+
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', scanAndSquirclify);
+    document.addEventListener('DOMContentLoaded', () => {
+      scanAndSquirclify();
+      window.setupMinimizeControlsPrecapture();
+    });
   } else {
     scanAndSquirclify();
+    window.setupMinimizeControlsPrecapture();
   }
 </script>
 
@@ -4480,6 +5231,10 @@ customElements.define('glass-element', GlassElement);
     win.querySelectorAll('*').forEach(child => child.dispatchEvent(new Event('force-liquid-glass', { bubbles: true })));
     
     setActiveApp(appName);
+
+    if (window.preCaptureWindow) {
+      window.preCaptureWindow(winId);
+    }
   }
 
   document.addEventListener('mousedown', (e) => {
@@ -4512,6 +5267,14 @@ customElements.define('glass-element', GlassElement);
     setActiveApp('Finder');
   });
   document.getElementById('btn-minimize').addEventListener('click', () => {
+    if (window.genieMinimizeEnabled) {
+      if (!winState.isMinimized) {
+        window.triggerMinimize('finder-window', 'Finder', winState);
+      } else {
+        window.restoreWindowById('finder-window');
+      }
+      return;
+    }
     if (!winState.isMinimized) {
       winState.targetScaleX = 0.2; winState.targetScaleY = 0.05;
       winState.targetTranslateY = 300; winState.targetOpacity = 0;
@@ -4543,6 +5306,10 @@ customElements.define('glass-element', GlassElement);
     finderIcon.addEventListener('click', (e) => {
       e.stopPropagation();
       bringWindowToFront('finder-window', 'Finder');
+      if (window.genieMinimizeEnabled && winState.isMinimized) {
+        window.restoreWindowById('finder-window');
+        return;
+      }
       if (!winState.isOpen || winState.isMinimized) {
         winState.targetScaleX = 1; 
         winState.targetScaleY = 1;
@@ -5057,6 +5824,14 @@ customElements.define('glass-element', GlassElement);
     setActiveApp('Finder');
   });
   document.getElementById('settings-btn-minimize').addEventListener('click', () => {
+    if (window.genieMinimizeEnabled) {
+      if (!settingsState.isMinimized) {
+        window.triggerMinimize('settings-window', 'System Settings', settingsState);
+      } else {
+        window.restoreWindowById('settings-window');
+      }
+      return;
+    }
     if (!settingsState.isMinimized) {
       settingsState.targetScaleX = 0.2; settingsState.targetScaleY = 0.05;
       settingsState.targetTranslateY = 300; settingsState.targetOpacity = 0;
@@ -5090,6 +5865,10 @@ customElements.define('glass-element', GlassElement);
     settingsIcon.addEventListener('click', (e) => {
       e.stopPropagation();
       bringWindowToFront('settings-window', 'System Settings');
+      if (window.genieMinimizeEnabled && settingsState.isMinimized) {
+        window.restoreWindowById('settings-window');
+        return;
+      }
       if (!settingsState.isOpen || settingsState.isMinimized) {
         settingsState.targetScaleX = 1; settingsState.targetScaleY = 1;
         settingsState.targetWidth = settingsState.isMaximized ? window.innerWidth - 40 : 600;
@@ -5098,9 +5877,13 @@ customElements.define('glass-element', GlassElement);
         settingsState.targetTranslateY = settingsState.isMaximized ? -30 : 0;
         settingsState.isOpen = true; settingsState.isMinimized = false;
       } else {
-        settingsState.targetScaleX = 0.2; settingsState.targetScaleY = 0.05;
-        settingsState.targetTranslateY = 300; settingsState.targetOpacity = 0;
-        settingsState.isMinimized = true;
+        if (window.genieMinimizeEnabled) {
+          window.triggerMinimize('settings-window', 'System Settings', settingsState);
+        } else {
+          settingsState.targetScaleX = 0.2; settingsState.targetScaleY = 0.05;
+          settingsState.targetTranslateY = 300; settingsState.targetOpacity = 0;
+          settingsState.isMinimized = true;
+        }
       }
     });
   }
@@ -5334,6 +6117,14 @@ customElements.define('glass-element', GlassElement);
 
   // Run once to initialize
   updateTerminalCustomization();
+
+  const genieMinimizeToggle = document.getElementById('genie-minimize-toggle');
+  if (genieMinimizeToggle) {
+    genieMinimizeToggle.checked = window.genieMinimizeEnabled;
+    genieMinimizeToggle.addEventListener('change', (e) => {
+      window.genieMinimizeEnabled = e.target.checked;
+    });
+  }
 
   const darkModeToggle = document.getElementById('dark-mode-toggle');
   if (darkModeToggle) {
@@ -5769,6 +6560,14 @@ if (val === 'help') {
     setActiveApp('Finder');
   });
   document.getElementById('terminal-btn-minimize').addEventListener('click', () => {
+    if (window.genieMinimizeEnabled) {
+      if (!terminalState.isMinimized) {
+        window.triggerMinimize('terminal-window', 'Terminal', terminalState);
+      } else {
+        window.restoreWindowById('terminal-window');
+      }
+      return;
+    }
     if (!terminalState.isMinimized) {
       terminalState.targetScaleX = 0.2; terminalState.targetScaleY = 0.05;
       terminalState.targetTranslateY = 300; terminalState.targetOpacity = 0;
@@ -5801,6 +6600,10 @@ if (val === 'help') {
     terminalIcon.addEventListener('click', (e) => {
       e.stopPropagation();
       bringWindowToFront('terminal-window', 'Terminal');
+      if (window.genieMinimizeEnabled && terminalState.isMinimized) {
+        window.restoreWindowById('terminal-window');
+        return;
+      }
       if (!terminalState.isOpen || terminalState.isMinimized) {
         terminalState.targetScaleX = 1; terminalState.targetScaleY = 1;
         terminalState.targetWidth = terminalState.isMaximized ? window.innerWidth - 40 : 600;
@@ -5811,9 +6614,13 @@ if (val === 'help') {
         
         setTimeout(() => terminalInput.focus(), 100);
       } else {
-        terminalState.targetScaleX = 0.2; terminalState.targetScaleY = 0.05;
-        terminalState.targetTranslateY = 300; terminalState.targetOpacity = 0;
-        terminalState.isMinimized = true;
+        if (window.genieMinimizeEnabled) {
+          window.triggerMinimize('terminal-window', 'Terminal', terminalState);
+        } else {
+          terminalState.targetScaleX = 0.2; terminalState.targetScaleY = 0.05;
+          terminalState.targetTranslateY = 300; terminalState.targetOpacity = 0;
+          terminalState.isMinimized = true;
+        }
       }
     });
   }
@@ -5837,6 +6644,14 @@ if (val === 'help') {
     setActiveApp('Finder');
   });
   document.getElementById('word-btn-minimize').addEventListener('click', () => {
+    if (window.genieMinimizeEnabled) {
+      if (!wordState.isMinimized) {
+        window.triggerMinimize('word-window', 'Word', wordState);
+      } else {
+        window.restoreWindowById('word-window');
+      }
+      return;
+    }
     if (!wordState.isMinimized) {
       wordState.targetScaleX = 0.2; wordState.targetScaleY = 0.05;
       wordState.targetTranslateY = 300; wordState.targetOpacity = 0;
@@ -5932,6 +6747,10 @@ if (val === 'help') {
     wordIcon.addEventListener('click', (e) => {
       e.stopPropagation();
       bringWindowToFront('word-window', 'Word');
+      if (window.genieMinimizeEnabled && wordState.isMinimized) {
+        window.restoreWindowById('word-window');
+        return;
+      }
       if (!wordState.isOpen || wordState.isMinimized) {
         wordState.targetScaleX = 1; wordState.targetScaleY = 1;
         wordState.targetWidth = wordState.isMaximized ? window.innerWidth - 40 : 800;
@@ -5940,9 +6759,13 @@ if (val === 'help') {
         wordState.targetTranslateY = wordState.isMaximized ? -30 : 0;
         wordState.isOpen = true; wordState.isMinimized = false;
       } else {
-        wordState.targetScaleX = 0.2; wordState.targetScaleY = 0.05;
-        wordState.targetTranslateY = 300; wordState.targetOpacity = 0;
-        wordState.isMinimized = true;
+        if (window.genieMinimizeEnabled) {
+          window.triggerMinimize('word-window', 'Word', wordState);
+        } else {
+          wordState.targetScaleX = 0.2; wordState.targetScaleY = 0.05;
+          wordState.targetTranslateY = 300; wordState.targetOpacity = 0;
+          wordState.isMinimized = true;
+        }
       }
     });
   }
@@ -6260,6 +7083,14 @@ if (val === 'help') {
     setActiveApp('Finder');
   });
   document.getElementById('safari-btn-minimize').addEventListener('click', () => {
+    if (window.genieMinimizeEnabled) {
+      if (!safariState.isMinimized) {
+        window.triggerMinimize('safari-window', 'Safari', safariState);
+      } else {
+        window.restoreWindowById('safari-window');
+      }
+      return;
+    }
     if (!safariState.isMinimized) {
       safariState.targetScaleX = 0.2; safariState.targetScaleY = 0.04;
       safariState.targetTranslateY = 350; safariState.targetOpacity = 0;
@@ -6291,6 +7122,10 @@ if (val === 'help') {
     safariIcon.addEventListener('click', (e) => {
       e.stopPropagation();
       bringWindowToFront('safari-window', 'Safari');
+      if (window.genieMinimizeEnabled && safariState.isMinimized) {
+        window.restoreWindowById('safari-window');
+        return;
+      }
       if (!safariState.isOpen || safariState.isMinimized) {
         safariState.targetScaleX = 1; safariState.targetScaleY = 1;
         safariState.targetWidth = safariState.isMaximized ? window.innerWidth : 1000;
@@ -6299,9 +7134,13 @@ if (val === 'help') {
         safariState.targetTranslateY = safariState.isMaximized ? -38 : 0;
         safariState.isOpen = true; safariState.isMinimized = false;
       } else {
-        safariState.targetScaleX = 0.2; safariState.targetScaleY = 0.04;
-        safariState.targetTranslateY = 350; safariState.targetOpacity = 0;
-        safariState.isMinimized = true;
+        if (window.genieMinimizeEnabled) {
+          window.triggerMinimize('safari-window', 'Safari', safariState);
+        } else {
+          safariState.targetScaleX = 0.2; safariState.targetScaleY = 0.04;
+          safariState.targetTranslateY = 350; safariState.targetOpacity = 0;
+          safariState.isMinimized = true;
+        }
       }
     });
   }
@@ -6467,23 +7306,30 @@ if (val === 'help') {
     const winMinDragY = -halfWinHeight + winState.height / 2 + 28;
     const winClampedDragY = Math.max(winMinDragY, Math.min(winState.dragY, winMaxDragY));
 
-    finderWindow.style.transform = `translate(${winState.dragX}px, ${winState.translateY + winClampedDragY}px) scale(${winState.scaleX}, ${winState.scaleY})`;
-    finderWindow.style.opacity = winState.opacity;
-    finderWindow.style.filter = !winState.isOpen && winState.opacity < 0.99 ? `blur(${(1 - winState.opacity) * 15}px)` : 'none';
-    finderWindow.style.width = `${winState.width}px`;
-    finderWindow.style.height = `${winState.height}px`;
-    finderWindow.style.marginLeft = `-${winState.width / 2}px`;
-    finderWindow.style.marginTop = `-${winState.height / 2}px`;
-
-    if (winState.isOpen) {
-      finderWindow.classList.add('interactive');
-      finderIcon && finderIcon.classList.add('active');
-      finderWindow.style.display = 'flex';
+    if (winState.isMinimized || winState.isMovingGenie) {
+      finderWindow.style.visibility = 'hidden';
+      finderWindow.style.pointerEvents = 'none';
+      finderWindow.style.opacity = '0';
     } else {
-      finderWindow.classList.remove('interactive');
-      finderIcon && finderIcon.classList.remove('active');
-      if (winState.opacity < 0.01) finderWindow.style.display = 'none';
-      else finderWindow.style.display = 'flex';
+      finderWindow.style.visibility = 'visible';
+      finderWindow.style.transform = `translate(${winState.dragX}px, ${winState.translateY + winClampedDragY}px) scale(${winState.scaleX}, ${winState.scaleY})`;
+      finderWindow.style.opacity = winState.opacity;
+      finderWindow.style.filter = !winState.isOpen && winState.opacity < 0.99 ? `blur(${(1 - winState.opacity) * 15}px)` : 'none';
+      finderWindow.style.width = `${winState.width}px`;
+      finderWindow.style.height = `${winState.height}px`;
+      finderWindow.style.marginLeft = `-${winState.width / 2}px`;
+      finderWindow.style.marginTop = `-${winState.height / 2}px`;
+
+      if (winState.isOpen) {
+        finderWindow.classList.add('interactive');
+        finderIcon && finderIcon.classList.add('active');
+        finderWindow.style.display = 'flex';
+      } else {
+        finderWindow.classList.remove('interactive');
+        finderIcon && finderIcon.classList.remove('active');
+        if (winState.opacity < 0.01) finderWindow.style.display = 'none';
+        else finderWindow.style.display = 'flex';
+      }
     }
 
     // Safari Window animation
@@ -6515,23 +7361,30 @@ if (val === 'help') {
     const safMinDragY = -halfWinHeight + safariState.height / 2 + 28;
     const safClampedDragY = Math.max(safMinDragY, Math.min(safariState.dragY, safMaxDragY));
 
-    safariWindow.style.transform = `translate(${safariState.dragX}px, ${safariState.translateY + safClampedDragY}px) scale(${safariState.scaleX}, ${safariState.scaleY})`;
-    safariWindow.style.opacity = safariState.opacity;
-    safariWindow.style.filter = !safariState.isOpen && safariState.opacity < 0.99 ? `blur(${(1 - safariState.opacity) * 15}px)` : 'none';
-    safariWindow.style.width = `${safariState.width}px`;
-    safariWindow.style.height = `${safariState.height}px`;
-    safariWindow.style.marginLeft = `-${safariState.width / 2}px`;
-    safariWindow.style.marginTop = `-${safariState.height / 2}px`;
-
-    if (safariState.isOpen) {
-      safariWindow.classList.add('interactive');
-      safariIcon && safariIcon.classList.add('active');
-      safariWindow.style.display = 'flex';
+    if (safariState.isMinimized || safariState.isMovingGenie) {
+      safariWindow.style.visibility = 'hidden';
+      safariWindow.style.pointerEvents = 'none';
+      safariWindow.style.opacity = '0';
     } else {
-      safariWindow.classList.remove('interactive');
-      safariIcon && safariIcon.classList.remove('active');
-      if (safariState.opacity < 0.01) safariWindow.style.display = 'none';
-      else safariWindow.style.display = 'flex';
+      safariWindow.style.visibility = 'visible';
+      safariWindow.style.transform = `translate(${safariState.dragX}px, ${safariState.translateY + safClampedDragY}px) scale(${safariState.scaleX}, ${safariState.scaleY})`;
+      safariWindow.style.opacity = safariState.opacity;
+      safariWindow.style.filter = !safariState.isOpen && safariState.opacity < 0.99 ? `blur(${(1 - safariState.opacity) * 15}px)` : 'none';
+      safariWindow.style.width = `${safariState.width}px`;
+      safariWindow.style.height = `${safariState.height}px`;
+      safariWindow.style.marginLeft = `-${safariState.width / 2}px`;
+      safariWindow.style.marginTop = `-${safariState.height / 2}px`;
+
+      if (safariState.isOpen) {
+        safariWindow.classList.add('interactive');
+        safariIcon && safariIcon.classList.add('active');
+        safariWindow.style.display = 'flex';
+      } else {
+        safariWindow.classList.remove('interactive');
+        safariIcon && safariIcon.classList.remove('active');
+        if (safariState.opacity < 0.01) safariWindow.style.display = 'none';
+        else safariWindow.style.display = 'flex';
+      }
     }
 
     // Apps/Launchpad Window animation
@@ -6594,23 +7447,30 @@ if (val === 'help') {
     const termMinDragY = -halfWinHeight + terminalState.height / 2 + 28;
     const termClampedDragY = Math.max(termMinDragY, Math.min(terminalState.dragY, termMaxDragY));
 
-    terminalWindow.style.transform = `translate(${terminalState.dragX}px, ${terminalState.translateY + termClampedDragY}px) scale(${terminalState.scaleX}, ${terminalState.scaleY})`;
-    terminalWindow.style.opacity = terminalState.opacity;
-    terminalWindow.style.filter = !terminalState.isOpen && terminalState.opacity < 0.99 ? `blur(${(1 - terminalState.opacity) * 15}px)` : 'none';
-    terminalWindow.style.width = `${terminalState.width}px`;
-    terminalWindow.style.height = `${terminalState.height}px`;
-    terminalWindow.style.marginLeft = `-${terminalState.width / 2}px`;
-    terminalWindow.style.marginTop = `-${terminalState.height / 2}px`;
-
-    if (terminalState.isOpen) {
-      terminalWindow.classList.add('interactive');
-      terminalIcon && terminalIcon.classList.add('active');
-      terminalWindow.style.display = 'flex';
+    if (terminalState.isMinimized || terminalState.isMovingGenie) {
+      terminalWindow.style.visibility = 'hidden';
+      terminalWindow.style.pointerEvents = 'none';
+      terminalWindow.style.opacity = '0';
     } else {
-      terminalWindow.classList.remove('interactive');
-      terminalIcon && terminalIcon.classList.remove('active');
-      if (terminalState.opacity < 0.01) terminalWindow.style.display = 'none';
-      else terminalWindow.style.display = 'flex';
+      terminalWindow.style.visibility = 'visible';
+      terminalWindow.style.transform = `translate(${terminalState.dragX}px, ${terminalState.translateY + termClampedDragY}px) scale(${terminalState.scaleX}, ${terminalState.scaleY})`;
+      terminalWindow.style.opacity = terminalState.opacity;
+      terminalWindow.style.filter = !terminalState.isOpen && terminalState.opacity < 0.99 ? `blur(${(1 - terminalState.opacity) * 15}px)` : 'none';
+      terminalWindow.style.width = `${terminalState.width}px`;
+      terminalWindow.style.height = `${terminalState.height}px`;
+      terminalWindow.style.marginLeft = `-${terminalState.width / 2}px`;
+      terminalWindow.style.marginTop = `-${terminalState.height / 2}px`;
+
+      if (terminalState.isOpen) {
+        terminalWindow.classList.add('interactive');
+        terminalIcon && terminalIcon.classList.add('active');
+        terminalWindow.style.display = 'flex';
+      } else {
+        terminalWindow.classList.remove('interactive');
+        terminalIcon && terminalIcon.classList.remove('active');
+        if (terminalState.opacity < 0.01) terminalWindow.style.display = 'none';
+        else terminalWindow.style.display = 'flex';
+      }
     }
 
     // Settings Window animation
@@ -6642,23 +7502,30 @@ if (val === 'help') {
     const setMinDragY = -halfWinHeight + settingsState.height / 2 + 28;
     const setClampedDragY = Math.max(setMinDragY, Math.min(settingsState.dragY, setMaxDragY));
 
-    settingsWindow.style.transform = `translate(${settingsState.dragX}px, ${settingsState.translateY + setClampedDragY}px) scale(${settingsState.scaleX}, ${settingsState.scaleY})`;
-    settingsWindow.style.opacity = settingsState.opacity;
-    settingsWindow.style.filter = !settingsState.isOpen && settingsState.opacity < 0.99 ? `blur(${(1 - settingsState.opacity) * 15}px)` : 'none';
-    settingsWindow.style.width = `${settingsState.width}px`;
-    settingsWindow.style.height = `${settingsState.height}px`;
-    settingsWindow.style.marginLeft = `-${settingsState.width / 2}px`;
-    settingsWindow.style.marginTop = `-${settingsState.height / 2}px`;
-
-    if (settingsState.isOpen) {
-      settingsWindow.classList.add('interactive');
-      settingsIcon && settingsIcon.classList.add('active');
-      settingsWindow.style.display = 'flex';
+    if (settingsState.isMinimized || settingsState.isMovingGenie) {
+      settingsWindow.style.visibility = 'hidden';
+      settingsWindow.style.pointerEvents = 'none';
+      settingsWindow.style.opacity = '0';
     } else {
-      settingsWindow.classList.remove('interactive');
-      settingsIcon && settingsIcon.classList.remove('active');
-      if (settingsState.opacity < 0.01) settingsWindow.style.display = 'none';
-      else settingsWindow.style.display = 'flex';
+      settingsWindow.style.visibility = 'visible';
+      settingsWindow.style.transform = `translate(${settingsState.dragX}px, ${settingsState.translateY + setClampedDragY}px) scale(${settingsState.scaleX}, ${settingsState.scaleY})`;
+      settingsWindow.style.opacity = settingsState.opacity;
+      settingsWindow.style.filter = !settingsState.isOpen && settingsState.opacity < 0.99 ? `blur(${(1 - settingsState.opacity) * 15}px)` : 'none';
+      settingsWindow.style.width = `${settingsState.width}px`;
+      settingsWindow.style.height = `${settingsState.height}px`;
+      settingsWindow.style.marginLeft = `-${settingsState.width / 2}px`;
+      settingsWindow.style.marginTop = `-${settingsState.height / 2}px`;
+
+      if (settingsState.isOpen) {
+        settingsWindow.classList.add('interactive');
+        settingsIcon && settingsIcon.classList.add('active');
+        settingsWindow.style.display = 'flex';
+      } else {
+        settingsWindow.classList.remove('interactive');
+        settingsIcon && settingsIcon.classList.remove('active');
+        if (settingsState.opacity < 0.01) settingsWindow.style.display = 'none';
+        else settingsWindow.style.display = 'flex';
+      }
     }
 
     // Word Window animation
@@ -6692,23 +7559,30 @@ if (val === 'help') {
     const wordClampedDragY = Math.max(wordMinDragY, Math.min(wordState.dragY, wordMaxDragY));
 
     if (wordWindow) {
-      wordWindow.style.transform = `translate(${wordState.dragX}px, ${wordState.translateY + wordClampedDragY}px) scale(${wordState.scaleX}, ${wordState.scaleY})`;
-      wordWindow.style.opacity = wordState.opacity;
-      wordWindow.style.filter = !wordState.isOpen && wordState.opacity < 0.99 ? `blur(${(1 - wordState.opacity) * 15}px)` : 'none';
-      wordWindow.style.width = `${wordState.width}px`;
-      wordWindow.style.height = `${wordState.height}px`;
-      wordWindow.style.marginLeft = `-${wordState.width / 2}px`;
-      wordWindow.style.marginTop = `-${wordState.height / 2}px`;
-
-      if (wordState.isOpen) {
-        wordWindow.classList.add('interactive');
-        wordIcon && wordIcon.classList.add('active');
-        wordWindow.style.display = 'flex';
+      if (wordState.isMinimized || wordState.isMovingGenie) {
+        wordWindow.style.visibility = 'hidden';
+        wordWindow.style.pointerEvents = 'none';
+        wordWindow.style.opacity = '0';
       } else {
-        wordWindow.classList.remove('interactive');
-        wordIcon && wordIcon.classList.remove('active');
-        if (wordState.opacity < 0.01) wordWindow.style.display = 'none';
-        else wordWindow.style.display = 'flex';
+        wordWindow.style.visibility = 'visible';
+        wordWindow.style.transform = `translate(${wordState.dragX}px, ${wordState.translateY + wordClampedDragY}px) scale(${wordState.scaleX}, ${wordState.scaleY})`;
+        wordWindow.style.opacity = wordState.opacity;
+        wordWindow.style.filter = !wordState.isOpen && wordState.opacity < 0.99 ? `blur(${(1 - wordState.opacity) * 15}px)` : 'none';
+        wordWindow.style.width = `${wordState.width}px`;
+        wordWindow.style.height = `${wordState.height}px`;
+        wordWindow.style.marginLeft = `-${wordState.width / 2}px`;
+        wordWindow.style.marginTop = `-${wordState.height / 2}px`;
+
+        if (wordState.isOpen) {
+          wordWindow.classList.add('interactive');
+          wordIcon && wordIcon.classList.add('active');
+          wordWindow.style.display = 'flex';
+        } else {
+          wordWindow.classList.remove('interactive');
+          wordIcon && wordIcon.classList.remove('active');
+          if (wordState.opacity < 0.01) wordWindow.style.display = 'none';
+          else wordWindow.style.display = 'flex';
+        }
       }
     }
 
