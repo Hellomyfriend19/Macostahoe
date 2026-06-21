@@ -3269,36 +3269,1346 @@
 </div>
 
 <div class="window" id="word-window">
-  <div class="titlebar" id="word-titlebar" style="background:transparent; backdrop-filter:none; -webkit-backdrop-filter:none; position:relative; z-index:1; border-bottom:0px;">
-    <glass-element style="position:absolute; top:0; left:0; width:100%; height:100%; z-index:-1; pointer-events:none;" radius="12" radius-config="top" depth="2" blur="8" strength="30" background-color="var(--word-titlebar-bg)" chromatic-aberration="1" auto-size="false"></glass-element>
-    <div class="traffic-lights">
+  <!-- Isolated Microsoft Word Styling -->
+  <style>
+    #word-window {
+      background: #f3f4f6;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: #333;
+      user-select: none;
+      display: flex !important;
+      flex-direction: column;
+    }
+    
+    /* Header & Start Screen Elements */
+    .word-main-body {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+      position: relative;
+      background: #fff;
+    }
+
+    .word-sidebar {
+      width: 72px;
+      background: #f0f1f4;
+      border-right: 1px solid #dcdcdc;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 56px; /* Space for traffic lights */
+      box-sizing: border-box;
+      flex-shrink: 0;
+    }
+
+    .word-sidebar-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #cbd5e1, #94a3b8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 24px;
+      cursor: pointer;
+      font-weight: 600;
+      color: #fff;
+      font-size: 15px;
+      border: 1px solid #b5b5b5;
+    }
+
+    .word-sidebar-nav {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      width: 100%;
+      align-items: center;
+    }
+
+    .word-sidebar-tab {
+      width: 58px;
+      height: 52px;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #555;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      background: transparent;
+    }
+
+    .word-sidebar-tab:hover {
+      background: rgba(0, 0, 0, 0.04);
+    }
+
+    .word-sidebar-tab.active {
+      background: #007aff;
+      color: #fff !important;
+    }
+
+    .word-sidebar-tab svg {
+      width: 20px;
+      height: 20px;
+      stroke-width: 2;
+    }
+
+    .word-sidebar-tab.active svg {
+      color: #fff;
+    }
+
+    .word-sidebar-tab .tab-label {
+      font-size: 10px;
+      font-weight: 500;
+      margin-top: 4px;
+    }
+
+    /* Content Area */
+    .word-content-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background: #fff;
+      position: relative;
+    }
+
+    .word-content-header {
+      padding: 16px 24px 12px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .word-content-header h2 {
+      font-size: 18px;
+      font-weight: bold;
+      color: #111;
+      margin: 0;
+    }
+
+    .word-content-header .more-templates-btn {
+      font-size: 12px;
+      color: #007aff;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .word-content-header .more-templates-btn:hover {
+      text-decoration: underline;
+    }
+
+    /* Primary Views Screens */
+    .word-tab-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: auto;
+      padding: 0 24px 70px 24px; /* Space for absolute start-footer */
+      box-sizing: border-box;
+    }
+
+    /* Horizontal scroll row (Home View Templates) */
+    .word-templates-list-horizontal {
+      display: flex;
+      gap: 16px;
+      overflow-x: auto;
+      padding: 4px 4px 16px 4px;
+      flex-shrink: 0;
+    }
+
+    /* Templates Grid (New View) */
+    .word-templates-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 20px 16px;
+      padding: 12px 4px 30px 4px;
+    }
+
+    .word-template-card {
+      width: 124px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .word-template-preview-box {
+      width: 124px;
+      height: 164px;
+      background: #ffffff;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.06);
+      transition: all 0.15s ease;
+      overflow: hidden;
+      position: relative;
+      box-sizing: border-box;
+      padding: 6px;
+    }
+
+    .word-template-card:hover .word-template-preview-box {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    .word-template-card.selected .word-template-preview-box {
+      border: 2.5px solid #007aff;
+      box-shadow: 0 0 0 1.5px rgba(0,122,255,0.2), 0 4px 10px rgba(0,0,0,0.1);
+      padding: 4.5px;
+    }
+
+    .word-template-label {
+      font-size: 11px;
+      font-weight: 500;
+      color: #333;
+      text-align: center;
+      margin-top: 6px;
+      line-height: 1.3;
+      width: 124px;
+      word-wrap: break-word;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Template Graphics */
+    .tpl-blank-sheet {
+      width: 100%;
+      height: 100%;
+      background: #fcfcfc;
+      box-shadow: inset 0 0 8px rgba(0,0,0,0.02);
+    }
+
+    .tpl-tour-sheet {
+      width: 100%;
+      height: 100%;
+      background: #fdfdfd;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      box-sizing: border-box;
+      padding: 4px;
+    }
+    .tpl-tour-circle {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: #fff;
+      border: 2px solid #005a9e;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 8px;
+    }
+    .tpl-tour-arrow {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #0072cb;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: bold;
+      font-size: 12px;
+    }
+
+    .tpl-notes-sheet {
+      width: 100%;
+      height: 100%;
+      background: #fcfcfc;
+      padding: 8px;
+      box-sizing: border-box;
+    }
+    .tpl-notes-line {
+      height: 1px;
+      background: #e2e8f0;
+      margin-bottom: 8px;
+      width: 100%;
+    }
+    .tpl-notes-line.red {
+      background: #fca5a5;
+    }
+
+    .tpl-cal-sheet {
+      width: 100%;
+      height: 100%;
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      padding: 4px;
+    }
+    .tpl-cal-header {
+      background: #2b2b2b;
+      color: #fca5a5;
+      font-size: 8px;
+      text-align: center;
+      padding: 2px;
+      font-weight: bold;
+      border-radius: 2px;
+      margin-bottom: 4px;
+    }
+    .tpl-cal-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 2px;
+      flex: 1;
+    }
+    .tpl-cal-day {
+      background: #f1f5f9;
+      border-radius: 1px;
+    }
+
+    .tpl-resume-sheet {
+      width: 100%;
+      height: 100%;
+      background: #fff;
+      padding: 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .tpl-resume-head {
+      border-bottom: 1.5px solid #005a9e;
+      height: 16px;
+      margin-bottom: 4px;
+    }
+    .tpl-resume-body {
+      display: flex;
+      gap: 6px;
+      flex: 1;
+    }
+    .tpl-resume-col-left {
+      width: 30%;
+      background: #f8fafc;
+      border-radius: 2px;
+    }
+    .tpl-resume-col-right {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .tpl-line-stub {
+      height: 3px;
+      background: #e2e8f0;
+      border-radius: 1px;
+      width: 80%;
+    }
+
+    /* Recent & Pinned Tabs Under Header */
+    .word-recent-tabs-bar {
+      margin-top: 16px;
+      border-bottom: 1px solid #e5e5e5;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding-bottom: 6px;
+      margin-bottom: 12px;
+      flex-shrink: 0;
+    }
+
+    .word-tab-pill {
+      font-size: 13px;
+      font-weight: 600;
+      color: #777;
+      cursor: pointer;
+      position: relative;
+      padding: 4px 8px;
+    }
+
+    .word-tab-pill.active {
+      color: #007aff;
+      background: rgba(0, 122, 255, 0.08);
+      border-radius: 12px;
+    }
+
+    /* List table of documents */
+    .word-recent-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    .word-recent-table th {
+      font-size: 11px;
+      text-transform: uppercase;
+      font-weight: 600;
+      color: #888;
+      padding: 8px 12px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .word-row-doc {
+      cursor: pointer;
+      transition: background 0.15s ease;
+      border-bottom: 1px solid #f5f5f5;
+    }
+
+    .word-row-doc:hover {
+      background: #f7fafc;
+    }
+
+    .word-row-doc.selected {
+      background: #0272da !important;
+    }
+
+    .word-row-doc.selected td,
+    .word-row-doc.selected .word-doc-name,
+    .word-row-doc.selected .word-doc-desc {
+      color: #fff !important;
+    }
+
+    .word-row-doc td {
+      padding: 10px 12px;
+      vertical-align: middle;
+      font-size: 13px;
+    }
+
+    .word-doc-name-cell {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .word-doc-name {
+      font-weight: 500;
+      color: #1a1a1a;
+    }
+
+    .word-doc-desc {
+      font-size: 11px;
+      color: #737373;
+      margin-top: 1px;
+    }
+
+    .word-doc-date {
+      color: #555;
+      font-size: 12px;
+    }
+
+    /* Open view custom column structure */
+    .word-open-columns {
+      display: flex;
+      flex: 1;
+      height: 100%;
+      border-top: 1px solid #e0e0e0;
+    }
+
+    .word-open-locations {
+      width: 200px;
+      background: #fafafa;
+      border-right: 1px solid #e0e0e0;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 100%;
+      box-sizing: border-box;
+    }
+
+    .word-open-items-pane {
+      flex: 1;
+      background: #fff;
+      padding: 16px;
+      overflow-y: auto;
+      height: 100%;
+      box-sizing: border-box;
+    }
+
+    .word-location-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      color: #333;
+    }
+
+    .word-location-item.active {
+      background: #e2e8f0;
+      color: #1e293b;
+    }
+
+    /* Absolute Footer for Start Screens */
+    .word-start-footer {
+      position: absolute;
+      bottom: 0;
+      left: 72px; /* aligns to the right of the sidebar */
+      right: 0;
+      height: 52px;
+      background: #fafafa;
+      border-top: 1px solid #e5e5e5;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 12px;
+      padding: 0 20px;
+      z-index: 10;
+    }
+
+    .word-btn {
+      padding: 5px 16px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      border: 1px solid #ccc;
+      background: #fff;
+      color: #333;
+    }
+    .word-btn:hover {
+      background: #f3f4f6;
+    }
+
+    .word-btn.primary {
+      background: #007aff;
+      border-color: #006ae6;
+      color: #fff;
+    }
+
+    .word-btn.primary:hover {
+      background: #006ae6;
+    }
+
+    .word-btn.primary:disabled {
+      background: #a3cdf7;
+      border-color: #a3cdf7;
+      cursor: not-allowed;
+    }
+
+    /* --- DOCUMENT EDITOR SCREEN --- */
+    .word-editor-screen-container {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      height: 100%;
+      overflow: hidden;
+      background: #e2e8f0;
+    }
+
+    /* Upper Dark Blue Titlebar */
+    .word-blue-header {
+      background: #185abd;
+      height: 42px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: #fff;
+      padding: 0 16px;
+      flex-shrink: 0;
+      box-sizing: border-box;
+    }
+
+    .word-header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-left: 80px;
+    }
+
+    .word-autosave-box {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .word-autosave-toggle {
+      width: 32px;
+      height: 16px;
+      border-radius: 8px;
+      background: #7ca8e6;
+      position: relative;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .word-autosave-toggle.on {
+      background: #107c41;
+    }
+
+    .word-autosave-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: white;
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      transition: transform 0.2s ease;
+    }
+
+    .word-autosave-toggle.on .word-autosave-dot {
+      transform: translateX(16px);
+    }
+
+    .word-header-btn {
+      width: 24px;
+      height: 24px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #fff;
+    }
+
+    .word-header-btn:hover {
+      background: rgba(255,255,255,0.15);
+    }
+
+    .word-header-btn svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .word-header-doc-title {
+      font-weight: 500;
+      font-size: 13px;
+      letter-spacing: 0.2px;
+    }
+
+    .word-header-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .word-share-pill {
+      background: #ffffff;
+      color: #185abd;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+    }
+
+    /* Ribbon Tabs Row */
+    .word-ribbon-tabs-strip {
+      background: #ffffff;
+      height: 30px;
+      border-bottom: 1px solid #e2e8f0;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      gap: 16px;
+      flex-shrink: 0;
+      box-sizing: border-box;
+    }
+
+    .word-ribbon-tab {
+      font-size: 12px;
+      color: #4b5563;
+      font-weight: 500;
+      cursor: pointer;
+      padding: 4px 2px;
+      position: relative;
+    }
+
+    .word-ribbon-tab:hover {
+      color: #111;
+    }
+
+    .word-ribbon-tab.active {
+      color: #185abd;
+      font-weight: 600;
+    }
+
+    .word-ribbon-tab.active::after {
+      content: "";
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: #185abd;
+    }
+
+    /* Active Tool Command Bar */
+    .word-ribbon-commands-panel {
+      background: #f8fafc;
+      border-bottom: 1px solid #cbd5e1;
+      padding: 8px 16px;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-shrink: 0;
+      overflow-x: auto;
+      box-sizing: border-box;
+    }
+
+    .word-tool-group {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      border-right: 1px solid #e2e8f0;
+      padding-right: 10px;
+    }
+
+    .word-tool-group:last-child {
+      border-right: none;
+    }
+
+    .word-editor-btn {
+      width: 26px;
+      height: 26px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #334155;
+      font-size: 13px;
+      background: transparent;
+      border: none;
+    }
+
+    .word-editor-btn:hover {
+      background: #e2e8f0;
+    }
+
+    .word-editor-btn.active {
+      background: #cbd5e1;
+      color: #000;
+      font-weight: bold;
+    }
+
+    /* Dropdown elements helper styles */
+    .word-select {
+      height: 24px;
+      padding: 0 4px;
+      font-size: 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 4px;
+      background: #fff;
+      outline: none;
+    }
+
+    /* Styles gallery preview blocks */
+    .word-styles-gallery {
+      display: flex;
+      gap: 8px;
+    }
+
+    .word-style-gallery-card {
+      width: 64px;
+      height: 38px;
+      border: 1px solid #cbd5e1;
+      border-radius: 4px;
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      box-sizing: border-box;
+      padding: 2px;
+      transition: border 0.1s ease;
+    }
+
+    .word-style-gallery-card:hover {
+      background: #f1f5f9;
+      border-color: #94a3b8;
+    }
+
+    .word-style-gallery-card .style-symbol {
+      font-size: 11px;
+      font-weight: 500;
+      height: 14px;
+    }
+
+    .word-style-gallery-card .style-label {
+      font-size: 8px;
+      color: #64748b;
+    }
+
+    /* Warning Banner / Office Update Bar */
+    .word-update-banner {
+      background: #fffbeb;
+      border-bottom: 1px solid #fef3c7;
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: #b45309;
+      font-size: 11.5px;
+      font-weight: 500;
+      flex-shrink: 0;
+      box-sizing: border-box;
+    }
+
+    .word-update-message {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .word-update-btn {
+      background: #f97316;
+      color: #fff;
+      padding: 3px 10px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+    }
+
+    .word-update-btn:hover {
+      background: #ea580c;
+    }
+
+    /* Editor Stage holding A4 Paper */
+    .word-scrollstage {
+      flex: 1;
+      overflow: auto;
+      padding: 40px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      position: relative;
+    }
+
+    .word-editing-paper-container {
+      transition: transform 0.2s ease;
+      transform-origin: top center;
+    }
+
+    #word-rich-editor {
+      background: #ffffff;
+      width: 620px;
+      min-height: 800px;
+      padding: 60px 80px;
+      box-sizing: border-box;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+      outline: none;
+      font-family: Arial;
+      font-size: 14px;
+      line-height: 1.6;
+      color: #000;
+      border: 1px solid #bbb;
+      text-align: left;
+    }
+
+    /* Status Bar */
+    .word-status-bar {
+      height: 24px;
+      background: #f1f5f9;
+      border-top: 1px solid #cbd5e1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 12px;
+      font-size: 11px;
+      color: #475569;
+      box-sizing: border-box;
+      flex-shrink: 0;
+    }
+
+    .word-status-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .word-status-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .word-view-toggle-icons {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .word-view-mode-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #64748b;
+      cursor: pointer;
+      width: 18px;
+      height: 18px;
+      border-radius: 2px;
+    }
+
+    .word-view-mode-btn.active {
+      background: #cbd5e1;
+      color: #0f172a;
+    }
+
+    .word-zoom-slider-container {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Specific Focus Theme Mask */
+    .word-focus-active {
+      background: #090909 !important;
+    }
+    .word-focus-active #word-rich-editor {
+      box-shadow: 0 0 25px rgba(255,255,255,0.05);
+    }
+  </style>
+
+  <!-- Drag-Friendly Window Glass-Titlebar Overlay -->
+  <div class="titlebar" id="word-titlebar" style="background:transparent; backdrop-filter:none; -webkit-backdrop-filter:none; position:absolute; top:0; left:0; right:0; height:44px; z-index:100; border-bottom:0px; display:flex; align-items:center;">
+    <div class="traffic-lights" style="padding-left: 16px; margin-right: 0; pointer-events: auto;">
       <div class="btn close" id="word-btn-close"><svg viewBox="0 0 24 24" fill="none" stroke="rgb(122, 60, 58)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></div>
       <div class="btn minimize" id="word-btn-minimize"><svg viewBox="0 0 24 24" fill="none" stroke="rgb(123, 104, 43)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg></div>
       <div class="btn maximize" id="word-btn-maximize"><svg viewBox="0 0 24 24" fill="none" stroke="rgb(54, 102, 59)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg></div>
     </div>
-    <div class="window-title">Microsoft Word</div>
+    
+    <!-- Titlebar Context Toggle (Starts out as Microsoft Word) -->
+    <div style="flex: 1; display: flex; justify-content: center; align-items: center; font-size: 13px; font-weight: 600; color: #333; pointer-events: none;" id="word-global-title">
+      Microsoft Word
+    </div>
+
+    <!-- Quick Search Widget on Titlebar (Home Mode) -->
+    <div style="padding-right: 16px; pointer-events: auto; display: flex; align-items: center;" id="word-top-search-widget">
+      <div style="position: relative; width: 170px; height: 24px;">
+        <span style="position: absolute; left: 8px; top: 5px; color: #888; display: flex; align-items: center;">
+          <i data-lucide="search" style="width: 14px; height: 14px;"></i>
+        </span>
+        <input type="text" id="word-search-templates-input" placeholder="Search" style="width: 100%; height: 100%; padding-left: 26px; padding-right: 8px; border: 1px solid #cccccc; border-radius: 6px; background: #ffffff; font-size: 11px; outline: none;">
+      </div>
+    </div>
   </div>
-  <div style="flex: 1; background: #fff; position: relative; display: flex; flex-direction: column;">
-    <div style="background: #f3f4f6; border-bottom: 1px solid #ddd; padding: 8px 12px; display: flex; gap: 8px; align-items: center; justify-content: center; flex-wrap: wrap;">
-      <select id="word-font" style="padding: 4px 8px; border: 1px solid #ccc; border-radius: 4px; background: white; outline: none; font-size: 13px;">
-        <option value="Arial">Arial</option>
-        <option value="Times New Roman">Times New Roman</option>
-        <option value="Courier New">Courier New</option>
-        <option value="Georgia">Georgia</option>
-        <option value="Trebuchet MS">Trebuchet MS</option>
-      </select>
-      <div style="width: 1px; height: 20px; background: #ccc; margin: 0 4px;"></div>
-      <button class="word-tool-btn" data-cmd="bold" style="font-weight: bold; width: 28px; height: 28px; background: transparent; border: 1px solid transparent; border-radius: 4px; cursor: pointer;">B</button>
-      <button class="word-tool-btn" data-cmd="italic" style="font-style: italic; width: 28px; height: 28px; background: transparent; border: 1px solid transparent; border-radius: 4px; cursor: pointer; font-family: serif;">I</button>
-      <button class="word-tool-btn" data-cmd="underline" style="text-decoration: underline; width: 28px; height: 28px; background: transparent; border: 1px solid transparent; border-radius: 4px; cursor: pointer;">U</button>
-      <button class="word-tool-btn" id="btn-overline" style="text-decoration: overline; width: 28px; height: 28px; background: transparent; border: 1px solid transparent; border-radius: 4px; cursor: pointer;">O</button>
-      <div style="width: 1px; height: 20px; background: #ccc; margin: 0 4px;"></div>
-      <button class="word-tool-btn" data-cmd="subscript" style="width: 28px; height: 28px; background: transparent; border: 1px solid transparent; border-radius: 4px; cursor: pointer; font-size: 11px;">X<sub>2</sub></button>
-      <button class="word-tool-btn" data-cmd="superscript" style="width: 28px; height: 28px; background: transparent; border: 1px solid transparent; border-radius: 4px; cursor: pointer; font-size: 11px;">X<sup>2</sup></button>
+
+  <!-- Microsoft Word Core Screen body Wrapper -->
+  <div class="word-main-body" id="word-app-core-body">
+    
+    <!-- Left Navigation Bar -->
+    <div class="word-sidebar" id="word-sidebar-rail">
+      <div class="word-sidebar-avatar" onclick="alert('Bubuvar Account\nUser: bubuvar\nDirectories: MacSSD » Users » bubuvar')">
+        B
+      </div>
+      <div class="word-sidebar-nav">
+        <div class="word-sidebar-tab active" data-tab="home" id="word-tab-nav-home">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+          <span class="tab-label">Home</span>
+        </div>
+        <div class="word-sidebar-tab" data-tab="new" id="word-tab-nav-new">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+          <span class="tab-label">New</span>
+        </div>
+        <div class="word-sidebar-tab" data-tab="recent" id="word-tab-nav-recent">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+          <span class="tab-label">Recent</span>
+        </div>
+        <div class="word-sidebar-tab" data-tab="open" id="word-tab-nav-open">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+          <span class="tab-label">Open</span>
+        </div>
+      </div>
     </div>
-    <div style="flex: 1; padding: 20px; overflow: auto; background: #f0f0f0; display: flex; justify-content: center;">
-      <div id="word-editor" contenteditable="true" style="background: white; width: 100%; max-width: 600px; min-height: 800px; padding: 40px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); outline: none; font-family: Arial; font-size: 14px; line-height: 1.6;"></div>
+
+    <!-- Main Workspace Area -->
+    <div class="word-content-area" id="word-workspace-area">
+      
+      <!-- START / HOME TAP PANEL VIEW -->
+      <div class="word-tab-panel" id="word-panel-home" style="padding-top: 56px;">
+        <div class="word-content-header" style="padding-left: 0; padding-right: 0;">
+          <h2>Templates</h2>
+          <span class="more-templates-btn" id="word-more-templates-link">More templates</span>
+        </div>
+        
+        <!-- Templates List (Horizontal scroll bar) -->
+        <div class="word-templates-list-horizontal" id="word-horizontal-templates-row">
+          <!-- Populated by JavaScript -->
+        </div>
+
+        <!-- Recent/Pinned filter tabs bar -->
+        <div class="word-recent-tabs-bar">
+          <span class="word-tab-pill active" id="word-recent-pills-all">Recent</span>
+          <span class="word-tab-pill" id="word-recent-pills-pinned" onclick="alert('Pinned list is empty. Hover document items to pin them.')">Pinned</span>
+        </div>
+
+        <!-- Recent files table list -->
+        <div style="flex: 1; overflow-y: auto;">
+          <table class="word-recent-table">
+            <thead>
+              <tr>
+                <th style="width: 70%">Name</th>
+                <th style="width: 30%">Last opened by you</th>
+              </tr>
+            </thead>
+            <tbody id="word-recent-files-table-body">
+              <!-- Populated dynamically by JavaScript -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- NEW TEMPLATES GRID VIEW -->
+      <div class="word-tab-panel" id="word-panel-new" style="display: none; padding-top: 56px;">
+        <div class="word-content-header" style="padding-left: 0; padding-right: 0; padding-bottom: 2px;">
+          <h2>New</h2>
+        </div>
+        
+        <!-- Large templates grid -->
+        <div class="word-templates-grid" id="word-large-templates-grid">
+          <!-- Filled dynamically by JavaScript -->
+        </div>
+      </div>
+
+      <!-- RECENT VIEW (Full pane) -->
+      <div class="word-tab-panel" id="word-panel-recent" style="display: none; padding-top: 56px;">
+        <div class="word-recent-tabs-bar" style="margin-top: 10px;">
+          <span class="word-tab-pill active">All</span>
+          <span class="word-tab-pill" onclick="alert('No Pinned files yet!')">Pinned</span>
+        </div>
+        <div style="flex: 1; overflow-y: auto;">
+          <table class="word-recent-table">
+            <thead>
+              <tr>
+                <th style="width: 70%">Name</th>
+                <th style="width: 30%">Last opened by you</th>
+              </tr>
+            </thead>
+            <tbody id="word-tab-recent-list-body">
+              <!-- Reused or synced recent rows -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- OPEN DIALOG (Columns explorer) -->
+      <div class="word-tab-panel" id="word-panel-open" style="display: none; padding: 0; padding-top: 48px; border-top: 1px solid #dcdcdc;">
+        <div class="word-open-columns">
+          
+          <!-- Open View Left locations pane -->
+          <div class="word-open-locations">
+            <div style="display: flex; flex-direction: column; gap: 4px;">
+              <div style="font-size: 11px; font-weight: 700; color: #888; text-transform: uppercase; padding: 6px 12px 2px 12px; letter-spacing: 0.5px;">Other Locations</div>
+              <div class="word-location-item active" id="word-loc-onmymac">
+                <i data-lucide="monitor" style="width:16px; height:16px; color: #1e293b;"></i>
+                On My Mac
+              </div>
+            </div>
+            
+            <button class="word-btn" style="display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; border-radius: 6px; padding: 6px 12px; font-size: 11px; font-weight: 500;" onclick="alert('Manage Storage Accounts: Connect OneDrive, Google Drive or Box account.')">
+              <i data-lucide="cloud" style="width:14px; height:14px; color:#475569;"></i>
+              Manage Storage Accounts
+            </button>
+          </div>
+
+          <!-- Open View Right Explorer Pane -->
+          <div class="word-open-items-pane">
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+              <button class="word-btn" id="word-open-dir-btn-documents" style="font-weight: bold; background: #e2e8f0;">Documents</button>
+              <button class="word-btn" id="word-open-dir-btn-downloads">Downloads</button>
+            </div>
+            
+            <div style="border: 1px solid #e2e8f0; border-radius: 6px; background: #fafafa; overflow: hidden;">
+              <table class="word-recent-table" style="background: #fff;">
+                <thead>
+                  <tr>
+                    <th style="width: 70%; padding: 6px 12px;">Name</th>
+                    <th style="width: 30%; padding: 6px 12px;">Last Modified</th>
+                  </tr>
+                </thead>
+                <tbody id="word-open-explorer-tbody">
+                  <!-- Loaded file directory list dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Action Footer for Start interfaces -->
+      <div class="word-start-footer" id="word-start-screen-footer">
+        <button class="word-btn" id="word-start-cancel-btn">Cancel</button>
+        <button class="word-btn primary" id="word-start-create-btn" disabled>Create</button>
+      </div>
+
     </div>
+
+    <!-- DOCUMENT EDITOR SCREEN VIEWPORT (Hidden by default) -->
+    <div class="word-editor-screen-container" id="word-document-editor-view" style="display: none;">
+      
+      <!-- Word Ribbon & Edit Headers -->
+      <div class="word-blue-header" id="word-editor-header">
+        <div class="word-header-left">
+          <div class="word-autosave-box">
+            <span>AutoSave</span>
+            <div class="word-autosave-toggle" id="word-autosave-switch">
+              <div class="word-autosave-dot"></div>
+            </div>
+            <span id="word-autosave-state" style="font-size: 9px; color: #cbd5e1; margin-left: 2px;">OFF</span>
+          </div>
+          <div class="word-header-btn" id="word-save-doc-icon-btn" title="Save Document (Cmd+S)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+          </div>
+          <!-- Undo / Redo buttons -->
+          <div class="word-header-btn" onclick="document.execCommand('undo', false, null)" title="Undo (Cmd+Z)">
+            <i data-lucide="undo-2" style="width: 14px; height: 14px;"></i>
+          </div>
+          <div class="word-header-btn" onclick="document.execCommand('redo', false, null)" title="Redo">
+            <i data-lucide="redo-2" style="width: 14px; height: 14px;"></i>
+          </div>
+          <!-- Document Print quick btn -->
+          <div class="word-header-btn" onclick="window.print()" title="Print page">
+            <i data-lucide="printer" style="width:14px; height:14px;"></i>
+          </div>
+        </div>
+
+        <!-- Dynamic Document title -->
+        <div class="word-header-doc-title" id="word-editor-doc-title-centered">
+          Document1 - Microsoft Word
+        </div>
+
+        <div class="word-header-right">
+          <!-- Search box inside header -->
+          <div style="position: relative; width: 140px; height: 22px;">
+            <span style="position: absolute; left: 8px; top: 4px; color: #eaeaea; display: flex; align-items: center;">
+              <i data-lucide="search" style="width: 12px; height: 12px;"></i>
+            </span>
+            <input type="text" placeholder="Search" style="width: 100%; height: 100%; padding-left: 24px; padding-right: 6px; border: none; border-radius: 4px; background: rgba(255,255,255,0.2); color: #fff; font-size: 11px; outline: none;" id="word-editor-search-box-input">
+          </div>
+
+          <div class="word-share-pill" id="word-editor-share-btn">
+            <i data-lucide="share" style="width: 12px; height: 12px;"></i>
+            Share
+          </div>
+
+          <div class="word-header-btn" style="border-radius: 50%; width: 22px; height: 22px; background: #1054a2; border: 1.5px solid #fff; font-size: 10px; font-weight: bold; color:white; display:flex; align-items:center; justify-content:center;">
+            B
+          </div>
+        </div>
+      </div>
+
+      <!-- Ribbon Tab Selector Bar -->
+      <div class="word-ribbon-tabs-strip">
+        <span class="word-ribbon-tab active" data-ribbon="home">Home</span>
+        <span class="word-ribbon-tab" data-ribbon="insert" onclick="alert('Insert Feature: Table, Pictures, Shapes, Page Break.')">Insert</span>
+        <span class="word-ribbon-tab" data-ribbon="draw" onclick="alert('Drawing Tools: Pen, Pencil, Highlighter, Eraser.')">Draw</span>
+        <span class="word-ribbon-tab" data-ribbon="design" onclick="alert('Themes, Colors, Margins, Page Borders.')">Design</span>
+        <span class="word-ribbon-tab" data-ribbon="layout" onclick="alert('Margins, Orientation, Size, Columns, Breaks.')">Layout</span>
+        <span class="word-ribbon-tab" data-ribbon="references" onclick="alert('Table of Contents, Footnotes, Citations, Index.')">References</span>
+        <span class="word-ribbon-tab" data-ribbon="mailings" onclick="alert('Mail Merge, Envelopes, Labels.')">Mailings</span>
+        <span class="word-ribbon-tab" data-ribbon="review" onclick="alert('Spelling & Grammar, Word Count, Language Translator.')">Review</span>
+        <span class="word-ribbon-tab" data-ribbon="view" onclick="alert('View settings: Ruler, Gridlines, Navigation pane.')">View</span>
+        <span class="word-ribbon-tab" data-ribbon="tell" onclick="alert('Tell Me: Search commands or help resources.')">Tell me</span>
+      </div>
+
+      <!-- Ribbon Tools Command Panel (Home Tools active) -->
+      <div class="word-ribbon-commands-panel" id="word-ribbon-home-toolbar">
+        
+        <!-- Clipboard Tools Group -->
+        <div class="word-tool-group" style="gap: 2px;">
+          <button class="word-editor-btn" style="height: auto; flex-direction: column; width: 34px; padding: 2px;" onclick="document.execCommand('paste', false, null)" title="Paste (Cmd+V)">
+            <i data-lucide="clipboard" style="width: 16px; height: 16px; color:#185abd;"></i>
+            <span style="font-size: 8px; scale: 0.9; margin-top: 1px;">Paste</span>
+          </button>
+          <div style="display: flex; flex-direction: column; gap: 1px;">
+            <button class="word-editor-btn" style="width: 20px; height: 14px;" onclick="document.execCommand('copy', false, null)" title="Copy (Cmd+C)">
+              <i data-lucide="copy" style="width: 11px; height: 11px;"></i>
+            </button>
+            <button class="word-editor-btn" style="width: 20px; height: 14px;" onclick="alert('Formatting Copier Active')" title="Format Painter">
+              <i data-lucide="brush" style="width: 11px; height: 11px; color:#f59e0b;"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Fonts Toggles Group -->
+        <div class="word-tool-group">
+          <!-- Font Dropdown -->
+          <select id="word-rich-font" class="word-select" style="width: 110px;">
+            <option value="Arial">Arial</option>
+            <option value="Calibri" selected>Calibri</option>
+            <option value="Times New Roman">Times New Roman</option>
+            <option value="Georgia">Georgia</option>
+            <option value="Courier New">Courier New</option>
+            <option value="Trebuchet MS">Trebuchet MS</option>
+            <option value="Impact">Impact</option>
+          </select>
+
+          <!-- Font Size dropdown -->
+          <select id="word-rich-font-size" class="word-select" style="width: 50px;">
+            <option value="8">8</option>
+            <option value="10">10</option>
+            <option value="11">11</option>
+            <option value="12" selected>12</option>
+            <option value="14">14</option>
+            <option value="16">16</option>
+            <option value="18">18</option>
+            <option value="20">20</option>
+            <option value="24">24</option>
+            <option value="28">28</option>
+            <option value="36">36</option>
+            <option value="48">48</option>
+            <option value="72">72</option>
+          </select>
+
+          <button class="word-editor-btn" onclick="document.execCommand('increaseFontSize', false, null)" title="Increase Font Size">
+            A<span style="font-size: 8px; font-weight: bold; vertical-align: top;">▲</span>
+          </button>
+          <button class="word-editor-btn" onclick="document.execCommand('decreaseFontSize', false, null)" title="Decrease Font Size">
+            A<span style="font-size: 8px; font-weight: bold; vertical-align: bottom;">▼</span>
+          </button>
+          
+          <div style="width: 1px; height: 18px; background: #e2e8f0; margin: 0 2px;"></div>
+
+          <!-- Bold, Italic, Underline, Strikethrough -->
+          <button class="word-editor-btn" id="word-rich-btn-bold" onclick="document.execCommand('bold', false, null)" title="Bold (Cmd+B)"><strong>B</strong></button>
+          <button class="word-editor-btn" id="word-rich-btn-italic" onclick="document.execCommand('italic', false, null)" style="font-style: italic; font-family: serif;" title="Italic (Cmd+I)">I</button>
+          <button class="word-editor-btn" id="word-rich-btn-underline" onclick="document.execCommand('underline', false, null)" style="text-decoration: underline;" title="Underline (Cmd+U)">U</button>
+          <button class="word-editor-btn" id="word-rich-btn-strike" onclick="document.execCommand('strikeThrough', false, null)" style="text-decoration: line-through;" title="Strikethrough">ab</button>
+          
+          <button class="word-editor-btn" onclick="document.execCommand('subscript', false, null)" title="Subscript" style="font-size: 11px;">X<sub>2</sub></button>
+          <button class="word-editor-btn" onclick="document.execCommand('superscript', false, null)" title="Superscript" style="font-size: 11px;">X<sup>2</sup></button>
+
+          <!-- Color pickers -->
+          <div style="position: relative; display: flex; align-items: center;">
+            <button class="word-editor-btn" id="word-btn-highlight-selector" title="Text Highlight Color" style="height: 24px; border-bottom: 3px solid #facc15;">
+              <i data-lucide="highlighter" style="width:13px; height:13px;"></i>
+            </button>
+          </div>
+          <div style="position: relative; display: flex; align-items: center;">
+            <button class="word-editor-btn" id="word-btn-textcolor-selector" title="Font Color" style="height: 24px; border-bottom: 3px solid #dc2626; font-weight: bold;">
+              A
+            </button>
+          </div>
+        </div>
+
+        <!-- Alignment / Paragraph Block -->
+        <div class="word-tool-group">
+          <!-- Lists -->
+          <button class="word-editor-btn" onclick="document.execCommand('insertUnorderedList', false, null)" title="Bullet List">
+            <i data-lucide="list" style="width:14px; height:14px;"></i>
+          </button>
+          <button class="word-editor-btn" onclick="document.execCommand('insertOrderedList', false, null)" title="Numbered List">
+            <i data-lucide="list-ordered" style="width:14px; height:14px;"></i>
+          </button>
+          
+          <div style="width: 1px; height: 18px; background: #e2e8f0; margin: 0 2px;"></div>
+
+          <!-- Alignments -->
+          <button class="word-editor-btn" id="word-align-left" onclick="document.execCommand('justifyLeft', false, null)" title="Align Left">
+            <i data-lucide="align-left" style="width:14px; height:14px;"></i>
+          </button>
+          <button class="word-editor-btn" id="word-align-center" onclick="document.execCommand('justifyCenter', false, null)" title="Center Title">
+            <i data-lucide="align-center" style="width:14px; height:14px;"></i>
+          </button>
+          <button class="word-editor-btn" id="word-align-right" onclick="document.execCommand('justifyRight', false, null)" title="Align Right">
+            <i data-lucide="align-right" style="width:14px; height:14px;"></i>
+          </button>
+          <button class="word-editor-btn" id="word-align-justify" onclick="document.execCommand('justifyFull', false, null)" title="Justify Content">
+            <i data-lucide="align-justify" style="width:14px; height:14px;"></i>
+          </button>
+
+          <!-- Toggle paragraphs sign ¶ -->
+          <button class="word-editor-btn" id="word-btn-para-glyph-toggle" title="Show/Hide ¶ Paragraph Marks">
+            ¶
+          </button>
+        </div>
+
+        <!-- Word Quick Formatting Styles Palette -->
+        <div class="word-tool-group" style="padding-right: 0;">
+          <div class="word-styles-gallery">
+            <div class="word-style-gallery-card" data-style="normal" title="Clear to Normal style text">
+              <span class="style-symbol" style="font-family: Arial; font-weight: normal;">AaBbCc</span>
+              <span class="style-label">Normal</span>
+            </div>
+            <div class="word-style-gallery-card" data-style="heading1" title="Format to Heading 1">
+              <span class="style-symbol" style="color: #185abd; font-weight: bold; font-family: Calibri;">AaBbCc</span>
+              <span class="style-label">Heading 1</span>
+            </div>
+            <div class="word-style-gallery-card" data-style="heading2" title="Format to Heading 2">
+              <span class="style-symbol" style="color: #2b78e4; font-weight: bold; font-family: Calibri;">AaBbCc</span>
+              <span class="style-label">Heading 2</span>
+            </div>
+            <div class="word-style-gallery-card" data-style="title" title="Format to Title Style">
+              <span class="style-symbol" style="font-size: 11px; font-weight: bold; text-align: center; font-family: Georgia;">TITLE</span>
+              <span class="style-label">Title</span>
+            </div>
+            <div class="word-style-gallery-card" data-style="subtitle" title="Format to Subtitle Style">
+              <span class="style-symbol" style="font-size: 11px; color:#64748b; font-family: Georgia;">Subtitle</span>
+              <span class="style-label">Subtitle</span>
+            </div>
+          </div>
+          
+          <button class="word-btn" style="padding: 4px 6px; font-size: 10px; height: 38px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;" onclick="alert('Styles Pane Opened:\nManage custom character and paragraph designs.')">
+            <i data-lucide="layout-template" style="width:12px; height:12px;"></i>
+            Styles Pane
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Warning Office Update Banner -->
+      <div class="word-update-banner" id="word-update-banner-box">
+        <div class="word-update-message">
+          <i data-lucide="info" style="width:14px; height:14px; color: #d97706; fill: #fef3c7;"></i>
+          <span><strong>Office Update</strong> To keep up-to-date with security updates, fixes, and improvements, choose Check for Updates.</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <button class="word-update-btn" id="word-update-check-banner-btn">Check for Updates</button>
+          <span style="font-weight: bold; cursor: pointer; padding: 4px; font-size: 12px; color: #9a3412;" id="word-update-banner-close-btn" title="Dismiss notification">✕</span>
+        </div>
+      </div>
+
+      <!-- Content Editing A4 Stage -->
+      <div class="word-scrollstage" id="word-scrollstage-viewport">
+        <div class="word-editing-paper-container" id="word-page-zoomer-wrapper">
+          <div id="word-rich-editor" contenteditable="true" spellcheck="false">
+            <!-- Content loaded dynamically based on file selected -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Editor Status bar slider -->
+      <div class="word-status-bar">
+        <div class="word-status-left">
+          <span>Page 1 of 1</span>
+          <span id="word-status-words-indicator">0 words</span>
+          <span>English (United States)</span>
+        </div>
+        <div class="word-status-right">
+          <div class="word-view-toggle-icons">
+            <div class="word-view-mode-btn" id="word-mode-focus" title="Focus Mode (Clean blank overlay)">
+              <i data-lucide="maximize-2" style="width:12px; height:12px;"></i>
+            </div>
+            <div class="word-view-mode-btn" id="word-mode-read" title="Read Mode">
+              <i data-lucide="book-open" style="width:12px; height:12px;"></i>
+            </div>
+            <div class="word-view-mode-btn active" id="word-mode-print" title="Print Layout View (Default)">
+              <i data-lucide="file-text" style="width:12px; height:12px;"></i>
+            </div>
+          </div>
+          
+          <div class="word-zoom-slider-container">
+            <span>-</span>
+            <input type="range" min="50" max="150" value="100" id="word-zoom-range-slider" style="width: 80px; height: 3px; accent-color: #185abd; cursor: pointer;">
+            <span>+</span>
+            <span id="word-zoom-percentage-text" style="width: 34px; text-align: right; font-weight: 500;">100%</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
   </div>
 </div>
 
@@ -3457,13 +4767,7 @@
               <span class="toggle-slider"></span>
             </label>
           </div>
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-            <span style="font-weight: 500; font-size: 14px;">Genie Minimize Effect</span>
-            <label class="toggle-switch">
-              <input type="checkbox" id="genie-minimize-toggle" checked>
-              <span class="toggle-slider"></span>
-            </label>
-          </div>
+
           <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
             <div style="display: flex; justify-content: space-between; align-items: center;">
               <span style="font-weight: 500; font-size: 14px;">Dock Size</span>
@@ -7154,13 +8458,7 @@ customElements.define('glass-element', GlassElement);
   // Run once to initialize
   updateTerminalCustomization();
 
-  const genieMinimizeToggle = document.getElementById('genie-minimize-toggle');
-  if (genieMinimizeToggle) {
-    genieMinimizeToggle.checked = window.genieMinimizeEnabled;
-    genieMinimizeToggle.addEventListener('change', (e) => {
-      window.genieMinimizeEnabled = e.target.checked;
-    });
-  }
+  window.genieMinimizeEnabled = true;
 
   const darkModeToggle = document.getElementById('dark-mode-toggle');
   if (darkModeToggle) {
@@ -7668,8 +8966,8 @@ if (val === 'help') {
     translateY: 0, targetTranslateY: 0, velTranslateY: 0,
     dragX: 0, targetDragX: 0, velDragX: 0,
     dragY: 0, targetDragY: 0, velDragY: 0,
-    width: 800, targetWidth: 800, velWidth: 0,
-    height: 600, targetHeight: 600, velHeight: 0,
+    width: 1000, targetWidth: 1000, velWidth: 0,
+    height: 720, targetHeight: 720, velHeight: 0,
     isOpen: false, isMinimized: false, isMaximized: false,
     preMaxDragX: 0, preMaxDragY: 0
   };
@@ -8537,11 +9835,837 @@ if (val === 'help') {
     });
   }
 
-  document.getElementById('word-btn-close').addEventListener('click', () => {
-    wordState.targetScaleX = 0.85; wordState.targetScaleY = 0.85;
-    wordState.targetOpacity = 0; wordState.isOpen = false;
-    setActiveApp('Finder');
+  // --- Advanced Microsoft Word Controller State & Actions ---
+  const WORD_DOCX_ICON = `<svg viewBox="0 0 24 24" style="width:18px; height:18px; display:inline-block; vertical-align:middle; flex-shrink:0;"><path d="M4,2 H14 L20,8 V20 A2,2 0 0,1 18,22 H4 A2,2 0 0,1 2,20 V4 A2,2 0 0,1 4,2 Z" fill="#ebf3fc" stroke="#2a6ebb" stroke-width="1.5"></path><path d="M14,2 L20,8 H14 Z" fill="#adcbf4" stroke="#2a6ebb" stroke-width="1.5"></path><rect x="2" y="10" width="8" height="7" rx="1" fill="#185abd"></rect><text x="6" y="15" fill="#fff" font-size="5" font-weight="bold" text-anchor="middle" style="font-family: -apple-system, BlinkMacSystemFont, sans-serif;">W</text></svg>`;
+
+  const wordTemplates = [
+    { id: 'blank', name: 'Blank Document', desc: 'Start with a completely blank canvas', content: '<p><br></p>', style: 'blank' },
+    { id: 'welcome', name: 'Welcome to Word', desc: 'Tour high-fidelity word editing features', content: '<h1 style="color:#185abd; font-family:Calibri;">Welcome to Microsoft Word</h1><p>This premium digital word processor has been recreated with macOS aesthetics. Here you can compose articles, outline reports, edit documents, or take school coordinates.</p><p>Highlight, make words <strong>Bold</strong> or <em>Italic</em>, or quickly apply heading presets from the Styles palette!</p><p>You can print, zoom using the slider at the bottom, or turn on AutoSave. Try editing this file and click save, it will update directly inside your Files list!</p>', style: 'tour' },
+    { id: 'notes', name: 'Take Notes', desc: 'Lined notebooks & meeting formats', content: '<h2 style="font-family:Calibri; color:#1e293b; border-bottom:1.5px solid #94a3b8; padding-bottom:4px; margin-bottom:12px;">MEETING NOTES</h2><p style="color:#64748b; font-size:12px; margin-top:2px;">Project: macOS OS Replication Sync</p><div style="border-left:4.5px solid #185abd; padding-left:14px; margin: 16px 0; background:#f8fafc; padding:8px 12px; border-radius:4px;"><p style="margin:0;"><strong>Attendees:</strong> Bubuvar, AI Coding Agent</p><p style="margin:4px 0 0 0;"><strong>Status:</strong> Active & Pixel-Perfect</p></div><p>We have loaded Georgian documents to illustrate Mac Word capabilities for school outlines in Tbilisi.</p>', style: 'notes' },
+    { id: 'calendar', name: 'Calendar', desc: 'Planner grids layout', content: '<h2 style="font-family:Georgia, serif; text-align:center; color:#185abd;">June 2026 Planner</h2><p style="text-align:center; color:#64748b; font-size:11px; margin-bottom:16px;">"Success is the sum of small efforts repeated daily."</p><table style="width:100%; border-collapse:collapse; text-align:center; font-family:Arial, sans-serif;"><tr style="background:#cbd5e1; font-weight:600;"><th style="border:1.5px solid #94a3b8; padding:5px;">M</th><th style="border:1.5px solid #94a3b8; padding:5px;">T</th><th style="border:1.5px solid #94a3b8; padding:5px;">W</th><th style="border:1.5px solid #94a3b8; padding:5px;">T</th><th style="border:1.5px solid #94a3b8; padding:5px;">F</th><th style="border:1.5px solid #94a3b8; padding:5px; color:#ef4444;">S</th><th style="border:1.5px solid #94a3b8; padding:5px; color:#ef4444;">S</th></tr><tr><td style="border:1px solid #cbd5e1; padding:8px; color:#94a3b8;">1</td><td style="border:1px solid #cbd5e1; padding:8px; color:#94a3b8;">2</td><td style="border:1px solid #cbd5e1; padding:8px; color:#94a3b8;">3</td><td style="border:1px solid #cbd5e1; padding:8px; color:#94a3b8;">4</td><td style="border:1px solid #cbd5e1; padding:8px; color:#94a3b8;">5</td><td style="border:1px solid #cbd5e1; padding:8px;">6</td><td style="border:1px solid #cbd5e1; padding:8px;">7</td></tr><tr><td style="border:1px solid #cbd5e1; padding:8px;">8</td><td style="border:1px solid #cbd5e1; padding:8px;">9</td><td style="border:1px solid #cbd5e1; padding:8px; font-weight:bold; color:#185abd; background:#f0f7ff;">10</td><td style="border:1px solid #cbd5e1; padding:8px;">11</td><td style="border:1px solid #cbd5e1; padding:8px;">12</td><td style="border:1px solid #cbd5e1; padding:8px;">13</td><td style="border:1px solid #cbd5e1; padding:8px;">14</td></tr></table>', style: 'cal' },
+    { id: 'resume', name: 'Creative resume, designed by MOO', desc: 'Striking resume template with color blocking heading', content: '<h1 style="color:#005a9e; margin-bottom:0; font-family:Calibri;">JOANE IMNADZE</h1><p style="color:#475569; font-size:12px; margin-top:2px; letter-spacing:1px;">SOFTWARE ENGINEER | DESIGNER</p><hr style="border:0; border-top:1.5px solid #005a9e; margin:10px 0;"><h4 style="color:#111; margin-top:14px; text-transform:uppercase;">Proficiencies</h4><p>React/Vite setup, Tailwind CSS styling, desktop simulations, custom folder structures, Georgian text parsing.</p>', style: 'resume' }
+  ];
+
+  const wordGeorgianFileList = [
+    {
+      name: 'Easter Egg.docx',
+      folder: 'Documents',
+      date: 'Just Now',
+      size: '12 KB',
+      content: `<h1 style="font-family: 'Calibri', sans-serif; color: #1e3a8a; font-weight: bold; font-size: 24px; border-bottom: 2px solid #cbd5e1; padding-bottom: 6px; margin-bottom: 16px;">Easter Egg</h1><p style="font-family: 'Calibri', sans-serif; font-size: 15px; color: #334155; line-height: 1.6;">This is just a word document from the creator, nothing new here.</p><div style="height: 600px;"></div><p style="font-family: 'Calibri', sans-serif; font-size: 14px; text-align: center; color: #64748b; border-top: 1px dashed #cbd5e1; padding-top: 24px; margin-top: 40px;">🎉 You scrolled all the way down! Here is your link:<br><br><a href="https://bubuvar.vercel.app" target="_blank" style="color: #2563eb; font-weight: bold; text-decoration: underline; font-size: 16px; transition: color 0.2s;">https://bubuvar.vercel.app</a></p>`
+    }
+  ];
+
+  // Seed documents into OS virtual filesystem so they appear unified!
+  setTimeout(() => {
+    if (typeof fileSystem !== 'undefined') {
+      wordGeorgianFileList.forEach(doc => {
+        const targetDir = doc.folder;
+        if (fileSystem[targetDir]) {
+          // Check if file is already there, if not push it
+          const exists = fileSystem[targetDir].some(f => f.name === doc.name);
+          if (!exists) {
+            fileSystem[targetDir].push({
+              name: doc.name,
+              date: doc.date,
+              size: doc.size,
+              icon: WORD_DOCX_ICON,
+              type: 'file',
+              content: doc.content,
+              isDoc: true
+            });
+          }
+        }
+      });
+      if (typeof renderContent === 'function') renderContent();
+    }
+  }, 1000);
+
+  // Active word states variables
+  let wordActiveTab = 'home';
+  let wordSelectedTemplateId = null;
+  let wordSelectedRecentFileName = null;
+  let wordActiveExplorerFolder = 'Documents'; 
+  let wordActiveExplorerFileName = null;
+  let wordEditorOpened = false;
+  let wordActiveDocName = '';
+  let wordActiveDocContent = '';
+  let wordDocScalePercent = 100;
+  let wordIsFocusedMode = false;
+  let wordIsAutosaveOn = false;
+
+  const wordEditorArea = document.getElementById('word-rich-editor');
+
+  // Trigger templates lists layout builders
+  function renderAllTemplatesLayouts() {
+    // 1) Horizontal scroll templates rows (Home View)
+    const horizContainer = document.getElementById('word-horizontal-templates-row');
+    if (horizContainer) {
+      horizContainer.innerHTML = wordTemplates.map(tpl => {
+        const innerSheet = getTemplateGraphicHTML(tpl.style);
+        return `
+          <div class="word-template-card" data-tpl-id="${tpl.id}">
+            <div class="word-template-preview-box">
+              ${innerSheet}
+            </div>
+            <div class="word-template-label">${tpl.name}</div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // 2) Large grid list (New View)
+    const gridContainer = document.getElementById('word-large-templates-grid');
+    if (gridContainer) {
+      // Create some additional placeholder cards to simulate professional template gallery (12 cards)
+      const fakeTemplates = [
+        { id: 'cover_moo', name: 'Creative cover letter, designed by MOO', style: 'resume' },
+        { id: 'resume_crisp', name: 'Crisp & clean resume, designed by MOO', style: 'resume' },
+        { id: 'cover_crisp', name: 'Crisp & clean cover letter', style: 'notes' },
+        { id: 'resume_polish', name: 'Polished resume', style: 'resume' },
+        { id: 'cover_polish', name: 'Polished cover letter', style: 'notes' },
+        { id: 'make_list', name: 'Make a List', style: 'notes' },
+        { id: 'journal', name: 'Write a Journal', style: 'notes' }
+      ];
+
+      const combined = [...wordTemplates, ...fakeTemplates];
+      gridContainer.innerHTML = combined.map(tpl => {
+        const innerSheet = getTemplateGraphicHTML(tpl.style);
+        return `
+          <div class="word-template-card" data-tpl-id="${tpl.id}">
+            <div class="word-template-preview-box">
+              ${innerSheet}
+            </div>
+            <div class="word-template-label">${tpl.name}</div>
+          </div>
+        `;
+      }).join('');
+    }
+    
+    // Bind click events to templates card selectors
+    document.querySelectorAll('.word-template-card').forEach(card => {
+      card.addEventListener('click', (e) => {
+        document.querySelectorAll('.word-template-card').forEach(c => c.classList.remove('selected'));
+        card.classList.add('selected');
+        
+        // Reset Recent list highlights
+        document.querySelectorAll('.word-row-doc').forEach(r => r.classList.remove('selected'));
+        wordSelectedRecentFileName = null;
+        
+        wordSelectedTemplateId = card.getAttribute('data-tpl-id');
+        const createBtn = document.getElementById('word-start-create-btn');
+        if (createBtn) {
+          createBtn.disabled = false;
+          createBtn.textContent = 'Create';
+        }
+      });
+
+      card.addEventListener('dblclick', () => {
+        wordSelectedTemplateId = card.getAttribute('data-tpl-id');
+        openSelectedWordObject();
+      });
+    });
+  }
+
+  // Returns beautiful tiny mockups for templates preview cards
+  function getTemplateGraphicHTML(style) {
+    if (style === 'tour') {
+      return `
+        <div class="tpl-tour-sheet">
+          <div class="tpl-tour-circle">
+            <div class="tpl-tour-arrow">→</div>
+          </div>
+          <div class="tpl-line-stub" style="width: 70%; margin-bottom: 4px;"></div>
+          <div class="tpl-line-stub" style="width: 50%;"></div>
+        </div>
+      `;
+    } else if (style === 'notes') {
+      return `
+        <div class="tpl-notes-sheet">
+          <div class="tpl-notes-line red"></div>
+          <div class="tpl-notes-line"></div>
+          <div class="tpl-notes-line"></div>
+          <div class="tpl-notes-line"></div>
+          <div class="tpl-notes-line"></div>
+          <div class="tpl-notes-line"></div>
+        </div>
+      `;
+    } else if (style === 'cal') {
+      return `
+        <div class="tpl-cal-sheet">
+          <div class="tpl-cal-header">JUN 2026</div>
+          <div class="tpl-cal-grid">
+            ${Array(28).fill('<div class="tpl-cal-day"></div>').join('')}
+          </div>
+        </div>
+      `;
+    } else if (style === 'resume') {
+      return `
+        <div class="tpl-resume-sheet">
+          <div class="tpl-resume-head"></div>
+          <div class="tpl-resume-body">
+            <div class="tpl-resume-col-left"></div>
+            <div class="tpl-resume-col-right">
+              <div class="tpl-line-stub"></div>
+              <div class="tpl-line-stub" style="width: 60%"></div>
+              <div class="tpl-line-stub" style="width: 90%"></div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+    // Default blank Document
+    return `<div class="tpl-blank-sheet"></div>`;
+  }
+
+  // Reloads and renders files list dynamically
+  function renderRecentAndExplorerTables() {
+    // 1) List documents in Recent (Home & Recent panels)
+    const recentBody = document.getElementById('word-recent-files-table-body');
+    const recentFullBody = document.getElementById('word-tab-recent-list-body');
+    
+    // Sourced documents from virtual filesystem to enable syncing!
+    let docList = [];
+    if (typeof fileSystem !== 'undefined') {
+      const docs = fileSystem['Documents'] || [];
+      const dls = fileSystem['Downloads'] || [];
+      docList = [...docs, ...dls].filter(f => f.isDoc || f.name.endsWith('.docx'));
+    }
+    
+    // Sort so most recent is first, fall back to our local data if filesystem list is empty
+    if (docList.length === 0) {
+      docList = wordGeorgianFileList;
+    }
+
+    const rowsHTML = docList.map(doc => {
+      const locationLabel = doc.folder || (doc.path && doc.path.includes('Downloads') ? 'Downloads' : 'Documents');
+      return `
+        <tr class="word-row-doc" data-file-name="${doc.name}" data-file-folder="${locationLabel}">
+          <td>
+            <div class="word-doc-name-cell">
+              ${WORD_DOCX_ICON}
+              <div>
+                <div class="word-doc-name">${doc.name}</div>
+                <div class="word-doc-desc">MacSSD » Users » bubuvar » ${locationLabel}</div>
+              </div>
+            </div>
+          </td>
+          <td>
+            <div class="word-doc-date">${doc.date || 'Today'}</div>
+          </td>
+        </tr>
+      `;
+    }).join('');
+
+    if (recentBody) recentBody.innerHTML = rowsHTML;
+    if (recentFullBody) recentFullBody.innerHTML = rowsHTML;
+
+    // 2) Open column browser directory list (Documents or Downloads)
+    const explorerBody = document.getElementById('word-open-explorer-tbody');
+    if (explorerBody) {
+      let filtered = [];
+      if (typeof fileSystem !== 'undefined' && fileSystem[wordActiveExplorerFolder]) {
+        filtered = fileSystem[wordActiveExplorerFolder].filter(f => f.isDoc || f.name.endsWith('.docx'));
+      } else {
+        filtered = wordGeorgianFileList.filter(f => f.folder === wordActiveExplorerFolder);
+      }
+
+      if (filtered.length === 0) {
+        explorerBody.innerHTML = `<tr><td colspan="2" style="text-align:center; color:#999; padding:20px;">No Word documents found in this directory.</td></tr>`;
+      } else {
+        explorerBody.innerHTML = filtered.map(doc => {
+          return `
+            <tr class="word-row-doc" data-file-name="${doc.name}" data-file-folder="${wordActiveExplorerFolder}">
+              <td>
+                <div class="word-doc-name-cell" style="padding-left: 10px;">
+                  ${WORD_DOCX_ICON}
+                  <span class="word-doc-name">${doc.name}</span>
+                </div>
+              </td>
+              <td>
+                <span class="word-doc-date">${doc.date || 'Today'}</span>
+              </td>
+            </tr>
+          `;
+        }).join('');
+      }
+    }
+
+    // Bind selection clicks to all document rows
+    document.querySelectorAll('.word-row-doc').forEach(row => {
+      row.addEventListener('click', () => {
+        document.querySelectorAll('.word-template-card').forEach(c => c.classList.remove('selected'));
+        wordSelectedTemplateId = null;
+
+        document.querySelectorAll('.word-row-doc').forEach(r => r.classList.remove('selected'));
+        row.classList.add('selected');
+
+        const fName = row.getAttribute('data-file-name');
+        const fFolder = row.getAttribute('data-file-folder');
+        wordSelectedRecentFileName = fName;
+        wordActiveExplorerFolder = fFolder;
+
+        const createBtn = document.getElementById('word-start-create-btn');
+        if (createBtn) {
+          createBtn.disabled = false;
+          createBtn.textContent = 'Open';
+        }
+      });
+
+      row.addEventListener('dblclick', () => {
+        const fName = row.getAttribute('data-file-name');
+        const fFolder = row.getAttribute('data-file-folder');
+        wordSelectedRecentFileName = fName;
+        wordActiveExplorerFolder = fFolder;
+        openSelectedWordObject();
+      });
+    });
+  }
+
+  // Opens selected object (Either template or recent/browse file)
+  function openSelectedWordObject() {
+    if (wordSelectedTemplateId) {
+      // Open a document template
+      const preset = wordTemplates.find(t => t.id === wordSelectedTemplateId) || { name: 'Document1', content: '<p><br></p>' };
+      let defaultBody = preset.content;
+      
+      // If template was not welcome/notes and has no prefilled, load empty page
+      if (wordSelectedTemplateId && !['blank', 'welcome', 'notes', 'calendar', 'resume'].includes(wordSelectedTemplateId)) {
+        defaultBody = `<h2>${preset.name}</h2><p style="color:#777; font-size:11px;">Template format placeholder</p><p>You can begin composing text freely using Bold/Italic tools.</p>`;
+      }
+      
+      openWordDocProcessor(preset.name, defaultBody);
+    } else if (wordSelectedRecentFileName) {
+      // Load and open file
+      let foundContent = '<p><br></p>';
+      
+      // Load from global virtual fileSystem state first
+      if (typeof fileSystem !== 'undefined' && fileSystem[wordActiveExplorerFolder]) {
+        const fileNode = fileSystem[wordActiveExplorerFolder].find(f => f.name === wordSelectedRecentFileName);
+        if (fileNode && fileNode.content) foundContent = fileNode.content;
+      } else {
+        const listMatch = wordGeorgianFileList.find(f => f.name === wordSelectedRecentFileName && f.folder === wordActiveExplorerFolder);
+        if (listMatch) foundContent = listMatch.content;
+      }
+      
+      openWordDocProcessor(wordSelectedRecentFileName, foundContent);
+    }
+  }
+
+  // Transitions display interface into Editor Processor Screen
+  function openWordDocProcessor(docName, bodyHTML) {
+    wordEditorOpened = true;
+    wordActiveDocName = docName.endsWith('.docx') ? docName : docName + '.docx';
+    wordActiveDocContent = bodyHTML;
+
+    // Toggle viewport structures
+    document.getElementById('word-sidebar-rail').style.display = 'none';
+    document.getElementById('word-workspace-area').style.display = 'none';
+    
+    const editorContainer = document.getElementById('word-document-editor-view');
+    editorContainer.style.display = 'flex';
+    
+    // Set Header titles
+    document.getElementById('word-global-title').style.display = 'none';
+    document.getElementById('word-top-search-widget').style.display = 'none';
+    document.getElementById('word-editor-doc-title-centered').textContent = wordActiveDocName + ' - Microsoft Word';
+
+    // Populate paper and count initial words
+    if (wordEditorArea) {
+      wordEditorArea.innerHTML = bodyHTML;
+      updateWordCount();
+    }
+
+    // Reset Zoom / View settings
+    wordDocScalePercent = 100;
+    document.getElementById('word-zoom-range-slider').value = 100;
+    document.getElementById('word-zoom-percentage-text').textContent = '100%';
+    document.getElementById('word-page-zoomer-wrapper').style.transform = 'scale(1)';
+
+    // Reset Warnings
+    document.getElementById('word-update-banner-box').style.display = 'flex';
+    document.getElementById('word-start-create-btn').disabled = true;
+
+    // Trigger update of lucide icons inside editor pane
+    if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+  }
+
+  // Transitions editor display BACK to Word templates menu
+  function closeWordDocProcessor() {
+    wordEditorOpened = false;
+    
+    // Reset selections
+    wordSelectedTemplateId = null;
+    wordSelectedRecentFileName = null;
+
+    // Restore views
+    document.getElementById('word-sidebar-rail').style.display = 'flex';
+    document.getElementById('word-workspace-area').style.display = 'flex';
+    document.getElementById('word-document-editor-view').style.display = 'none';
+
+    // Titlebar restoration
+    document.getElementById('word-global-title').style.display = 'flex';
+    document.getElementById('word-top-search-widget').style.display = 'flex';
+    document.getElementById('word-global-title').textContent = 'Microsoft Word';
+
+    const createBtn = document.getElementById('word-start-create-btn');
+    if (createBtn) {
+      createBtn.disabled = true;
+      createBtn.textContent = 'Create';
+    }
+
+    renderRecentAndExplorerTables();
+  }
+
+  // Function to save document back into filesystem and locally
+  function saveCurrentWordDocument() {
+    if (!wordEditorOpened) return;
+    const currentHTML = wordEditorArea.innerHTML;
+    
+    // Save to the virtual fileSystem state so Finder can see it!
+    if (typeof fileSystem !== 'undefined') {
+      const targetList = fileSystem[wordActiveExplorerFolder] || fileSystem['Documents'];
+      const idx = targetList.findIndex(f => f.name === wordActiveDocName);
+      if (idx !== -1) {
+        targetList[idx].content = currentHTML;
+        targetList[idx].date = 'Just Now';
+      } else {
+        targetList.push({
+          name: wordActiveDocName,
+          date: 'Just Now',
+          size: Math.round(currentHTML.length / 100) + ' KB',
+          icon: WORD_DOCX_ICON,
+          type: 'file',
+          content: currentHTML,
+          isDoc: true
+        });
+      }
+      if (typeof renderContent === 'function') renderContent();
+    }
+
+    // Save to local Georgian array for immediate rendering inside menus
+    const localMatchIdx = wordGeorgianFileList.findIndex(f => f.name === wordActiveDocName && f.folder === wordActiveExplorerFolder);
+    if (localMatchIdx !== -1) {
+      wordGeorgianFileList[localMatchIdx].content = currentHTML;
+      wordGeorgianFileList[localMatchIdx].date = 'Just Now';
+    } else {
+      wordGeorgianFileList.unshift({
+        name: wordActiveDocName,
+        folder: wordActiveExplorerFolder || 'Documents',
+        date: 'Just Now',
+        size: Math.round(currentHTML.length / 100) + ' KB',
+        content: currentHTML
+      });
+    }
+
+    // Showcase beautiful saved overlay notification
+    const saveNotice = document.createElement('div');
+    saveNotice.innerHTML = `<i data-lucide="check" style="width:14px; height:14px; color:#fff; display:inline-block; vertical-align:middle; margin-right:4px;"></i> Saved to ${wordActiveExplorerFolder}`;
+    saveNotice.style.position = 'absolute';
+    saveNotice.style.top = '60px';
+    saveNotice.style.left = '50%';
+    saveNotice.style.transform = 'translateX(-50%)';
+    saveNotice.style.background = '#107c41';
+    saveNotice.style.color = '#fff';
+    saveNotice.style.padding = '8px 16px';
+    saveNotice.style.borderRadius = '20px';
+    saveNotice.style.fontSize = '12px';
+    saveNotice.style.fontWeight = '600';
+    saveNotice.style.boxShadow = '0 3px 12px rgba(0,0,0,0.15)';
+    saveNotice.style.zIndex = '99999';
+    saveNotice.style.pointerEvents = 'none';
+
+    document.getElementById('word-window').appendChild(saveNotice);
+    if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+    setTimeout(() => {
+      saveNotice.style.transition = 'opacity 0.3s ease';
+      saveNotice.style.opacity = '0';
+      setTimeout(() => saveNotice.remove(), 300);
+    }, 1500);
+  }
+
+  // Count words inside the contenteditable editor
+  function updateWordCount() {
+    if (!wordEditorArea) return;
+    const txt = wordEditorArea.innerText || '';
+    const wordsNum = txt.trim().split(/\s+/).filter(w => w.length > 0).length;
+    const display = document.getElementById('word-status-words-indicator');
+    if (display) {
+      display.textContent = `${wordsNum} word${wordsNum === 1 ? '' : 's'}`;
+    }
+  }
+
+  // Sidebar Toggling Handler
+  document.querySelectorAll('.word-sidebar-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      const tabKey = tab.getAttribute('data-tab');
+      wordActiveTab = tabKey;
+
+      // Update state active class
+      document.querySelectorAll('.word-sidebar-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+
+      // Hide all panels
+      document.getElementById('word-panel-home').style.display = 'none';
+      document.getElementById('word-panel-new').style.display = 'none';
+      document.getElementById('word-panel-recent').style.display = 'none';
+      document.getElementById('word-panel-open').style.display = 'none';
+
+      // Show specific panel
+      document.getElementById(`word-panel-${tabKey}`).style.display = 'flex';
+
+      // Toggle Open explorer files vs recent tabs row selection buttons
+      const createBtn = document.getElementById('word-start-create-btn');
+      if (createBtn) {
+        if (tabKey === 'home' || tabKey === 'new') {
+          createBtn.textContent = 'Create';
+        } else {
+          createBtn.textContent = 'Open';
+        }
+        createBtn.disabled = true; // Disable until card/table item selection made inside tab views
+      }
+      
+      wordSelectedTemplateId = null;
+      wordSelectedRecentFileName = null;
+      document.querySelectorAll('.word-template-card').forEach(c => c.classList.remove('selected'));
+      document.querySelectorAll('.word-row-doc').forEach(r => r.classList.remove('selected'));
+
+      renderRecentAndExplorerTables();
+    });
   });
+
+  // Open Dialog Explorer column folders toggles
+  const docDirBtn = document.getElementById('word-open-dir-btn-documents');
+  const dlsDirBtn = document.getElementById('word-open-dir-btn-downloads');
+  
+  if (docDirBtn) {
+    docDirBtn.addEventListener('click', () => {
+      wordActiveExplorerFolder = 'Documents';
+      docDirBtn.style.background = '#e2e8f0';
+      if (dlsDirBtn) dlsDirBtn.style.background = 'transparent';
+      renderRecentAndExplorerTables();
+    });
+  }
+
+  if (dlsDirBtn) {
+    dlsDirBtn.addEventListener('click', () => {
+      wordActiveExplorerFolder = 'Downloads';
+      dlsDirBtn.style.background = '#e2e8f0';
+      if (docDirBtn) docDirBtn.style.background = 'transparent';
+      renderRecentAndExplorerTables();
+    });
+  }
+
+  // Start cancel/create operations
+  document.getElementById('word-start-cancel-btn').addEventListener('click', () => {
+    // Closes / hides app
+    document.getElementById('word-btn-close').click();
+  });
+
+  document.getElementById('word-start-create-btn').addEventListener('click', () => {
+    openSelectedWordObject();
+  });
+
+  // More templates link redirects to the New Tab in Microsoft Word sidebar
+  const moreTemplates = document.getElementById('word-more-templates-link');
+  if (moreTemplates) {
+    moreTemplates.addEventListener('click', () => {
+      const newSidebarTab = document.getElementById('word-tab-nav-new');
+      if (newSidebarTab) newSidebarTab.click();
+    });
+  }
+
+  // Warning check update action buttons banner
+  const updateCloseBtn = document.getElementById('word-update-banner-close-btn');
+  if (updateCloseBtn) {
+    updateCloseBtn.addEventListener('click', () => {
+      document.getElementById('word-update-banner-box').style.display = 'none';
+    });
+  }
+
+  const checkUpdatesBtn = document.getElementById('word-update-check-banner-btn');
+  if (checkUpdatesBtn) {
+    checkUpdatesBtn.addEventListener('click', () => {
+      alert('Microsoft Office Update Assistant\n\nChecking file catalogs... Complete.\nYour Microsoft Word application is fully up to date!');
+      document.getElementById('word-update-banner-box').style.display = 'none';
+    });
+  }
+  const bannerCheckBtn = document.getElementById('word-update-check-banner-btn');
+  if (bannerCheckBtn) {
+    bannerCheckBtn.addEventListener('click', () => {
+      alert('Microsoft Office Update Assistant\n\nChecking file catalogs... Complete.\nYour Microsoft Word application is fully up to date!');
+      document.getElementById('word-update-banner-box').style.display = 'none';
+    });
+  }
+
+  // Content editable keydown text computations listener
+  if (wordEditorArea) {
+    wordEditorArea.addEventListener('input', () => {
+      updateWordCount();
+    });
+
+    wordEditorArea.addEventListener('keydown', (e) => {
+      // Autosave listener
+      if (wordIsAutosaveOn) {
+        setTimeout(saveCurrentWordDocument, 100);
+      }
+      
+      // Save Shortcut listener (CMD+S/Ctrl+S)
+      if ((e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'S')) {
+        e.preventDefault();
+        saveCurrentWordDocument();
+      }
+    });
+  }
+
+  // Save icons in dark blue header
+  const headerSaveBtn = document.getElementById('word-save-doc-icon-btn');
+  if (headerSaveBtn) {
+    headerSaveBtn.addEventListener('click', () => {
+      saveCurrentWordDocument();
+    });
+  }
+
+  // Autosave toggle controls
+  const autoToggle = document.getElementById('word-autosave-switch');
+  const autoText = document.getElementById('word-autosave-state');
+  if (autoToggle) {
+    autoToggle.addEventListener('click', () => {
+      wordIsAutosaveOn = !wordIsAutosaveOn;
+      if (wordIsAutosaveOn) {
+        autoToggle.classList.add('on');
+        autoText.textContent = 'ON';
+        autoText.style.color = '#107c41';
+        saveCurrentWordDocument();
+      } else {
+        autoToggle.classList.remove('on');
+        autoText.textContent = 'OFF';
+        autoText.style.color = '#cbd5e1';
+      }
+    });
+  }
+
+  // Zoom slider scale implementation
+  const zoomSlider = document.getElementById('word-zoom-range-slider');
+  const zoomText = document.getElementById('word-zoom-percentage-text');
+  const pageZoomContainer = document.getElementById('word-page-zoomer-wrapper');
+  
+  if (zoomSlider) {
+    zoomSlider.addEventListener('input', (e) => {
+      const zoomVal = parseInt(e.target.value);
+      wordDocScalePercent = zoomVal;
+      zoomText.textContent = `${zoomVal}%`;
+      if (pageZoomContainer) {
+        pageZoomContainer.style.transform = `scale(${zoomVal / 100})`;
+      }
+    });
+  }
+
+  // Formatting styles gallery applying selectors
+  document.querySelectorAll('.word-style-gallery-card').forEach(card => {
+    card.addEventListener('click', () => {
+      if (!wordEditorOpened) return;
+      const type = card.getAttribute('data-style');
+
+      if (type === 'normal') {
+        document.execCommand('formatBlock', false, 'p');
+        // Clear custom header fonts/styles
+        document.execCommand('removeFormat', false, null);
+      } else if (type === 'heading1') {
+        document.execCommand('formatBlock', false, 'h1');
+        // Style headings beautifully
+        document.execCommand('foreColor', false, '#185abd');
+      } else if (type === 'heading2') {
+        document.execCommand('formatBlock', false, 'h2');
+        document.execCommand('foreColor', false, '#2b78e4');
+      } else if (type === 'title') {
+        document.execCommand('formatBlock', false, 'h1');
+        document.execCommand('foreColor', false, '#111827');
+        // Center titles instantly
+        document.execCommand('justifyCenter', false, null);
+      } else if (type === 'subtitle') {
+        document.execCommand('formatBlock', false, 'h3');
+        document.execCommand('foreColor', false, '#64748b');
+      }
+      
+      wordEditorArea.focus();
+    });
+  });
+
+  // Fonts / Font Sizes selection inside Editor Ribbon bar
+  const fontSelector = document.getElementById('word-rich-font');
+  if (fontSelector) {
+    fontSelector.addEventListener('change', (e) => {
+      document.execCommand('fontName', false, e.target.value);
+      wordEditorArea.focus();
+    });
+  }
+
+  const fontSizeSelector = document.getElementById('word-rich-font-size');
+  if (fontSizeSelector) {
+    fontSizeSelector.addEventListener('change', (e) => {
+      const targetSize = e.target.value;
+      
+      // Highlight selection and insert exact font size using CSS span structure rather than poor 1-7 approximations
+      const sel = window.getSelection();
+      if (sel && sel.rangeCount > 0 && sel.toString().trim() !== '') {
+        const range = sel.getRangeAt(0);
+        const span = document.createElement('span');
+        span.style.fontSize = `${targetSize}px`;
+        span.appendChild(range.extractContents());
+        range.insertNode(span);
+      } else {
+        document.execCommand('fontSize', false, "3"); // default safe fallback fallback
+      }
+      wordEditorArea.focus();
+    });
+  }
+
+  // Text color picker toggle buttons
+  const textClrSelector = document.getElementById('word-btn-textcolor-selector');
+  if (textClrSelector) {
+    textClrSelector.addEventListener('click', () => {
+      const colors = ['#dc2626', '#1e3a8a', '#107c41', '#d97706', '#000000'];
+      const current = textClrSelector.style.borderBottomColor;
+      // Cycle or toggle red color
+      const chosenColor = current === 'rgb(220, 38, 38)' ? '#000000' : '#dc2626';
+      textClrSelector.style.borderBottomColor = chosenColor;
+      document.execCommand('foreColor', false, chosenColor);
+      wordEditorArea.focus();
+    });
+  }
+
+  const highlightClrSelector = document.getElementById('word-btn-highlight-selector');
+  if (highlightClrSelector) {
+    highlightClrSelector.addEventListener('click', () => {
+      const current = highlightClrSelector.style.borderBottomColor;
+      const chosenColor = current === 'rgb(250, 204, 21)' ? 'transparent' : '#fef08a';
+      highlightClrSelector.style.borderBottomColor = chosenColor === 'transparent' ? '#cbd5e1' : '#facc15';
+      document.execCommand('backColor', false, chosenColor);
+      wordEditorArea.focus();
+    });
+  }
+
+  // ¶ paragraph glyph selector toggle
+  const paraGlyphBtn = document.getElementById('word-btn-para-glyph-toggle');
+  if (paraGlyphBtn) {
+    paraGlyphBtn.addEventListener('click', () => {
+      paraGlyphBtn.classList.toggle('active');
+      const paragraphs = wordEditorArea.querySelectorAll('p, h1, h2, h3, div');
+      const isShowing = paraGlyphBtn.classList.contains('active');
+      
+      paragraphs.forEach(p => {
+        if (isShowing) {
+          p.setAttribute('data-paragraph-glyph', 'true');
+          // Inline append paragraph symbol visual style
+          p.classList.add('para-glyph-show');
+        } else {
+          p.removeAttribute('data-paragraph-glyph');
+          p.classList.remove('para-glyph-show');
+        }
+      });
+      wordEditorArea.focus();
+    });
+  }
+
+  // View modes button handlers (Focus and Read Modes implementation)
+  const modePrint = document.getElementById('word-mode-print');
+  const modeRead = document.getElementById('word-mode-read');
+  const modeFocus = document.getElementById('word-mode-focus');
+  const viewportScrollstage = document.getElementById('word-scrollstage-viewport');
+
+  function resetAllViewModes() {
+    [modePrint, modeRead, modeFocus].forEach(b => { if (b) b.classList.remove('active'); });
+    if (wordEditorArea) {
+      wordEditorArea.removeAttribute('style');
+      wordEditorArea.style.background = '#ffffff';
+      wordEditorArea.style.width = '620px';
+      wordEditorArea.style.minHeight = '800px';
+      wordEditorArea.style.padding = '60px 80px';
+    }
+    viewportScrollstage.classList.remove('word-focus-active');
+    
+    // Restore toolbars
+    document.getElementById('word-editor-header').style.display = 'flex';
+    document.querySelector('.word-ribbon-tabs-strip').style.display = 'flex';
+    document.getElementById('word-ribbon-home-toolbar').style.display = 'flex';
+    document.getElementById('word-update-banner-box').style.display = 'none'; // reset update banner to not annoy after mode restore
+  }
+
+  if (modePrint) {
+    modePrint.addEventListener('click', () => {
+      resetAllViewModes();
+      modePrint.classList.add('active');
+    });
+  }
+
+  if (modeRead) {
+    modeRead.addEventListener('click', () => {
+      resetAllViewModes();
+      modeRead.classList.add('active');
+      // Expand width, hide vertical scroll stage margins visual cues
+      if (wordEditorArea) {
+        wordEditorArea.style.width = '90%';
+        wordEditorArea.style.maxWidth = '900px';
+        wordEditorArea.style.padding = '40px 60px';
+      }
+    });
+  }
+
+  if (modeFocus) {
+    modeFocus.addEventListener('click', () => {
+      resetAllViewModes();
+      modeFocus.classList.add('active');
+      viewportScrollstage.classList.add('word-focus-active');
+      
+      // Hide all distracting ribbon utility rails
+      document.getElementById('word-editor-header').style.display = 'none';
+      document.querySelector('.word-ribbon-tabs-strip').style.display = 'none';
+      document.getElementById('word-ribbon-home-toolbar').style.display = 'none';
+      document.getElementById('word-update-banner-box').style.display = 'none';
+
+      // Floating restore helper banner
+      const endFocusTip = document.createElement('div');
+      endFocusTip.id = 'word-focus-mode-dismiss-badge';
+      endFocusTip.innerHTML = `Focus Mode Active • <span style="text-decoration:underline; font-weight:600; cursor:pointer;" id="word-exit-focus-btn">Exit Focus View</span>`;
+      endFocusTip.style.position = 'absolute';
+      endFocusTip.style.bottom = '40px';
+      endFocusTip.style.left = '50%';
+      endFocusTip.style.transform = 'translateX(-50%)';
+      endFocusTip.style.background = 'rgba(0,0,0,0.85)';
+      endFocusTip.style.color = '#fff';
+      endFocusTip.style.padding = '6px 14px';
+      endFocusTip.style.borderRadius = '20px';
+      endFocusTip.style.fontSize = '11px';
+      endFocusTip.style.boxShadow = '0 2px 10px rgba(0,0,0,0.4)';
+      endFocusTip.style.zIndex = '999999';
+      
+      viewportScrollstage.appendChild(endFocusTip);
+
+      document.getElementById('word-exit-focus-btn').addEventListener('click', () => {
+        endFocusTip.remove();
+        if (modePrint) modePrint.click(); // restore print layout standard
+      });
+    });
+  }
+
+  // Render initial template visuals when Word loads
+  renderAllTemplatesLayouts();
+  renderRecentAndExplorerTables();
+
+
+  // --- Window Controls Setup ---
+  document.getElementById('word-btn-close').addEventListener('click', () => {
+    // If editor processor is active, navigate back to template dashboard instead of killing app directly!
+    if (wordEditorOpened) {
+      closeWordDocProcessor();
+    } else {
+      wordState.targetScaleX = 0.85; wordState.targetScaleY = 0.85;
+      wordState.targetOpacity = 0; wordState.isOpen = false;
+      setActiveApp('Finder');
+    }
+  });
+
   document.getElementById('word-btn-minimize').addEventListener('click', () => {
     if (window.genieMinimizeEnabled) {
       if (!wordState.isMinimized) {
@@ -8561,6 +10685,7 @@ if (val === 'help') {
       wordState.isMinimized = false;
     }
   });
+
   document.getElementById('word-btn-maximize').addEventListener('click', () => {
     if (!wordState.isMaximized) {
       wordState.preMaxDragX = wordState.targetDragX;
@@ -8573,71 +10698,8 @@ if (val === 'help') {
     } else {
       wordState.targetDragX = wordState.preMaxDragX;
       wordState.targetDragY = wordState.preMaxDragY;
-      wordState.targetWidth = 800; wordState.targetHeight = 600;
+      wordState.targetWidth = 1000; wordState.targetHeight = 720;
       wordState.targetTranslateY = 0; wordState.isMaximized = false;
-    }
-  });
-
-  const wordEditor = document.getElementById('word-editor');
-  
-  document.querySelectorAll('.word-tool-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      e.preventDefault();
-      const cmd = btn.getAttribute('data-cmd');
-      if (cmd) {
-        document.execCommand(cmd, false, null);
-      } else if (btn.id === 'btn-overline') {
-        const selection = window.getSelection();
-        if (!selection.rangeCount) return;
-        const range = selection.getRangeAt(0);
-        const span = document.createElement('span');
-        span.style.textDecoration = 'overline';
-        span.appendChild(range.extractContents());
-        range.insertNode(span);
-      }
-      wordEditor.focus();
-    });
-  });
-
-  document.getElementById('word-font').addEventListener('change', (e) => {
-    document.execCommand('fontName', false, e.target.value);
-    wordEditor.focus();
-  });
-
-  wordEditor.addEventListener('keydown', (e) => {
-    if (e.ctrlKey || e.metaKey) {
-      if (e.key === 's' || e.key === 'S') {
-        e.preventDefault();
-        
-        const fileName = prompt('Save Document As:', 'Untitled.docx');
-        if (fileName) {
-          if (!fileSystem['Documents']) fileSystem['Documents'] = [];
-          fileSystem['Documents'].push({
-            name: fileName,
-            date: 'Today',
-            size: '1 KB',
-            icon: '📄',
-            type: 'file',
-            content: wordEditor.innerHTML
-          });
-          if (currentFolder === 'Documents') renderContent();
-          
-          const saveNotice = document.createElement('div');
-          saveNotice.textContent = 'Saved to Documents';
-          saveNotice.style.position = 'absolute';
-          saveNotice.style.bottom = '20px';
-          saveNotice.style.left = '50%';
-          saveNotice.style.transform = 'translateX(-50%)';
-          saveNotice.style.background = 'rgba(0,0,0,0.7)';
-          saveNotice.style.color = '#fff';
-          saveNotice.style.padding = '8px 16px';
-          saveNotice.style.borderRadius = '20px';
-          saveNotice.style.fontSize = '12px';
-          saveNotice.style.pointerEvents = 'none';
-          document.getElementById('word-window').appendChild(saveNotice);
-          setTimeout(() => saveNotice.remove(), 2000);
-        }
-      }
     }
   });
 
@@ -8652,11 +10714,14 @@ if (val === 'help') {
       }
       if (!wordState.isOpen || wordState.isMinimized) {
         wordState.targetScaleX = 1; wordState.targetScaleY = 1;
-        wordState.targetWidth = wordState.isMaximized ? window.innerWidth - 40 : 800;
-        wordState.targetHeight = wordState.isMaximized ? window.innerHeight - 120 : 600;
+        wordState.targetWidth = wordState.isMaximized ? window.innerWidth - 40 : 1000;
+        wordState.targetHeight = wordState.isMaximized ? window.innerHeight - 120 : 720;
         wordState.targetOpacity = 1; 
         wordState.targetTranslateY = wordState.isMaximized ? -30 : 0;
         wordState.isOpen = true; wordState.isMinimized = false;
+        
+        // Refresh tables in case filesystem files sync was changed inside Finder
+        renderRecentAndExplorerTables();
       } else {
         if (window.genieMinimizeEnabled) {
           window.triggerMinimize('word-window', 'Word', wordState);
@@ -9930,13 +11995,14 @@ if (val === 'help') {
       const fileName = prompt('Save Document As:', 'Untitled.docx');
       if (fileName) {
         if (!fileSystem['Documents']) fileSystem['Documents'] = [];
+        const wordRichEditorEl = document.getElementById('word-rich-editor');
         fileSystem['Documents'].push({
           name: fileName,
           date: 'Today',
           size: '1 KB',
           icon: '📄',
           type: 'file',
-          content: wordEditor.innerHTML
+          content: wordRichEditorEl ? wordRichEditorEl.innerHTML : '<p><br></p>'
         });
         if (currentFolder === 'Documents') renderContent();
         
@@ -9988,7 +12054,9 @@ if (val === 'help') {
     let filename = saveFileInput.value.trim() || 'Document.docx';
     if (!filename.endsWith('.docx')) filename += '.docx';
     
-    let content = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${filename}</title></head><body>${wordEditor.innerHTML}</body></html>`; 
+    const wordRichEditorEl = document.getElementById('word-rich-editor');
+    const editorInnerLines = wordRichEditorEl ? wordRichEditorEl.innerHTML : '<p><br></p>';
+    let content = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${filename}</title></head><body>${editorInnerLines}</body></html>`; 
     if (typeof htmlDocx !== 'undefined') {
        let converted = htmlDocx.asBlob(content);
        const el = document.createElement('a');
