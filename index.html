@@ -1402,11 +1402,30 @@
     padding: 0 12px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.1) inset, 0 1px 0 rgba(255,255,255,0.5);
     border: 1px solid #d1d1d1;
+    transition: outline 0.15s cubic-bezier(0.25, 1, 0.5, 1), border-color 0.15s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.15s cubic-bezier(0.25, 1, 0.5, 1);
+  }
+  .safari-address-bar:focus-within {
+    border-color: #007aff;
+    outline: 2px solid #007aff;
+    outline-offset: -1px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1) inset;
+  }
+  .safari-address-bar-content {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    min-width: 0;
+    padding-left: calc(50% - 110px);
+    transition: padding-left 0.35s cubic-bezier(0.25, 1, 0.25, 1);
+  }
+  .safari-address-bar:focus-within .safari-address-bar-content {
+    padding-left: 0;
   }
   .safari-address-bar .icon {
     font-size: 12px;
     color: #888;
     margin-right: 6px;
+    flex-shrink: 0;
   }
   .safari-address-bar input {
     border: none;
@@ -1434,68 +1453,94 @@
   .safari-toolbar-right .btn:hover { background: rgba(0,0,0,0.05); }
 
   .safari-tabs {
-    height: 36px;
+    height: 32px;
     background: #ECECEC;
     display: flex;
-    align-items: flex-end;
-    padding: 0 8px;
-    border-bottom: 1px solid #c0c0c0;
-    gap: 2px;
+    align-items: center;
+    padding: 2px;
+    gap: 4px;
+    margin: 4px 16px 8px 16px;
+    border-radius: 9999px;
+    position: relative;
+    box-sizing: border-box;
+    overflow: hidden;
   }
   .safari-tab {
-    height: 28px;
-    background: #D8D8D8;
-    border-radius: 6px 6px 0 0;
-    padding: 0 10px;
+    height: 100%;
+    background: #ECECEC;
+    border-radius: 9999px;
+    padding: 0 16px;
     display: flex;
     align-items: center;
-    font-size: 12px;
+    justify-content: center;
+    font-size: 11.5px;
     color: #1C1C1E;
     cursor: pointer;
-    max-width: 200px;
-    min-width: 100px;
     flex: 1;
     position: relative;
-    border: 1px solid transparent;
-    border-bottom: none;
-    transition: background 0.1s;
+    border: none;
+    box-sizing: border-box;
+    transition: background-color 0.15s ease, box-shadow 0.15s ease, max-width 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease;
+    min-width: 0;
+  }
+  .safari-tab.tab-pop-anim {
+    animation: safari-tab-enter 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+  @keyframes safari-tab-enter {
+    from {
+      flex: 0.0001 1 0px;
+      max-width: 0px;
+      padding: 0;
+      opacity: 0;
+      transform: translateX(40px);
+    }
+    to {
+      flex: 1 1 0px;
+      max-width: 100%;
+      padding: 0 16px;
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+  .safari-tab:hover {
+    background: #dbdbdb;
   }
   .safari-tab.active {
-    background: #FFFFFF;
-    border-color: #c0c0c0;
-  }
-  .safari-tab.active::after {
-    content: '';
-    position: absolute;
-    bottom: -1px;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: #FFFFFF;
+    background: #FFFFFF !important;
+    box-shadow: inset 0 0 0 1px #ffffff, 0 -1.2px 0 0 #A8A8A8, 0 1px 3px rgba(0,0,0,0.06) !important;
   }
   .safari-tab .favicon {
     width: 14px;
     height: 14px;
     margin-right: 6px;
+    flex-shrink: 0;
   }
   .safari-tab .title {
-    flex: 1;
+    font-size: 11px;
+    font-weight: 500;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    margin-right: 14px;
   }
   .safari-tab .close-btn {
-    width: 16px;
-    height: 16px;
+    width: 14px;
+    height: 14px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 4px;
+    border-radius: 50%;
     opacity: 0;
-    font-size: 14px;
+    font-size: 10px;
+    font-weight: 600;
+    color: #8E8E93;
+    background: rgba(0, 0, 0, 0.05);
+    position: absolute;
+    right: 12px;
+    transition: opacity 0.15s, background-color 0.15s, color 0.15s;
   }
   .safari-tab:hover .close-btn { opacity: 1; }
-  .safari-tab .close-btn:hover { background: rgba(0,0,0,0.1); }
+  .safari-tab .close-btn:hover { background: rgba(0,0,0,0.12); color: #1c1c1e; }
   .safari-add-tab {
     width: 28px;
     height: 28px;
@@ -1598,7 +1643,214 @@
     transition: transform 0.1s;
   }
   .safari-nt-fav:hover .safari-nt-fav-icon { transform: scale(1.05); }
-  .safari-nt-fav-title { font-size: 12px; color: #555; text-align: center; }
+  .safari-nt-fav-title { font-size: 11px; font-weight: 500; color: #1c1c1e; text-align: center; }
+
+  /* iCloud Tabs & Privacy Report start page layout classes */
+  .safari-scroll-content {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 48px;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    box-sizing: border-box;
+  }
+  .safari-section-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1a1a1c;
+    margin-bottom: 12px;
+    text-align: left;
+    letter-spacing: -0.2px;
+  }
+  .safari-privacy-box {
+    background: rgba(255, 255, 255, 0.45);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+    display: flex;
+    width: 100%;
+    box-sizing: border-box;
+    text-align: left;
+  }
+  .safari-privacy-left {
+    width: 45%;
+    padding: 24px;
+    border-right: 1px solid rgba(0, 0, 0, 0.06);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-sizing: border-box;
+  }
+  .safari-privacy-right {
+    width: 55%;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    justify-content: space-between;
+    box-sizing: border-box;
+  }
+  .safari-privacy-subgroup {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .safari-privacy-subgroup-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: #6e6e73;
+    text-transform: normal;
+  }
+  .safari-ratio-cards {
+    display: flex;
+    gap: 12px;
+    width: 100%;
+  }
+  .safari-ratio-card {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: 12px;
+    padding: 12px 14px;
+    border: 1px solid rgba(0, 0, 0, 0.03);
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 80px;
+  }
+  .safari-ratio-card-label {
+    font-size: 11px;
+    font-weight: 500;
+    color: #6e6e73;
+    line-height: 1.3;
+  }
+  .safari-ratio-card-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1a1a1c;
+    margin-top: 4px;
+  }
+  .safari-tracker-main-bar {
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: 12px;
+    padding: 12px 14px;
+    border: 1px solid rgba(0, 0, 0, 0.03);
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #1a1a1c;
+    box-sizing: border-box;
+  }
+
+  .safari-icloud-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .safari-icloud-card {
+    background: rgba(255, 255, 255, 0.45);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 16px;
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.01);
+    box-sizing: border-box;
+    text-align: left;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+  }
+  .safari-icloud-card:hover {
+    transform: translateY(-2px);
+    box-sizing: border-box;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.04);
+  }
+  .safari-icloud-icon-box {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: 700;
+    overflow: hidden;
+    flex-shrink: 0;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .safari-icloud-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    overflow: hidden;
+    flex: 1;
+  }
+  .safari-icloud-tab-title {
+    font-size: 11.5px;
+    font-weight: 600;
+    color: #1D1D1F;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .safari-icloud-tab-url {
+    font-size: 9.5px;
+    color: #86868B;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .safari-icloud-tab-device {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 9px;
+    color: #86868B;
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-top: 3px;
+    letter-spacing: 0.1px;
+  }
+
+  .safari-bookmark-bar {
+    height: 32px;
+    background: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(0,0,0,0.08);
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    gap: 14px;
+    overflow-x: auto;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
+    user-select: none;
+    flex-shrink: 0;
+    scrollbar-width: none; /* Firefox */
+  }
+  .safari-bookmark-bar::-webkit-scrollbar { zoom: 0; width: 0; height: 0; display: none; } /* Safari */
+  .safari-bookmark-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: #1c1c1e;
+    cursor: pointer;
+    white-space: nowrap;
+    opacity: 0.85;
+    transition: opacity 0.1s;
+    font-weight: 500;
+  }
+  .safari-bookmark-item:hover { opacity: 1; }
 
   /* Error Page */
   .safari-error-page {
@@ -2727,51 +2979,281 @@
       <div class="btn minimize" id="safari-btn-minimize"><svg viewBox="0 0 24 24" fill="none" stroke="rgb(123, 104, 43)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg></div>
       <div class="btn maximize" id="safari-btn-maximize"><svg viewBox="0 0 24 24" fill="none" stroke="rgb(54, 102, 59)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg></div>
     </div>
-    <div class="safari-nav-btns">
+    
+    <!-- Sidebar toggle & dropdown button -->
+    <div style="display: flex; align-items: center; gap: 2px; margin-left: 12px;">
+      <div class="safari-nav-btn" style="width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;" onclick="alert('Toggle browser split sidebar.')"><i data-lucide="sidebar" style="width:16px;height:16px;"></i></div>
+      <div class="safari-nav-btn" style="width: 14px; height: 28px; display: flex; align-items: center; justify-content: center;"><i data-lucide="chevron-down" style="width:10px;height:10px;"></i></div>
+    </div>
+
+    <div class="safari-nav-btns" style="display: flex; gap: 4px; margin-left: 8px; color: #555;">
       <div class="safari-nav-btn" id="safari-btn-back"><i data-lucide="chevron-left" style="width:16px;height:16px;"></i></div>
       <div class="safari-nav-btn" id="safari-btn-forward"><i data-lucide="chevron-right" style="width:16px;height:16px;"></i></div>
-      <div class="safari-nav-btn" id="safari-btn-reload"><i data-lucide="rotate-cw" style="width:16px;height:16px;"></i></div>
     </div>
+
+    <!-- Privacy Tracking Badge Shield in a circle -->
+    <div class="safari-nav-btn" style="margin-left: 10px; color: #333;" onclick="alert('Tracking Prevention: Safari is protecting your identity and privacy on this website.')">
+      <i data-lucide="shield" style="width:16px;height:16px;stroke-width:2.5;"></i>
+    </div>
+
     <div class="safari-address-container">
-      <div class="safari-address-bar">
-        <span class="icon" id="safari-address-icon"><i data-lucide="lock" style="width:14px;height:14px;display:block"></i></span>
-        <input type="text" id="safari-address-input" value="https://wikipedia.org" spellcheck="false" autocomplete="off">
+      <div class="safari-address-bar" style="position: relative;" id="safari-address-bar">
+        <div class="safari-address-bar-content" id="safari-address-bar-content">
+          <span class="icon" id="safari-address-icon"><i data-lucide="lock" style="width:14px;height:14px;display:block"></i></span>
+          <input type="text" id="safari-address-input" value="" placeholder="Search or enter website name" spellcheck="false" autocomplete="off">
+        </div>
+        <span style="position: absolute; right: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer;" id="safari-audio-indicator" onclick="alert('Mute this tab or other tabs playing sound.')">
+          <i data-lucide="volume-2" style="width:14px;height:14px;color:#007aff;fill:#007aff;"></i>
+        </span>
       </div>
     </div>
-    <div class="safari-toolbar-right">
-      <div class="btn"><i data-lucide="share" style="width:16px;height:16px;"></i></div>
-      <div class="btn"><i data-lucide="copy" style="width:16px;height:16px;"></i></div>
+
+    <div class="safari-toolbar-right" style="display: flex; align-items: center; gap: 4px;">
+      <div class="safari-nav-btn" onclick="alert('Downloads: No active downloads.')"><i data-lucide="arrow-down-circle" style="width:16px;height:16px;"></i></div>
+      <div class="safari-nav-btn" id="safari-share-btn"><i data-lucide="share" style="width:16px;height:16px;"></i></div>
+      <div class="safari-nav-btn" id="safari-add-tab-header"><i data-lucide="plus" style="width:16px;height:16px;"></i></div>
+      <div class="safari-nav-btn" onclick="alert('Tab Overview: Toggle tabs dashboard view.')"><i data-lucide="layout-grid" style="width:16px;height:16px;"></i></div>
     </div>
   </div>
   <div class="safari-tabs" id="safari-tabs-container">
     <!-- Tabs injected here -->
   </div>
+
+
   <div class="safari-content-area">
     <iframe class="safari-iframe" id="safari-iframe" sandbox="allow-scripts allow-same-origin allow-forms allow-popups"></iframe>
     
     <div class="safari-overlay" id="safari-new-tab-overlay">
-      <div class="safari-new-tab">
-        <div class="safari-nt-title">Favorites</div>
-        <div class="safari-nt-search">
-          <i data-lucide="search" style="width: 16px; height: 16px; color: #888;"></i>
-          <input type="text" placeholder="Search or enter website name" id="safari-nt-search-input">
+      <!-- Edit button in bottom right -->
+      <button style="position: absolute; bottom: 20px; right: 20px; font-size: 11px; font-weight: 600; background: rgba(0,0,0,0.06); border: 1px solid rgba(0,0,0,0.04); padding: 5px 12px; border-radius: 12px; cursor: pointer; color: #1c1c1e; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); z-index: 50;" onclick="alert('Start page background and layout customization controls.')">Edit</button>
+
+      <div class="safari-scroll-content">
+        <!-- Section 1: Favorites -->
+        <div>
+          <div class="safari-section-title">Favorites</div>
+          <div style="display: flex; gap: 24px; flex-wrap: wrap; text-align: center;">
+            <!-- Favorite 1: Win11 in React -->
+            <div class="safari-nt-fav" data-url="https://win11.blueedge.me">
+              <div class="safari-nt-fav-icon" style="background: #0078d4; border-radius: 50%; width: 64px; height: 64px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); color: white; display: flex; align-items: center; justify-content: center; transition: transform 0.15s ease;">
+                <i data-lucide="atom" style="width: 28px; height: 28px;"></i>
+              </div>
+              <div class="safari-nt-fav-title" style="margin-top: 8px;">Win11 in React</div>
+            </div>
+            <!-- Favorite 2: Apple -->
+            <div class="safari-nt-fav" data-url="https://apple.com">
+              <div class="safari-nt-fav-icon" style="background: #f5f5f7; border-radius: 50%; width: 64px; height: 64px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); color: #1d1d1f; display: flex; align-items: center; justify-content: center; transition: transform 0.15s ease;">
+                <i data-lucide="apple" style="width: 28px; height: 28px;"></i>
+              </div>
+              <div class="safari-nt-fav-title" style="margin-top: 8px;">Apple</div>
+            </div>
+            <!-- Favorite 3: Bing -->
+            <div class="safari-nt-fav" data-url="https://bing.com">
+              <div class="safari-nt-fav-icon" style="background: #00829a; border-radius: 50%; width: 64px; height: 64px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); color: white; display: flex; align-items: center; justify-content: center; font-size: 26px; font-weight: 700; transition: transform 0.15s ease; font-family: -apple-system, system-ui, sans-serif;">B</div>
+              <div class="safari-nt-fav-title" style="margin-top: 8px;">Bing</div>
+            </div>
+            <!-- Favorite 4: Google -->
+            <div class="safari-nt-fav" data-url="https://google.com">
+              <div class="safari-nt-fav-icon" style="background: #4285F4; border-radius: 50%; width: 64px; height: 64px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); color: white; display: flex; align-items: center; justify-content: center; font-size: 26px; font-weight: 700; transition: transform 0.15s ease; font-family: -apple-system, system-ui, sans-serif;">G</div>
+              <div class="safari-nt-fav-title" style="margin-top: 8px;">Google</div>
+            </div>
+            <!-- Favorite 5: Yahoo -->
+            <div class="safari-nt-fav" data-url="https://yahoo.com">
+              <div class="safari-nt-fav-icon" style="background: #6001d2; border-radius: 50%; width: 64px; height: 64px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); color: white; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 800; font-style: italic; transition: transform 0.15s ease; font-family: -apple-system, system-ui, sans-serif; letter-spacing: -1px; padding-right: 2px;">yahoo!</div>
+              <div class="safari-nt-fav-title" style="margin-top: 8px;">Yahoo</div>
+            </div>
+          </div>
         </div>
-        <div class="safari-nt-favorites">
-          <div class="safari-nt-fav" data-url="https://wikipedia.org">
-            <div class="safari-nt-fav-icon">W</div>
-            <div class="safari-nt-fav-title">Wikipedia</div>
+
+        <!-- Section 2: Privacy Report -->
+        <div>
+          <div class="safari-section-title">Privacy Report</div>
+          <div class="safari-privacy-box">
+            <!-- Left Half -->
+            <div class="safari-privacy-left">
+              <div style="display: flex; align-items: center; gap: 4px;">
+                <!-- Exact Double green-glowing split Apple Privacy Shield -->
+                <svg width="44" height="52" viewBox="0 0 44 52" fill="none" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(0 2px 10px rgba(74,222,128,0.25)); flex-shrink:0;">
+                  <path d="M22 0L4 6V24C4 36.8 11.6 46.4 22 52C32.4 46.4 40 36.8 40 24V6L22 0Z" fill="#22c55e" fill-opacity="0.1"/>
+                  <path d="M22 2V2C12.6 7.4 6 15.8 6 24C6 34.6 12.4 42.6 22 47.8V2Z" fill="#22c55e" fill-opacity="0.85"/>
+                  <path d="M22 2V47.8C31.6 42.6 38 34.6 38 24C38 15.8 31.4 7.4 22 2Z" fill="#4ade80" fill-opacity="0.85"/>
+                </svg>
+              </div>
+              <div>
+                <div style="font-size: 14px; font-weight: 500; color: #1a1a1c; margin-top: 24px; line-height: 1.45;">Safari prevents trackers from profiling you.</div>
+                <div style="margin-top: 16px;">
+                  <span style="color: #007aff; font-size: 12px; font-weight: 600; cursor: pointer;" onclick="alert('Safari intelligent tracking prevention has blocked trackers from collecting fingerprint data across all open virtual tabs.')">Show More</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right Half -->
+            <div class="safari-privacy-right">
+              <div class="safari-privacy-subgroup">
+                <div class="safari-privacy-subgroup-title">Last 30 days</div>
+                <div class="safari-ratio-cards">
+                  <div class="safari-ratio-card">
+                    <div class="safari-ratio-card-label">Trackers prevented from profiling you</div>
+                    <div class="safari-ratio-card-value">29</div>
+                  </div>
+                  <div class="safari-ratio-card">
+                    <div class="safari-ratio-card-label">Websites that contacted trackers</div>
+                    <div class="safari-ratio-card-value">15%</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="safari-privacy-subgroup">
+                <div class="safari-privacy-subgroup-title">Most contacted tracker</div>
+                <div class="safari-tracker-main-bar">
+                  google.com was prevented from profiling you across 12 websites
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="safari-nt-fav" data-url="https://github.com">
-            <div class="safari-nt-fav-icon"><i data-lucide="github"></i></div>
-            <div class="safari-nt-fav-title">GitHub</div>
-          </div>
-          <div class="safari-nt-fav" data-url="https://youtube.com">
-            <div class="safari-nt-fav-icon" style="color:red"><i data-lucide="youtube"></i></div>
-            <div class="safari-nt-fav-title">YouTube</div>
-          </div>
-          <div class="safari-nt-fav" data-url="https://google.com">
-            <div class="safari-nt-fav-icon" style="color:#4285F4">G</div>
-            <div class="safari-nt-fav-title">Google</div>
+        </div>
+
+        <!-- Section 3: iCloud Tabs -->
+        <div>
+          <div class="safari-section-title">iCloud Tabs</div>
+          <div class="safari-icloud-grid">
+            <!-- Tab 1 -->
+            <div class="safari-icloud-card" onclick="window.open('https://google.com/search?q=chess+set', '_blank')">
+              <div class="safari-icloud-icon-box" style="background: #007aff; color: white;">C</div>
+              <div class="safari-icloud-info">
+                <div class="safari-icloud-tab-title">chess set - Google Search</div>
+                <div class="safari-icloud-tab-url">google.com</div>
+                <div class="safari-icloud-tab-device">
+                  <i data-lucide="smartphone" style="width: 10px; height: 10px;"></i>on Bubu
+                </div>
+              </div>
+            </div>
+
+            <!-- Tab 2 -->
+            <div class="safari-icloud-card" onclick="window.open('https://google.com/search?q=ghkcu', '_blank')">
+              <div class="safari-icloud-icon-box" style="background: #e5e5ea; position: relative;">
+                <div style="position: absolute; top: 4px; left: 4px; width: 18px; height: 18px; background: #fff; border-radius: 4px; border: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                  <div style="width: 4px; height: 10px; background: #b08d57; border-radius: 1px;"></div>
+                </div>
+                <div style="position: absolute; top: 4px; right: 4px; width: 18px; height: 18px; background: #fff; border-radius: 4px; border: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                  <div style="width: 8px; height: 8px; background: #4285f4; border-radius: 50%;"></div>
+                </div>
+                <div style="position: absolute; bottom: 4px; left: 4px; width: 18px; height: 18px; background: #fff; border-radius: 4px; border: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                  <div style="width: 10px; height: 4px; background: #34c759; border-radius: 1px;"></div>
+                </div>
+                <div style="position: absolute; bottom: 4px; right: 4px; width: 18px; height: 18px; background: #fff; border-radius: 4px; border: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                  <div style="width: 6px; height: 6px; background: #ff3b30; transform: rotate(45deg);"></div>
+                </div>
+              </div>
+              <div class="safari-icloud-info">
+                <div class="safari-icloud-tab-title">ghkcu - Google Search</div>
+                <div class="safari-icloud-tab-url">google.com</div>
+                <div class="safari-icloud-tab-device">
+                  <i data-lucide="smartphone" style="width: 10px; height: 10px;"></i>on Bubu
+                </div>
+              </div>
+            </div>
+
+            <!-- Tab 3 -->
+            <div class="safari-icloud-card" onclick="window.open('https://drive.google.com', '_blank')">
+              <div class="safari-icloud-icon-box" style="background: #34c759; color: white;">З</div>
+              <div class="safari-icloud-info">
+                <div class="safari-icloud-tab-title">З1.png - Google Drive</div>
+                <div class="safari-icloud-tab-url">drive.google.com</div>
+                <div class="safari-icloud-tab-device">
+                  <i data-lucide="smartphone" style="width: 10px; height: 10px;"></i>on Bubu
+                </div>
+              </div>
+            </div>
+
+            <!-- Tab 4 -->
+            <div class="safari-icloud-card" onclick="window.open('https://aistudio.google.com', '_blank')">
+              <div class="safari-icloud-icon-box" style="background: #8e8e93; color: white;">G</div>
+              <div class="safari-icloud-info">
+                <div class="safari-icloud-tab-title">Genie Minimize Effect | Google AI Studio</div>
+                <div class="safari-icloud-tab-url">aistudio.google.com</div>
+                <div class="safari-icloud-tab-device">
+                  <i data-lucide="smartphone" style="width: 10px; height: 10px;"></i>on Bubu
+                </div>
+              </div>
+            </div>
+
+            <!-- Tab 5 -->
+            <div class="safari-icloud-card" onclick="window.open('https://google.com/search?q=instagram+photostrips', '_blank')">
+              <div class="safari-icloud-icon-box" style="background: #3a3a3c; position: relative; display: flex; align-items: center; justify-content: center; gap: 3px;">
+                <div style="width: 9px; height: 30px; background: #fff; border-radius: 1px; transform: rotate(-8deg); box-shadow: 0 1px 3px rgba(0,0,0,0.3); padding: 1px; box-sizing: border-box;">
+                  <div style="width: 100%; height: 20px; background: #1c1c1e;"></div>
+                </div>
+                <div style="width: 9px; height: 30px; background: #fff; border-radius: 1px; transform: rotate(4deg); box-shadow: 0 1px 3px rgba(0,0,0,0.3); padding: 1px; box-sizing: border-box;">
+                  <div style="width: 100%; height: 20px; background: #555;"></div>
+                </div>
+                <div style="width: 9px; height: 30px; background: #fff; border-radius: 1px; transform: rotate(-2deg); box-shadow: 0 1px 3px rgba(0,0,0,0.3); padding: 1px; box-sizing: border-box;">
+                  <div style="width: 100%; height: 20px; background: #000;"></div>
+                </div>
+              </div>
+              <div class="safari-icloud-info">
+                <div class="safari-icloud-tab-title">did instagram remove photostrips - Google Search</div>
+                <div class="safari-icloud-tab-url">google.com</div>
+                <div class="safari-icloud-tab-device">
+                  <i data-lucide="smartphone" style="width: 10px; height: 10px;"></i>on Bubu
+                </div>
+              </div>
+            </div>
+
+            <!-- Tab 6 -->
+            <div class="safari-icloud-card" onclick="window.open('https://drive.google.com', '_blank')">
+              <div class="safari-icloud-icon-box" style="background: #34c759; color: white;">N</div>
+              <div class="safari-icloud-info">
+                <div class="safari-icloud-tab-title">nervous.png - Google Drive</div>
+                <div class="safari-icloud-tab-url">drive.google.com</div>
+                <div class="safari-icloud-tab-device">
+                  <i data-lucide="smartphone" style="width: 10px; height: 10px;"></i>on Bubu
+                </div>
+              </div>
+            </div>
+
+            <!-- Tab 7 -->
+            <div class="safari-icloud-card" onclick="window.open('https://drive.google.com', '_blank')">
+              <div class="safari-icloud-icon-box" style="background: #34c759; color: white;">C</div>
+              <div class="safari-icloud-info">
+                <div class="safari-icloud-tab-title">ch.png - Google Drive</div>
+                <div class="safari-icloud-tab-url">drive.google.com</div>
+                <div class="safari-icloud-tab-device">
+                  <i data-lucide="smartphone" style="width: 10px; height: 10px;"></i>on Bubu
+                </div>
+              </div>
+            </div>
+
+            <!-- Tab 8 -->
+            <div class="safari-icloud-card" onclick="window.open('https://drive.google.com', '_blank')">
+              <div class="safari-icloud-icon-box" style="background: #34c759; color: white;">1</div>
+              <div class="safari-icloud-info">
+                <div class="safari-icloud-tab-title">1v8n.png - Google Drive</div>
+                <div class="safari-icloud-tab-url">drive.google.com</div>
+                <div class="safari-icloud-tab-device">
+                  <i data-lucide="smartphone" style="width: 10px; height: 10px;"></i>on Bubu
+                </div>
+              </div>
+            </div>
+
+            <!-- Tab 9 -->
+            <div class="safari-icloud-card" onclick="window.open('https://google.com/search?q=miles+to+km', '_blank')">
+              <div class="safari-icloud-icon-box" style="background: #ffffff; padding: 6px; box-sizing: border-box;">
+                <svg viewBox="0 0 24 24" style="width: 100%; height: 100%;">
+                  <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                  <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                  <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22c-.87-2.6-2.6-4.53-6.16-4.53z" fill="#FBBC05"/>
+                  <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                </svg>
+              </div>
+              <div class="safari-icloud-info">
+                <div class="safari-icloud-tab-title">miles to km - Google Search</div>
+                <div class="safari-icloud-tab-url">google.com</div>
+                <div class="safari-icloud-tab-device">
+                  <i data-lucide="smartphone" style="width: 10px; height: 10px;"></i>on Bubu
+                </div>
+              </div>
+            </div>
+
           </div>
         </div>
       </div>
@@ -3203,6 +3685,533 @@
       <input type="text" id="launchpad-search" class="launchpad-search-input" placeholder="Applications" autocomplete="off">
     </div>
     <div class="launchpad-content" id="launchpad-content"></div>
+  </div>
+</div>
+
+</div>
+
+<style>
+  #music-window {
+    --music-sidebar-bg: rgba(255, 238, 240, 0.6);
+    --music-sidebar-border: rgba(0,0,0,0.06);
+    --music-content-bg: #ffffff;
+    --music-text: #000000;
+    --music-player-bg: rgba(255, 230, 232, 0.35);
+  }
+  body.dark-mode #music-window {
+    --music-sidebar-bg: rgba(26, 8, 12, 0.65);
+    --music-sidebar-border: rgba(255,255,255,0.06);
+    --music-content-bg: #141416;
+    --music-text: #ffffff;
+    --music-player-bg: rgba(40, 15, 20, 0.55);
+  }
+  @keyframes bar-rise {
+    0% { transform: scaleY(0.4); }
+    100% { transform: scaleY(1.2); }
+  }
+  .music-sidebar-item {
+    transition: background 0.2s ease, color 0.15s ease;
+  }
+  .music-sidebar-item:hover {
+    background: rgba(0, 0, 0, 0.04);
+  }
+  body.dark-mode .music-sidebar-item:hover {
+    background: rgba(255, 255, 255, 0.04);
+  }
+  .music-cta-button {
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .player-ctrl-btn {
+    transition: transform 0.15s ease, opacity 0.15s ease;
+  }
+  .player-ctrl-btn:hover {
+    transform: scale(1.08);
+    opacity: 1 !important;
+  }
+  .player-ctrl-btn:active {
+    transform: scale(0.95);
+  }
+  .song-table-row:hover {
+    background: rgba(0,0,0,0.03) !important;
+  }
+  body.dark-mode .song-table-row:hover {
+    background: rgba(255,255,255,0.03) !important;
+  }
+</style>
+
+<div class="window" id="music-window" style="position: absolute; width: 960px; height: 640px; display: none; flex-direction: row; overflow: hidden; z-index: 20000; box-shadow: 0 30px 80px rgba(0,0,0,0.6), var(--window-stroke); background: transparent; transform-origin: center;">
+  <div class="window-inner" style="position: relative; width: 100%; height: 100%; display: flex; flex-direction: row; background: transparent; padding: 0; overflow: hidden; border-radius: 0;">
+    
+    <!-- Sidebar / Left Panel -->
+    <div class="music-sidebar" style="position: relative; width: 220px; height: 100%; display: flex; flex-direction: column; justify-content: space-between; padding: 18px 0 18px 0; box-sizing: border-box; flex-shrink: 0; border-right: 1px solid var(--music-sidebar-border); cursor: default;">
+      <glass-element style="position:absolute; top:0; left:0; width:100%; height:100%; z-index:-1; pointer-events:none;" radius="12" radius-config="left" depth="3" blur="15" strength="35" background-color="var(--music-sidebar-bg)" chromatic-aberration="1" auto-size="false"></glass-element>
+      
+      <div>
+        <!-- Traffic lights / Top Gutter -->
+        <div class="traffic-lights" style="display: flex; gap: 8px; padding-left: 20px; margin-bottom: 24px;">
+          <div class="btn close" id="music-btn-close" style="width: 12px; height: 12px; border-radius: 50%; cursor: pointer; background: rgb(255, 95, 87); display: flex; align-items: center; justify-content: center;"><svg viewBox="0 0 24 24" fill="none" stroke="rgb(122, 60, 58)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round" style="width: 6.5px; height: 6.5px;"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></div>
+          <div class="btn minimize" id="music-btn-minimize" style="width: 12px; height: 12px; border-radius: 50%; cursor: pointer; background: rgb(254, 188, 46); display: flex; align-items: center; justify-content: center;"><svg viewBox="0 0 24 24" fill="none" stroke="rgb(123, 104, 43)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round" style="width: 6.5px; height: 6.5px;"><line x1="5" y1="12" x2="19" y2="12"></line></svg></div>
+          <div class="btn maximize" id="music-btn-maximize" style="width: 12px; height: 12px; border-radius: 50%; cursor: pointer; background: rgb(39, 201, 63); display: flex; align-items: center; justify-content: center;"><svg viewBox="0 0 24 24" fill="none" stroke="rgb(54, 102, 59)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round" style="width: 6.5px; height: 6.5px;"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg></div>
+        </div>
+
+        <!-- Sidebar Groups / Search -->
+        <div style="padding: 0 16px; display: flex; flex-direction: column; gap: 4px;">
+          <!-- Search Row -->
+          <div class="music-sidebar-item" style="display: flex; align-items: center; gap: 8px; padding: 6px 10px; border-radius: 8px; cursor: pointer; font-size: 13px; color: var(--text-color, #222);" id="music-nav-search">
+            <i data-lucide="search" style="width: 16px; height: 16px;"></i>
+            <span>Search</span>
+          </div>
+
+          <!-- Home Tab -->
+          <div class="music-sidebar-item active" style="display: flex; align-items: center; gap: 8px; padding: 6px 10px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 500; color: #ff2d55; background: rgba(255, 45, 85, 0.1);" id="music-nav-home">
+            <i data-lucide="home" style="width: 16px; height: 16px; stroke: #ff2d55;"></i>
+            <span>Home</span>
+          </div>
+
+          <!-- Radio Tab -->
+          <div class="music-sidebar-item" style="display: flex; align-items: center; gap: 8px; padding: 6px 10px; border-radius: 8px; cursor: pointer; font-size: 13px; color: var(--text-color, #222);" id="music-nav-radio">
+            <i data-lucide="radio" style="width: 16px; height: 16px;"></i>
+            <span>Radio</span>
+          </div>
+
+          <!-- Library Section Title -->
+          <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: #8a8a8e; letter-spacing: 0.5px; margin: 18px 0 6px 12px; pointer-events: none;">Library</div>
+
+          <!-- Recently Added -->
+          <div class="music-sidebar-item" style="display: flex; align-items: center; gap: 8px; padding: 6px 10px; border-radius: 8px; cursor: pointer; font-size: 13px; color: var(--text-color, #222);" id="music-nav-recent">
+            <i data-lucide="clock" style="width: 16px; height: 16px;"></i>
+            <span>Recently Added</span>
+          </div>
+
+          <!-- Artists -->
+          <div class="music-sidebar-item" style="display: flex; align-items: center; gap: 8px; padding: 6px 10px; border-radius: 8px; cursor: pointer; font-size: 13px; color: var(--text-color, #222);" id="music-nav-artists">
+            <i data-lucide="mic" style="width: 16px; height: 16px;"></i>
+            <span>Artists</span>
+          </div>
+
+          <!-- Albums -->
+          <div class="music-sidebar-item" style="display: flex; align-items: center; gap: 8px; padding: 6px 10px; border-radius: 8px; cursor: pointer; font-size: 13px; color: var(--text-color, #222);" id="music-nav-albums">
+            <i data-lucide="disc" style="width: 16px; height: 16px;"></i>
+            <span>Albums</span>
+          </div>
+
+          <!-- Songs -->
+          <div class="music-sidebar-item" style="display: flex; align-items: center; gap: 8px; padding: 6px 10px; border-radius: 8px; cursor: pointer; font-size: 13px; color: var(--text-color, #222);" id="music-nav-songs">
+            <i data-lucide="music" style="width: 16px; height: 16px;"></i>
+            <span>Songs</span>
+          </div>
+
+          <!-- Store Section Title -->
+          <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: #8a8a8e; letter-spacing: 0.5px; margin: 18px 0 6px 12px; pointer-events: none;">Store</div>
+
+          <!-- iTunes Store -->
+          <div class="music-sidebar-item" style="display: flex; align-items: center; gap: 8px; padding: 6px 10px; border-radius: 8px; cursor: pointer; font-size: 13px; color: var(--text-color, #222);" id="music-nav-store">
+            <i data-lucide="shopping-bag" style="width: 16px; height: 16px;"></i>
+            <span>iTunes Store</span>
+          </div>
+
+          <!-- Playlists Section Title -->
+          <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: #8a8a8e; letter-spacing: 0.5px; margin: 18px 0 6px 12px; pointer-events: none;">Playlists</div>
+
+          <!-- All Playlists -->
+          <div class="music-sidebar-item" style="display: flex; align-items: center; gap: 8px; padding: 6px 10px; border-radius: 8px; cursor: pointer; font-size: 13px; color: var(--text-color, #222);" id="music-nav-playlists">
+            <i data-lucide="layout-grid" style="width: 16px; height: 16px;"></i>
+            <span>All Playlists</span>
+          </div>
+
+          <!-- MYSHIT Playlist with custom pink-orange background icon -->
+          <div class="music-sidebar-item" style="display: flex; align-items: center; gap: 8px; padding: 6px 10px; border-radius: 8px; cursor: pointer; font-size: 13px; color: var(--text-color, #222);" id="music-nav-myshit">
+            <div style="width: 16px; height: 16px; border-radius: 4px; background: linear-gradient(135deg, #ff2d55, #ff9500); display: flex; align-items: center; justify-content: center; font-size: 8px; color: #fff; font-weight: bold; overflow: hidden; font-family: sans-serif;">
+              
+            </div>
+            <span>MYSHIT</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- User Information bottom area -->
+      <div style="padding: 0 16px; margin-top: auto;">
+        <div style="display: flex; align-items: center; gap: 10px; padding: 6px 10px; background: rgba(0,0,0,0.03); border-radius: 12px; border: 1px solid rgba(0,0,0,0.03);">
+          <div style="width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #a2b0ff, #3b82f6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 11px; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">BU</div>
+          <div style="display: flex; flex-direction: column;">
+            <div style="font-size: 11.5px; font-weight: 600; color: var(--music-text, #000); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px;">Bubuvar</div>
+            <div style="font-size: 9px; color: #8a8a8e;">appleid.com</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Content / Right Panel -->
+    <div class="music-content" style="position: relative; flex: 1; height: 100%; display: flex; flex-direction: column; overflow-y: auto; background: var(--music-content-bg); color: var(--music-text); box-sizing: border-box; padding: 40px 48px; min-width: 0;">
+      <!-- Main Content Header -->
+      <div style="display: flex; flex-direction: column; width: 100%; margin-bottom: 24px;">
+        <h1 style="font-weight: 700; font-size: 34px; letter-spacing: -0.5px; margin: 0 0 12px 0; font-family: system-ui, -apple-system, sans-serif;" id="music-main-title">Home</h1>
+        <div style="width: 100%; height: 1px; background: rgba(0, 0, 0, 0.08);"></div>
+      </div>
+
+      <!-- Scrollable Contents -->
+      <div style="display: flex; flex-direction: column; gap: 32px; flex: 1; padding-bottom: 90px;" id="music-scroll-content">
+        
+        <!-- Banners Panel -->
+        <div class="music-banner-card" style="position: relative; width: 100%; height: 260px; border-radius: 20px; overflow: hidden; background: linear-gradient(180deg, #b01c34, #6b0c15); display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 24px; box-sizing: border-box; color: white; box-shadow: 0 15px 35px rgba(176, 28, 52, 0.3);">
+          <!-- Top Tagline -->
+          <div style="font-size: 13px; font-weight: 600; letter-spacing: 0.1px; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">Get 1 month of free music.</div>
+          
+          <!-- Large Apple Music Logo with glows -->
+          <div style="display: flex; align-items: center; gap: 12px; transform: scale(1.1); filter: drop-shadow(0 4px 12px rgba(255, 45, 85, 0.45));">
+            <span style="font-size: 45px; font-weight: 300; pointer-events: none;"></span>
+            <span style="font-size: 42px; font-weight: 800; letter-spacing: -1.5px; font-family: -apple-system, system-ui, sans-serif;">Music</span>
+          </div>
+
+          <!-- CTA / Bottom section -->
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 4px; text-align: center;">
+            <button class="music-cta-button" style="background: white; color: #b01c34; border: none; font-size: 12px; font-weight: 700; padding: 8px 24px; border-radius: 9999px; cursor: pointer; transition: transform 0.2s; box-shadow: 0 4px 12px rgba(0,0,0,0.15);" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">Try It Free</button>
+            <div style="font-size: 10px; opacity: 0.8; font-weight: 500;">1 month free, then 5,49 US$/month.</div>
+          </div>
+        </div>
+
+        <!-- Banner Card 2: Family Promo -->
+        <div class="music-banner-card" style="position: relative; width: 100%; height: 260px; border-radius: 20px; overflow: hidden; background: linear-gradient(135deg, #ff2a54, #86052F, #3a0014); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; box-sizing: border-box; color: white; box-shadow: 0 15px 35px rgba(176, 28, 52, 0.15);">
+          <!-- Particle representation/aesthetic waves inside the background as visible in the screenshot -->
+          <div style="position: absolute; inset: 0; opacity: 0.45; overflow: hidden; pointer-events: none; display: flex; align-items: flex-end; justify-content: center; gap: 6px; padding-bottom: 30px;" id="music-audio-vis-wave">
+            <!-- Dynamic visualizer bars as liquid glass drops -->
+            <div style="width: 6px; height: 90px; background: rgba(255,255,255,0.8); border-radius: 9999px; transform-origin: bottom; animation: bar-rise 1.2s ease-in-out infinite alternate; animation-play-state: paused;"></div>
+            <div style="width: 6px; height: 110px; background: rgba(255,255,255,0.95); border-radius: 9999px; transform-origin: bottom; animation: bar-rise 1.5s ease-in-out infinite alternate 0.2s; animation-play-state: paused;"></div>
+            <div style="width: 6px; height: 70px; background: rgba(255,255,255,0.7); border-radius: 9999px; transform-origin: bottom; animation: bar-rise 1s ease-in-out infinite alternate 0.4s; animation-play-state: paused;"></div>
+            <div style="width: 6px; height: 130px; background: rgba(255,255,255,0.9); border-radius: 9999px; transform-origin: bottom; animation: bar-rise 1.8s ease-in-out infinite alternate 0.1s; animation-play-state: paused;"></div>
+            <div style="width: 6px; height: 100px; background: rgba(255,255,255,0.8); border-radius: 9999px; transform-origin: bottom; animation: bar-rise 1.4s ease-in-out infinite alternate 0.3s; animation-play-state: paused;"></div>
+          </div>
+
+          <div style="position: relative; z-index: 2; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 16px;">
+            <div style="font-size: 18px; font-weight: 700; letter-spacing: -0.2px; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">Music for the whole family. 1 month free.</div>
+            <button class="music-cta-button" style="background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); color: white; border: 1px solid rgba(255,255,255,0.4); font-size: 11px; font-weight: 600; padding: 8px 20px; border-radius: 9999px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.08);" onmouseover="this.style.background='white'; this.style.color='#ff2a54'" onmouseout="this.style.background='rgba(255,255,255,0.2)'; this.style.color='white'">Learn More</button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- FLOATING LIQUID GLASS CAPSULE PLAYER -->
+      <glass-element id="music-player-bar" radius="25" depth="15" blur="1" strength="110" background-color="var(--music-player-bg)" chromatic-aberration="1" auto-size="false" style="position: sticky; bottom: 20px; align-self: center; width: 90%; height: 50px; z-index: 1000; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; box-sizing: border-box; box-shadow: 0 8px 32px rgba(0,0,0,0.1), 0 0px 1px rgba(255,255,255,0.25) inset; transition: filter 0.3s ease; flex-shrink: 0;">
+        <div class="player-bar-inner" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: space-between; color: var(--music-text); font-family: system-ui, sans-serif;">
+          <!-- Left side: Controls (shuffle, back, play/pause, next, repeat) -->
+          <div style="display: flex; align-items: center; gap: 16px; min-width: 140px;">
+            <button class="player-ctrl-btn" id="music-btn-shuffle" style="background: none; border: none; color: inherit; cursor: pointer; opacity: 0.6; padding: 2px; display: flex; justify-content: center; align-items: center;" title="Shuffle"><i data-lucide="shuffle" style="width: 14px; height: 14px;"></i></button>
+            <button class="player-ctrl-btn" id="music-btn-prev" style="background: none; border: none; color: inherit; cursor: pointer; opacity: 0.8; padding: 2px; display: flex; justify-content: center; align-items: center;" title="Previous"><i data-lucide="skip-back" style="width: 14px; height: 14px;"></i></button>
+            <button class="player-ctrl-btn" id="music-btn-play" style="background: none; border: none; color: inherit; cursor: pointer; padding: 2px; display: flex; justify-content: center; align-items: center; transform: scale(1.15);" title="Play/Pause"><i data-lucide="play" id="music-play-icon" style="width: 18px; height: 18px; fill: currentColor;"></i></button>
+            <button class="player-ctrl-btn" id="music-btn-next" style="background: none; border: none; color: inherit; cursor: pointer; opacity: 0.8; padding: 2px; display: flex; justify-content: center; align-items: center;" title="Next"><i data-lucide="skip-forward" style="width: 14px; height: 14px;"></i></button>
+            <button class="player-ctrl-btn" id="music-btn-repeat" style="background: none; border: none; color: inherit; cursor: pointer; opacity: 0.6; padding: 2px; display: flex; justify-content: center; align-items: center;" title="Repeat"><i data-lucide="repeat" style="width: 14px; height: 14px;"></i></button>
+          </div>
+
+          <!-- Center: Metallic Apple Music Brand Badge in player bar -->
+          <div style="display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 500; opacity: 0.7; pointer-events: none;" id="music-badge">
+            
+          </div>
+
+          <!-- Right side: Lyrics, Track List, Volume Controls -->
+          <div style="display: flex; align-items: center; gap: 16px; min-width: 160px; justify-content: flex-end;">
+            <!-- Lyrics Button -->
+            <button class="player-ctrl-btn" id="music-btn-lyrics" style="background: none; border: none; color: inherit; cursor: pointer; opacity: 0.7; display: flex; justify-content: center; align-items: center;" title="Lyrics"><i data-lucide="message-square-quote" style="width: 15px; height: 15px;"></i></button>
+            <!-- Up Next / List -->
+            <button class="player-ctrl-btn" id="music-btn-list" style="background: none; border: none; color: inherit; cursor: pointer; opacity: 0.7; display: flex; justify-content: center; align-items: center;" title="Queue"><i data-lucide="list-music" style="width: 15px; height: 15px;"></i></button>
+            <!-- Volume Icon and Slider -->
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <button class="player-ctrl-btn" id="music-btn-volume" style="background: none; border: none; color: inherit; cursor: pointer; opacity: 0.7; display: flex; justify-content: center; align-items: center;"><i data-lucide="volume-2" id="music-volume-icon" style="width: 15px; height: 15px;"></i></button>
+              <div style="width: 60px; height: 4px; background: rgba(0,0,0,0.1); border-radius: 2px; position: relative; cursor: pointer;" id="music-vol-slider-track">
+                <div style="width: 70%; height: 100%; background: var(--music-text); border-radius: 2px; position: absolute; left: 0; top: 0;" id="music-vol-slider-bar"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </glass-element>
+    </div>
+    
+  </div>
+</div>
+</div>
+
+<style>
+  #calendar-window {
+    --cal-bg: #f6f6f6;
+    --cal-inner-bg: #ffffff;
+    --cal-text: #000000;
+    --cal-muted: #8e8e93;
+    --cal-grid-border: #e5e5e5;
+    --cal-toolbar-btn-bg: rgba(0, 0, 0, 0.05);
+    --cal-toolbar-btn-hover: rgba(0, 0, 0, 0.1);
+    --cal-btn-border: rgba(0, 0, 0, 0.1);
+    --cal-segmented-bg: rgba(0, 0, 0, 0.04);
+    --cal-segmented-active: #ffffff;
+    --cal-header-border: rgba(0, 0, 0, 0.08);
+  }
+  body.dark-mode #calendar-window {
+    --cal-bg: #1e1e1e;
+    --cal-inner-bg: #151515;
+    --cal-text: #ffffff;
+    --cal-muted: #7d7d82;
+    --cal-grid-border: #2c2c2e;
+    --cal-toolbar-btn-bg: rgba(255, 255, 255, 0.08);
+    --cal-toolbar-btn-hover: rgba(255, 255, 255, 0.15);
+    --cal-btn-border: rgba(255, 255, 255, 0.15);
+    --cal-segmented-bg: rgba(255, 255, 255, 0.08);
+    --cal-segmented-active: #3a3a3c;
+    --cal-header-border: rgba(255, 255, 255, 0.12);
+  }
+  .cal-toolbar-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    background: var(--cal-inner-bg);
+    border: 1px solid var(--cal-btn-border);
+    color: var(--cal-text);
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+  }
+  .cal-toolbar-btn:hover {
+    background: var(--cal-toolbar-btn-hover);
+  }
+  .cal-toolbar-btn:active {
+    transform: scale(0.95);
+  }
+  .cal-segmented-control {
+    display: flex;
+    background: var(--cal-segmented-bg);
+    padding: 2px;
+    border-radius: 8px;
+    align-items: center;
+  }
+  .cal-segment-item {
+    font-size: 12px;
+    padding: 5px 14px;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    user-select: none;
+    color: var(--cal-text);
+    transition: background 0.15s, box-shadow 0.15s;
+  }
+  .cal-segment-item.active {
+    background: var(--cal-segmented-active);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    font-weight: 600;
+  }
+  /* Calendar grid styling */
+  .cal-grid-cell {
+    position: relative;
+    border-right: 1px solid var(--cal-grid-border);
+    border-bottom: 1px solid var(--cal-grid-border);
+    display: flex;
+    flex-direction: column;
+    padding: 6px;
+    min-height: 75px;
+    box-sizing: border-box;
+    transition: background 0.15s;
+    user-select: none;
+  }
+  .cal-grid-cell:hover {
+    background: rgba(0,0,0,0.015);
+  }
+  body.dark-mode .cal-grid-cell:hover {
+    background: rgba(255,255,255,0.015);
+  }
+  .cal-day-num {
+    align-self: flex-end;
+    font-size: 12px;
+    font-weight: 500;
+    margin-bottom: 4px;
+    margin-right: 2px;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+  }
+  .cal-day-num.today {
+    background: #ff2d55;
+    color: #ffffff !important;
+    font-weight: 600;
+    box-shadow: 0 2px 6px rgba(255, 45, 85, 0.4);
+  }
+  .cal-day-num.muted {
+    color: var(--cal-muted);
+    opacity: 0.5;
+  }
+  .cal-day-label {
+    font-size: 11px;
+    color: var(--cal-muted);
+    font-weight: 500;
+    align-self: flex-end;
+    margin-right: 4px;
+  }
+  /* Animation and event classes */
+  .cal-event-pill {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-bottom: 3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    transition: transform 0.15s, filter 0.15s;
+  }
+  .cal-event-pill:hover {
+    filter: brightness(0.95);
+    transform: translateY(-0.5px);
+  }
+  body.dark-mode .cal-event-pill:hover {
+    filter: brightness(1.1);
+  }
+</style>
+
+<div class="window" id="calendar-window" style="position: absolute; width: 960px; height: 640px; display: none; flex-direction: column; overflow: hidden; z-index: 20000; box-shadow: 0 30px 80px rgba(0,0,0,0.6), var(--window-stroke); background: var(--cal-bg); transform-origin: center; border-radius: 12px; color: var(--cal-text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+  <!-- Inner Toolbar wrapper with solid styling and nice light border -->
+  <div class="calendar-toolbar" style="display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; border-bottom: 1px solid var(--cal-header-border); background: var(--cal-inner-bg); user-select: none; cursor: default;">
+    <!-- Left toolbar elements (traffic lights & quick action buttons) -->
+    <div style="display: flex; align-items: center; gap: 16px;">
+      <!-- Traffic lights -->
+      <div class="traffic-lights" style="display: flex; gap: 8px;">
+        <div class="btn close" id="calendar-btn-close" style="width: 12px; height: 12px; border-radius: 50%; cursor: pointer; background: rgb(255, 95, 87); display: flex; align-items: center; justify-content: center;"><svg viewBox="0 0 24 24" fill="none" stroke="rgb(122, 60, 58)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round" style="width: 6.5px; height: 6.5px;"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></div>
+        <div class="btn minimize" id="calendar-btn-minimize" style="width: 12px; height: 12px; border-radius: 50%; cursor: pointer; background: rgb(254, 188, 46); display: flex; align-items: center; justify-content: center;"><svg viewBox="0 0 24 24" fill="none" stroke="rgb(123, 104, 43)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round" style="width: 6.5px; height: 6.5px;"><line x1="5" y1="12" x2="19" y2="12"></line></svg></div>
+        <div class="btn maximize" id="calendar-btn-maximize" style="width: 12px; height: 12px; border-radius: 50%; cursor: pointer; background: rgb(39, 201, 63); display: flex; align-items: center; justify-content: center;"><svg viewBox="0 0 24 24" fill="none" stroke="rgb(54, 102, 59)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round" style="width: 6.5px; height: 6.5px;"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg></div>
+      </div>
+      
+      <!-- List Sidebar Icon and Inbox Style Icon group -->
+      <div style="display: flex; align-items: center; background: var(--cal-segmented-bg); border-radius: 8px; padding: 2px; gap: 2px; border: 1px solid var(--cal-btn-border);">
+        <button id="calendar-action-sidebar" class="cal-toolbar-btn" style="width: 28px; height: 28px; border: none; background: transparent;" title="Toggle Sidebar"><i data-lucide="sidebar" style="width: 14px; height: 14px;"></i></button>
+        <button id="calendar-action-inbox" class="cal-toolbar-btn" style="width: 28px; height: 28px; border: none; background: transparent;" title="Inbox"><i data-lucide="inbox" style="width: 14px; height: 14px;"></i></button>
+      </div>
+
+      <!-- Standing plus button for adding calendar entries -->
+      <button id="calendar-action-add" class="cal-toolbar-btn" style="border-radius: 8px;" title="New Event"><i data-lucide="plus" style="width: 15px; height: 15px;"></i></button>
+    </div>
+
+    <!-- Center Segmented options -->
+    <div class="cal-segmented-control" style="border: 1px solid var(--cal-btn-border)">
+      <div class="cal-segment-item" id="cal-seg-day" onclick="alert('Day view has been curated into the high-contrast Month view for ultimate desktop productivity.')">Day</div>
+      <div class="cal-segment-item" id="cal-seg-week" onclick="alert('Week view has been curated into the high-contrast Month view for ultimate desktop productivity.')">Week</div>
+      <div class="cal-segment-item active" id="cal-seg-month">Month</div>
+      <div class="cal-segment-item" id="cal-seg-year" onclick="alert('Year view has been curated into the high-contrast Month view for ultimate desktop productivity.')">Year</div>
+    </div>
+
+    <!-- Right-hand Search element -->
+    <div>
+      <div style="position: relative; display: flex; align-items: center;">
+        <button class="cal-toolbar-btn" style="border-radius: 50%;" id="calendar-action-search" title="Search events"><i data-lucide="search" style="width: 14px; height: 14px;"></i></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Body Content layout of the Calendar app -->
+  <div style="display: flex; flex: 1; min-height: 0; background: var(--cal-inner-bg);">
+    <!-- Collapsible events sidebar (left sidebar layout overlay) -->
+    <div id="calendar-sidebar" style="width: 230px; border-right: 1px solid var(--cal-grid-border); background: var(--cal-bg); display: flex; flex-direction: column; padding: 18px; box-sizing: border-box; overflow-y: auto;">
+      <h3 style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--cal-muted); tracking: 0.5px; margin-bottom: 12px;">My Calendars</h3>
+      <div style="display: flex; flex-direction: column; gap: 8px;">
+        <div style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 500;">
+          <input type="checkbox" checked style="accent-color: #ff2d55;">
+          <span style="width: 10px; height: 10px; border-radius: 50%; background: #ff2d55;"></span>
+          <span>Bubuvar Live</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 500;">
+          <input type="checkbox" checked style="accent-color: #34c759;">
+          <span style="width: 10px; height: 10px; border-radius: 50%; background: #34c759;"></span>
+          <span>Work Sync</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 500;">
+          <input type="checkbox" checked style="accent-color: #007aff;">
+          <span style="width: 10px; height: 10px; border-radius: 50%; background: #007aff;"></span>
+          <span>Personal</span>
+        </div>
+      </div>
+
+      <div style="margin-top: 32px; flex: 1;">
+        <h3 style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--cal-muted); tracking: 0.5px; margin-bottom: 12px;">Active Events</h3>
+        <div id="calendar-sidebar-events-list" style="display: flex; flex-direction: column; gap: 8px;">
+          <!-- Managed by JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Grid space area -->
+    <div style="flex: 1; display: flex; flex-direction: column; min-width: 0;">
+      <!-- Month & Navigation Header block -->
+      <div style="display: flex; justify-content: space-between; align-items: center; padding: 16px 24px; border-bottom: 1px solid var(--cal-grid-border);">
+        <div style="font-size: 28px; color: var(--cal-text); font-family: system-ui, sans-serif;" id="cal-display-month-year">
+          <span style="font-weight: 700;">June</span> <span style="font-weight: 300;">2026</span>
+        </div>
+        <!-- Arrow toggle buttons -->
+        <div style="display: flex; align-items: center; gap: 4px;">
+          <button class="cal-toolbar-btn" style="width: 28px; height: 28px;" id="cal-nav-prev"><i data-lucide="chevron-left" style="width: 15px; height: 15px;"></i></button>
+          <button style="background: var(--cal-segmented-bg); border: 1px solid var(--cal-btn-border); color: var(--cal-text); font-size: 12px; font-weight: 600; padding: 4px 14px; border-radius: 6px; cursor: pointer;" id="cal-nav-today">Today</button>
+          <button class="cal-toolbar-btn" style="width: 28px; height: 28px;" id="cal-nav-next"><i data-lucide="chevron-right" style="width: 15px; height: 15px;"></i></button>
+        </div>
+      </div>
+
+      <!-- Seven Columns Day Names Header row -->
+      <div style="display: grid; grid-template-columns: repeat(7, 1fr); padding: 6px 0; border-bottom: 1px solid var(--cal-grid-border); text-align: center; background: var(--cal-bg);">
+        <div style="font-size: 11px; font-weight: 600; color: var(--cal-muted);">Mon</div>
+        <div style="font-size: 11px; font-weight: 600; color: var(--cal-muted);">Tue</div>
+        <div style="font-size: 11px; font-weight: 600; color: var(--cal-muted);">Wed</div>
+        <div style="font-size: 11px; font-weight: 600; color: var(--cal-muted);">Thu</div>
+        <div style="font-size: 11px; font-weight: 600; color: var(--cal-muted);">Fri</div>
+        <div style="font-size: 11px; font-weight: 600; color: var(--cal-muted);">Sat</div>
+        <div style="font-size: 11px; font-weight: 600; color: var(--cal-muted);">Sun</div>
+      </div>
+
+      <!-- Dynamic Days Grid area -->
+      <div id="cal-days-grid" style="display: grid; grid-template-columns: repeat(7, 1fr); grid-auto-rows: 1fr; flex: 1; border-left: 1px solid var(--cal-grid-border); overflow-y: auto;">
+        <!-- Hydrated dynamically with Javascript -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Apple Designed Popover for editing/adding events -->
+<div id="cal-event-dialog" style="position: absolute; display: none; width: 280px; background: var(--cal-inner-bg); border: 1px solid var(--cal-header-border); box-shadow: 0 10px 40px rgba(0,0,0,0.25); border-radius: 12px; z-index: 25000; padding: 14px; box-sizing: border-box; font-family: -apple-system, sans-serif;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+    <span style="font-size: 13px; font-weight: 700; color: var(--cal-text);" id="cal-dialog-title-label">New Event</span>
+    <button style="background: transparent; border: none; font-size: 11px; color: var(--cal-muted); cursor: pointer;" id="cal-dialog-close">Cancel</button>
+  </div>
+  <div style="display: flex; flex-direction: column; gap: 8px;">
+    <input type="text" id="cal-event-title" placeholder="Event Title" style="width: 100%; border: 1px solid var(--cal-grid-border); background: var(--cal-bg); color: var(--cal-text); font-size: 12px; padding: 6px 8px; border-radius: 6px; box-sizing: border-box; outline: none;">
+    <div style="display: flex; gap: 4px;">
+      <div style="flex: 1; display: flex; flex-direction: column; gap: 2px;">
+        <label style="font-size: 9px; color: var(--cal-muted);">Date</label>
+        <input type="date" id="cal-event-date" style="border: 1px solid var(--cal-grid-border); background: var(--cal-bg); color: var(--cal-text); font-size: 11px; padding: 4px 6px; border-radius: 4px; outline: none;">
+      </div>
+    </div>
+    <div style="display: flex; gap: 4px;">
+      <div style="flex: 1; display: flex; flex-direction: column; gap: 2px;">
+        <label style="font-size: 9px; color: var(--cal-muted);">Starts</label>
+        <input type="time" id="cal-event-start" value="09:00" style="border: 1px solid var(--cal-grid-border); background: var(--cal-bg); color: var(--cal-text); font-size: 11px; padding: 4px; border-radius: 4px; outline: none;">
+      </div>
+      <div style="flex: 1; display: flex; flex-direction: column; gap: 2px;">
+        <label style="font-size: 9px; color: var(--cal-muted);">Ends</label>
+        <input type="time" id="cal-event-end" value="10:00" style="border: 1px solid var(--cal-grid-border); background: var(--cal-bg); color: var(--cal-text); font-size: 11px; padding: 4px; border-radius: 4px; outline: none;">
+      </div>
+    </div>
+    
+    <div style="display: flex; flex-direction: column; gap: 2px;">
+      <label style="font-size: 9px; color: var(--cal-muted);">Calendar Color</label>
+      <div style="display: flex; gap: 6px; margin-top: 2px;">
+        <div class="cal-color-dot" data-color="#ff2d55" style="width: 14px; height: 14px; border-radius: 50%; background: #ff2d55; cursor: pointer; border: 2px solid white; box-shadow: 0 0 0 1px #ff2d55;"></div>
+        <div class="cal-color-dot" data-color="#34c759" style="width: 14px; height: 14px; border-radius: 50%; background: #34c759; cursor: pointer; border: 2px solid transparent;"></div>
+        <div class="cal-color-dot" data-color="#007aff" style="width: 14px; height: 14px; border-radius: 50%; background: #007aff; cursor: pointer; border: 2px solid transparent;"></div>
+        <div class="cal-color-dot" data-color="#af52de" style="width: 14px; height: 14px; border-radius: 50%; background: #af52de; cursor: pointer; border: 2px solid transparent;"></div>
+        <div class="cal-color-dot" data-color="#ff9500" style="width: 14px; height: 14px; border-radius: 50%; background: #ff9500; cursor: pointer; border: 2px solid transparent;"></div>
+      </div>
+    </div>
+
+    <button style="background: #ff2d55; border: none; font-size: 12px; color: white; padding: 8px; border-radius: 6px; font-weight: 600; cursor: pointer; margin-top: 4px;" id="cal-dialog-save">Add Event</button>
   </div>
 </div>
 
@@ -3646,7 +4655,7 @@
   };
 
   /**
-   * Runs the animation canvas loop using a highly responsive 5x5 grid (50 triangles total).
+   * Runs the animation canvas loop using a highly responsive 8x8 grid (128 triangles total).
    */
   window.runGenieAnimation = function({
     direction,
@@ -3669,8 +4678,8 @@
     document.body.appendChild(canvas);
 
     const ctx = canvas.getContext('2d');
-    const COLUMNS = 5;
-    const ROWS = 5;
+    const COLUMNS = 8;
+    const ROWS = 8;
 
     const dpr = window.devicePixelRatio || 1;
     const updateSize = () => {
@@ -4370,7 +5379,9 @@
       { elementId: 'word-btn-minimize', windowId: 'word-window' },
       { elementId: 'terminal-btn-minimize', windowId: 'terminal-window' },
       { elementId: 'settings-btn-minimize', windowId: 'settings-window' },
-      { elementId: 'launchpad-btn-minimize', windowId: 'launchpad-window' }
+      { elementId: 'launchpad-btn-minimize', windowId: 'launchpad-window' },
+      { elementId: 'music-btn-minimize', windowId: 'music-window' },
+      { elementId: 'calendar-btn-minimize', windowId: 'calendar-window' }
     ];
 
     selectorMap.forEach(item => {
@@ -5279,6 +6290,8 @@ customElements.define('glass-element', GlassElement);
       else if (id === 'word-window') bringWindowToFront('word-window', 'Word');
       else if (id === 'settings-window') bringWindowToFront('settings-window', 'System Settings');
       else if (id === 'launchpad-window') bringWindowToFront('launchpad-window', 'Apps');
+      else if (id === 'music-window') bringWindowToFront('music-window', 'Apple Music');
+      else if (id === 'calendar-window') bringWindowToFront('calendar-window', 'Calendar');
     } else {
       setActiveApp('Finder');
     }
@@ -6661,6 +7674,869 @@ if (val === 'help') {
     preMaxDragX: 0, preMaxDragY: 0
   };
 
+  const musicState = {
+    scaleX: 0.85, targetScaleX: 0.85, velScaleX: 0,
+    scaleY: 0.85, targetScaleY: 0.85, velScaleY: 0,
+    opacity: 0, targetOpacity: 0, velOpacity: 0,
+    translateY: 0, targetTranslateY: 0, velTranslateY: 0,
+    dragX: 0, targetDragX: 0, velDragX: 0,
+    dragY: 0, targetDragY: 0, velDragY: 0,
+    width: 960, targetWidth: 960, velWidth: 0,
+    height: 640, targetHeight: 640, velHeight: 0,
+    isOpen: false, isMinimized: false, isMaximized: false,
+    preMaxDragX: 0, preMaxDragY: 0
+  };
+
+  const musicIcon = document.querySelector('.dock-icon[data-name="Apple Music"]');
+  if (musicIcon) {
+    musicIcon.addEventListener('click', (e) => {
+      e.stopPropagation();
+      bringWindowToFront('music-window', 'Apple Music');
+      if (window.genieMinimizeEnabled && musicState.isMinimized) {
+        window.restoreWindowById('music-window');
+        return;
+      }
+      if (!musicState.isOpen || musicState.isMinimized) {
+        musicState.targetScaleX = 1; musicState.targetScaleY = 1;
+        musicState.targetWidth = musicState.isMaximized ? window.innerWidth - 40 : 960;
+        musicState.targetHeight = musicState.isMaximized ? window.innerHeight - 120 : 640;
+        musicState.targetOpacity = 1;
+        musicState.targetTranslateY = musicState.isMaximized ? -30 : 0;
+        musicState.isOpen = true; musicState.isMinimized = false;
+        syncMusicPlayerUI();
+      } else {
+        if (window.genieMinimizeEnabled) {
+          window.triggerMinimize('music-window', 'Apple Music', musicState);
+        } else {
+          musicState.targetScaleX = 0.2; musicState.targetScaleY = 0.05;
+          musicState.targetTranslateY = 300; musicState.targetOpacity = 0;
+          musicState.isMinimized = true;
+        }
+      }
+    });
+  }
+
+  const calendarState = {
+    scaleX: 0.85, targetScaleX: 0.85, velScaleX: 0,
+    scaleY: 0.85, targetScaleY: 0.85, velScaleY: 0,
+    opacity: 0, targetOpacity: 0, velOpacity: 0,
+    translateY: 0, targetTranslateY: 0, velTranslateY: 0,
+    dragX: 50, targetDragX: 50, velDragX: 0,
+    dragY: -20, targetDragY: -20, velDragY: 0,
+    width: 960, targetWidth: 960, velWidth: 0,
+    height: 640, targetHeight: 640, velHeight: 0,
+    isOpen: false, isMinimized: false, isMaximized: false,
+    preMaxDragX: 0, preMaxDragY: 0
+  };
+
+  const calendarIcon = document.querySelector('.dock-icon[data-name="Calendar"]');
+  if (calendarIcon) {
+    calendarIcon.addEventListener('click', (e) => {
+      e.stopPropagation();
+      bringWindowToFront('calendar-window', 'Calendar');
+      if (window.genieMinimizeEnabled && calendarState.isMinimized) {
+        window.restoreWindowById('calendar-window');
+        return;
+      }
+      if (!calendarState.isOpen || calendarState.isMinimized) {
+        calendarState.targetScaleX = 1; calendarState.targetScaleY = 1;
+        calendarState.targetWidth = calendarState.isMaximized ? window.innerWidth - 40 : 960;
+        calendarState.targetHeight = calendarState.isMaximized ? window.innerHeight - 120 : 640;
+        calendarState.targetOpacity = 1;
+        calendarState.targetTranslateY = calendarState.isMaximized ? -30 : 0;
+        calendarState.isOpen = true; calendarState.isMinimized = false;
+        renderCalendarGrid();
+      } else {
+        if (window.genieMinimizeEnabled) {
+          window.triggerMinimize('calendar-window', 'Calendar', calendarState);
+        } else {
+          calendarState.targetScaleX = 0.2; calendarState.targetScaleY = 0.05;
+          calendarState.targetTranslateY = 300; calendarState.targetOpacity = 0;
+          calendarState.isMinimized = true;
+        }
+      }
+    });
+  }
+
+  // Window Toolbar button clicks
+  const calCloseBtn = document.getElementById('calendar-btn-close');
+  if (calCloseBtn) {
+    calCloseBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      calendarState.targetScaleX = 0.85; calendarState.targetScaleY = 0.85;
+      calendarState.targetOpacity = 0; calendarState.isOpen = false;
+      setActiveApp('Finder');
+    });
+  }
+
+  const calMinBtn = document.getElementById('calendar-btn-minimize');
+  if (calMinBtn) {
+    calMinBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (window.genieMinimizeEnabled) {
+        if (!calendarState.isMinimized) {
+          window.triggerMinimize('calendar-window', 'Calendar', calendarState);
+        } else {
+          window.restoreWindowById('calendar-window');
+        }
+        return;
+      }
+      if (!calendarState.isMinimized) {
+        calendarState.targetScaleX = 0.2; calendarState.targetScaleY = 0.05;
+        calendarState.targetTranslateY = 300; calendarState.targetOpacity = 0;
+        calendarState.isOpen = true; calendarState.isMinimized = true;
+      } else {
+        calendarState.targetScaleX = 1; calendarState.targetScaleY = 1;
+        calendarState.targetTranslateY = 0; calendarState.targetOpacity = 1;
+        calendarState.isMinimized = false;
+      }
+    });
+  }
+
+  const calMaxBtn = document.getElementById('calendar-btn-maximize');
+  if (calMaxBtn) {
+    calMaxBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (!calendarState.isMaximized) {
+        calendarState.preMaxDragX = calendarState.targetDragX;
+        calendarState.preMaxDragY = calendarState.targetDragY;
+        calendarState.targetDragX = 0;
+        calendarState.targetDragY = 0;
+        calendarState.targetWidth = window.innerWidth - 40;
+        calendarState.targetHeight = window.innerHeight - 120;
+        calendarState.targetTranslateY = -30;
+        calendarState.isMaximized = true;
+      } else {
+        calendarState.targetDragX = calendarState.preMaxDragX;
+        calendarState.targetDragY = calendarState.preMaxDragY;
+        calendarState.targetWidth = 960;
+        calendarState.targetHeight = 640;
+        calendarState.targetTranslateY = 0;
+        calendarState.isMaximized = false;
+      }
+    });
+  }
+
+  // Toggle calendar app sidebar
+  const calSideBarBtn = document.getElementById('calendar-action-sidebar');
+  if (calSideBarBtn) {
+    calSideBarBtn.addEventListener('click', () => {
+      const sidebar = document.getElementById('calendar-sidebar');
+      if (sidebar) {
+        if (sidebar.style.display === 'none') {
+          sidebar.style.display = 'flex';
+          calSideBarBtn.style.background = 'var(--cal-toolbar-btn-hover)';
+        } else {
+          sidebar.style.display = 'none';
+          calSideBarBtn.style.background = 'transparent';
+        }
+      }
+    });
+  }
+
+  // Prepopulated state variables & events
+  let calCurrentDate = new Date(2026, 5, 20); // June 20, 2026
+  let calViewMonth = 5; // June (0-indexed)
+  let calViewYear = 2026;
+  let calSelectedDateStr = '2026-06-20';
+  let calSelectedColor = '#ff2d55';
+
+  let calendarEvents = [
+    { id: '1', title: 'WWDC Keynote', date: '2026-06-03', start: '10:00', end: '12:00', color: '#ff2d55' },
+    { id: '2', title: 'Developer Sync', date: '2026-06-10', start: '14:00', end: '15:30', color: '#007aff' },
+    { id: '3', title: 'Bubuvar Release Party 🎉', date: '2026-06-19', start: '18:00', end: '23:30', color: '#af52de' },
+    { id: '4', title: 'Calendar UI Review', date: '2026-06-20', start: '09:00', end: '13:00', color: '#34c759' },
+    { id: '5', title: 'Team Outing', date: '2026-07-04', start: '12:00', end: '18:00', color: '#ff9500' }
+  ];
+
+  const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+  // Render month grid dynamically
+  function renderCalendarGrid() {
+    const grid = document.getElementById('cal-days-grid');
+    if (!grid) return;
+    grid.innerHTML = '';
+
+    // Update Month Display text
+    const displayHeader = document.getElementById('cal-display-month-year');
+    if (displayHeader) {
+      displayHeader.innerHTML = `<span style="font-weight: 700;">${monthNames[calViewMonth]}</span> <span style="font-weight: 300;">${calViewYear}</span>`;
+    }
+
+    // Get first day of the view month
+    const firstDay = new Date(calViewYear, calViewMonth, 1);
+    // Find the weekday of the 1st of the month (0 = Sun, 1 = Mon, ..., 6 = Sat)
+    // Convert to Monday-start (Mon = 0, ..., Sun = 6)
+    let startDayOfWeek = firstDay.getDay() - 1;
+    if (startDayOfWeek === -1) startDayOfWeek = 6; // Sunday is index 6
+
+    // Total days in matching prev month
+    const prevMonthLast = new Date(calViewYear, calViewMonth, 0);
+    const prevMonthDaysCount = prevMonthLast.getDate();
+
+    // Total days in view month
+    const currentMonthLast = new Date(calViewYear, calViewMonth + 1, 0);
+    const currentMonthDaysCount = currentMonthLast.getDate();
+
+    // Render cells of previous month
+    for (let i = startDayOfWeek - 1; i >= 0; i--) {
+      const dayNum = prevMonthDaysCount - i;
+      const cellDateStr = getFormattedDateStr(calViewMonth === 0 ? calViewYear - 1 : calViewYear, calViewMonth === 0 ? 11 : calViewMonth - 1, dayNum);
+      const cell = createGridCell(dayNum, true, cellDateStr);
+      grid.appendChild(cell);
+    }
+
+    // Render cells of current month
+    for (let dayNum = 1; dayNum <= currentMonthDaysCount; dayNum++) {
+      const cellDateStr = getFormattedDateStr(calViewYear, calViewMonth, dayNum);
+      const cell = createGridCell(dayNum, false, cellDateStr);
+      grid.appendChild(cell);
+    }
+
+    // Render cells of next month to complete standard 42 cell grid
+    const totalRendered = startDayOfWeek + currentMonthDaysCount;
+    const remaining = 42 - totalRendered;
+    for (let dayNum = 1; dayNum <= remaining; dayNum++) {
+      const cellDateStr = getFormattedDateStr(calViewMonth === 11 ? calViewYear + 1 : calViewYear, calViewMonth === 11 ? 0 : calViewMonth + 1, dayNum);
+      const cell = createGridCell(dayNum, true, cellDateStr);
+      grid.appendChild(cell);
+    }
+
+    // Also populate events onto sidebar list for active month
+    renderSidebarEvents();
+    
+    // Trigger Lucide re-render of icons
+    if (window.lucide && typeof window.lucide.createIcons === 'function') {
+      window.lucide.createIcons();
+    }
+  }
+
+  function getFormattedDateStr(year, month, day) {
+    const m = String(month + 1).padStart(2, '0');
+    const d = String(day).padStart(2, '0');
+    return `${year}-${m}-${d}`;
+  }
+
+  function createGridCell(dayNum, isMuted, cellDateStr) {
+    const cell = document.createElement('div');
+    cell.className = 'cal-grid-cell';
+    cell.dataset.date = cellDateStr;
+
+    // Check if cell is Today
+    const todayStr = getFormattedDateStr(calCurrentDate.getFullYear(), calCurrentDate.getMonth(), calCurrentDate.getDate());
+    const isToday = (cellDateStr === todayStr);
+
+    const numSpan = document.createElement('div');
+    numSpan.className = 'cal-day-num' + (isMuted ? ' muted' : '') + (isToday ? ' today' : '');
+    
+    // Add Month Label if first day of a month
+    if (dayNum === 1) {
+      const parts = cellDateStr.split('-');
+      const mIdx = parseInt(parts[1]) - 1;
+      const label = document.createElement('span');
+      label.className = 'cal-day-label';
+      label.textContent = monthNames[mIdx].substring(0, 3);
+      cell.appendChild(label);
+    }
+
+    numSpan.textContent = dayNum;
+    cell.appendChild(numSpan);
+
+    // Filter events on this exact date
+    const dayEvents = calendarEvents.filter(ev => ev.date === cellDateStr);
+    dayEvents.forEach(ev => {
+      const pill = document.createElement('div');
+      pill.className = 'cal-event-pill';
+      pill.style.background = ev.color + '18';
+      pill.style.borderLeft = `3px solid ${ev.color}`;
+      pill.style.color = ev.color;
+      pill.innerHTML = `<span style="text-overflow: ellipsis; overflow: hidden; font-weight: 500;">${ev.title}</span>`;
+      
+      // Delete button inside event pill
+      const delBtn = document.createElement('span');
+      delBtn.style.fontSize = '8px';
+      delBtn.style.opacity = '0';
+      delBtn.style.marginLeft = '4px';
+      delBtn.style.padding = '0 2px';
+      delBtn.style.cursor = 'pointer';
+      delBtn.textContent = '✕';
+      delBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (confirm(`Remove event: "${ev.title}"?`)) {
+          calendarEvents = calendarEvents.filter(item => item.id !== ev.id);
+          renderCalendarGrid();
+        }
+      });
+
+      pill.addEventListener('mouseenter', () => delBtn.style.opacity = '1');
+      pill.addEventListener('mouseleave', () => delBtn.style.opacity = '0');
+      pill.appendChild(delBtn);
+
+      cell.appendChild(pill);
+    });
+
+    // Handle double click to add event
+    cell.addEventListener('dblclick', (e) => {
+      e.stopPropagation();
+      openAddEventDialog(cellDateStr, e.clientX, e.clientY);
+    });
+
+    // Handle single click to select/highlight dates
+    cell.addEventListener('click', () => {
+      document.querySelectorAll('.cal-grid-cell').forEach(c => {
+        c.style.background = '';
+      });
+      cell.style.background = 'rgba(255, 45, 87, 0.05)';
+      calSelectedDateStr = cellDateStr;
+    });
+
+    return cell;
+  }
+
+  // Display sidebar events dynamically
+  function renderSidebarEvents() {
+    const list = document.getElementById('calendar-sidebar-events-list');
+    if (!list) return;
+    list.innerHTML = '';
+
+    // Filter events within active month
+    const activeEvents = calendarEvents.filter(ev => {
+      const parts = ev.date.split('-');
+      return parseInt(parts[0]) === calViewYear && parseInt(parts[1]) - 1 === calViewMonth;
+    });
+
+    if (activeEvents.length === 0) {
+      list.innerHTML = `<span style="font-size: 12px; color: var(--cal-muted); font-style: italic;">No events this month.</span>`;
+      return;
+    }
+
+    // Sort by date then start time
+    activeEvents.sort((a,b) => a.date.localeCompare(b.date) || a.start.localeCompare(b.start));
+
+    activeEvents.forEach(ev => {
+      const row = document.createElement('div');
+      row.style.background = 'var(--cal-inner-bg)';
+      row.style.border = '1px solid var(--cal-grid-border)';
+      row.style.borderRadius = '8px';
+      row.style.padding = '8px 10px';
+      row.style.display = 'flex';
+      row.style.flexDirection = 'column';
+      row.style.gap = '2px';
+      
+      const parts = ev.date.split('-');
+      const dayStr = `${monthNames[parseInt(parts[1]) - 1].substring(0, 3)} ${parseInt(parts[2])}`;
+
+      row.innerHTML = `
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+          <span style="font-size: 11px; font-weight: 700; color: ${ev.color}; text-transform: uppercase;">${dayStr}</span>
+          <span style="font-size: 10px; color: var(--cal-muted); font-weight: 500;">${ev.start} - ${ev.end}</span>
+        </div>
+        <span style="font-size: 12px; font-weight: 600; color: var(--cal-text); text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">${ev.title}</span>
+      `;
+      list.appendChild(row);
+    });
+  }
+
+  // Next/Prev Month navigation
+  document.getElementById('cal-nav-prev').addEventListener('click', () => {
+    calViewMonth--;
+    if (calViewMonth < 0) {
+      calViewMonth = 11;
+      calViewYear--;
+    }
+    renderCalendarGrid();
+  });
+
+  document.getElementById('cal-nav-next').addEventListener('click', () => {
+    calViewMonth++;
+    if (calViewMonth > 11) {
+      calViewMonth = 0;
+      calViewYear++;
+    }
+    renderCalendarGrid();
+  });
+
+  document.getElementById('cal-nav-today').addEventListener('click', () => {
+    calViewMonth = calCurrentDate.getMonth();
+    calViewYear = calCurrentDate.getFullYear();
+    renderCalendarGrid();
+  });
+
+  // Dialog handling
+  const dialog = document.getElementById('cal-event-dialog');
+  document.getElementById('calendar-action-add').addEventListener('click', (e) => {
+    e.stopPropagation();
+    openAddEventDialog(calSelectedDateStr, e.clientX - 100, e.clientY + 40);
+  });
+
+  document.getElementById('cal-dialog-close').addEventListener('click', () => {
+    dialog.style.display = 'none';
+  });
+
+  function openAddEventDialog(dateStr, x, y) {
+    dialog.style.display = 'block';
+    
+    // Position dialog visually nicely clamped inside the window
+    const calWin = document.getElementById('calendar-window');
+    const rect = calWin.getBoundingClientRect();
+    
+    // Convert coordinate to relative
+    let relativeX = x - rect.left;
+    let relativeY = y - rect.top;
+
+    // Boundary check
+    if (relativeX + 280 > rect.width) relativeX = rect.width - 290;
+    if (relativeY + 220 > rect.height) relativeY = rect.height - 230;
+    if (relativeX < 10) relativeX = 10;
+    if (relativeY < 10) relativeY = 10;
+
+    dialog.style.left = `${relativeX}px`;
+    dialog.style.top = `${relativeY}px`;
+
+    // Fill the date
+    document.getElementById('cal-event-date').value = dateStr;
+    document.getElementById('cal-event-title').value = '';
+    document.getElementById('cal-event-title').focus();
+  }
+
+  // Handle color dot selections
+  document.querySelectorAll('.cal-color-dot').forEach(dot => {
+    dot.addEventListener('click', () => {
+      document.querySelectorAll('.cal-color-dot').forEach(d => {
+        d.style.borderColor = 'transparent';
+        d.style.boxShadow = 'none';
+      });
+      dot.style.borderColor = 'white';
+      dot.style.boxShadow = `0 0 0 1px ${dot.dataset.color}`;
+      calSelectedColor = dot.dataset.color;
+    });
+  });
+
+  // Save new event trigger
+  document.getElementById('cal-dialog-save').addEventListener('click', () => {
+    const title = document.getElementById('cal-event-title').value.trim();
+    const dateInput = document.getElementById('cal-event-date').value;
+    const startInput = document.getElementById('cal-event-start').value;
+    const endInput = document.getElementById('cal-event-end').value;
+
+    if (!title) {
+      alert('Please enter an event title.');
+      return;
+    }
+
+    const newEv = {
+      id: String(Date.now()),
+      title: title,
+      date: dateInput,
+      start: startInput,
+      end: endInput,
+      color: calSelectedColor
+    };
+
+    calendarEvents.push(newEv);
+    dialog.style.display = 'none';
+    renderCalendarGrid();
+    
+    // Show a small beautiful notification bubble of completion
+    const notice = document.createElement('div');
+    notice.style.position = 'absolute';
+    notice.style.bottom = '20px';
+    notice.style.right = '20px';
+    notice.style.background = '#34c759';
+    notice.style.color = '#ffffff';
+    notice.style.padding = '8px 16px';
+    notice.style.borderRadius = '8px';
+    notice.style.fontSize = '12px';
+    notice.style.fontWeight = '600';
+    notice.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+    notice.style.zIndex = '30000';
+    notice.style.animation = 'fadeInOut 2.5s forwards';
+    notice.textContent = `Event "${title}" added!`;
+    document.getElementById('calendar-window').appendChild(notice);
+    
+    setTimeout(() => notice.remove(), 2500);
+  });
+
+  document.getElementById('music-btn-close').addEventListener('click', (e) => {
+    e.stopPropagation();
+    musicState.targetScaleX = 0.85; musicState.targetScaleY = 0.85;
+    musicState.targetOpacity = 0; musicState.isOpen = false;
+    setActiveApp('Finder');
+  });
+
+  document.getElementById('music-btn-minimize').addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (window.genieMinimizeEnabled) {
+      if (!musicState.isMinimized) {
+        window.triggerMinimize('music-window', 'Apple Music', musicState);
+      } else {
+        window.restoreWindowById('music-window');
+      }
+      return;
+    }
+    if (!musicState.isMinimized) {
+      musicState.targetScaleX = 0.2; musicState.targetScaleY = 0.05;
+      musicState.targetTranslateY = 300; musicState.targetOpacity = 0;
+      musicState.isOpen = true; musicState.isMinimized = true;
+    } else {
+      musicState.targetScaleX = 1; musicState.targetScaleY = 1;
+      musicState.targetTranslateY = 0; musicState.targetOpacity = 1;
+      musicState.isMinimized = false;
+    }
+  });
+
+  document.getElementById('music-btn-maximize').addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (!musicState.isMaximized) {
+      musicState.preMaxDragX = musicState.targetDragX;
+      musicState.preMaxDragY = musicState.targetDragY;
+      musicState.targetDragX = 0;
+      musicState.targetDragY = 0;
+      musicState.targetWidth = window.innerWidth - 40;
+      musicState.targetHeight = window.innerHeight - 120;
+      musicState.targetTranslateY = -30;
+      musicState.isMaximized = true;
+    } else {
+      musicState.targetDragX = musicState.preMaxDragX;
+      musicState.targetDragY = musicState.preMaxDragY;
+      musicState.targetWidth = 960;
+      musicState.targetHeight = 640;
+      musicState.targetTranslateY = 0;
+      musicState.isMaximized = false;
+    }
+  });
+
+  // Sidebar Tabs integration
+  const sidebarTabs = [
+    { id: 'search', name: 'Search' },
+    { id: 'home', name: 'Home' },
+    { id: 'radio', name: 'Radio' },
+    { id: 'recent', name: 'Recently Added' },
+    { id: 'artists', name: 'Artists' },
+    { id: 'albums', name: 'Albums' },
+    { id: 'songs', name: 'Songs' },
+    { id: 'store', name: 'iTunes Store' },
+    { id: 'playlists', name: 'All Playlists' },
+    { id: 'myshit', name: 'MYSHIT' }
+  ];
+
+  sidebarTabs.forEach(tab => {
+    const el = document.getElementById(`music-nav-${tab.id}`);
+    if (el) {
+      el.addEventListener('click', (e) => {
+        e.stopPropagation();
+        switchMusicTab(tab.id, tab.name);
+      });
+    }
+  });
+
+  function switchMusicTab(tabId, tabName) {
+    document.querySelectorAll('.music-sidebar-item').forEach(el => {
+      el.classList.remove('active');
+      el.style.background = 'transparent';
+      el.style.color = 'var(--text-color, #222)';
+      const icon = el.querySelector('i');
+      if (icon) icon.style.stroke = 'currentColor';
+    });
+    
+    const activeEl = document.getElementById(`music-nav-${tabId}`);
+    if (activeEl) {
+      activeEl.classList.add('active');
+      activeEl.style.background = 'rgba(255, 45, 85, 0.1)';
+      activeEl.style.color = '#ff2d55';
+      const icon = activeEl.querySelector('i');
+      if (icon) icon.style.stroke = '#ff2d55';
+    }
+
+    const titleEl = document.getElementById('music-main-title');
+    if (titleEl) titleEl.textContent = tabName;
+
+    const scrollContent = document.getElementById('music-scroll-content');
+    if (!scrollContent) return;
+
+    if (tabId === 'home') {
+      scrollContent.innerHTML = `
+        <div class="music-banner-card" style="position: relative; width: 100%; height: 260px; border-radius: 20px; overflow: hidden; background: linear-gradient(180deg, #b01c34, #6b0c15); display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 24px; box-sizing: border-box; color: white; box-shadow: 0 15px 35px rgba(176, 28, 52, 0.3);">
+          <div style="font-size: 13px; font-weight: 600; letter-spacing: 0.1px; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">Get 1 month of free music.</div>
+          
+          <div style="display: flex; align-items: center; gap: 12px; transform: scale(1.1); filter: drop-shadow(0 4px 12px rgba(255, 45, 85, 0.45));">
+            <span style="font-size: 45px; font-weight: 300; pointer-events: none;"></span>
+            <span style="font-size: 42px; font-weight: 800; letter-spacing: -1.5px; font-family: -apple-system, system-ui, sans-serif;">Music</span>
+          </div>
+
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 4px; text-align: center;">
+            <button class="music-cta-button" style="background: white; color: #b01c34; border: none; font-size: 12px; font-weight: 700; padding: 8px 24px; border-radius: 9999px; cursor: pointer; transition: transform 0.2s; box-shadow: 0 4px 12px rgba(0,0,0,0.15);" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">Try It Free</button>
+            <div style="font-size: 10px; opacity: 0.8; font-weight: 500;">1 month free, then 5,49 US$/month.</div>
+          </div>
+        </div>
+
+        <div class="music-banner-card" style="position: relative; width: 100%; height: 260px; border-radius: 20px; overflow: hidden; background: linear-gradient(135deg, #ff2a54, #86052F, #3a0014); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; box-sizing: border-box; color: white; box-shadow: 0 15px 35px rgba(176, 28, 52, 0.15);">
+          <div style="position: absolute; inset: 0; opacity: 0.45; overflow: hidden; pointer-events: none; display: flex; align-items: flex-end; justify-content: center; gap: 6px; padding-bottom: 30px;" id="music-audio-vis-wave">
+            <div style="width: 6px; height: 90px; background: rgba(255,255,255,0.8); border-radius: 9999px; transform-origin: bottom; animation: bar-rise 1.2s ease-in-out infinite alternate;"></div>
+            <div style="width: 6px; height: 110px; background: rgba(255,255,255,0.95); border-radius: 9999px; transform-origin: bottom; animation: bar-rise 1.5s ease-in-out infinite alternate 0.2s;"></div>
+            <div style="width: 6px; height: 70px; background: rgba(255,255,255,0.7); border-radius: 9999px; transform-origin: bottom; animation: bar-rise 1s ease-in-out infinite alternate 0.4s;"></div>
+            <div style="width: 6px; height: 130px; background: rgba(255,255,255,0.9); border-radius: 9999px; transform-origin: bottom; animation: bar-rise 1.8s ease-in-out infinite alternate 0.1s;"></div>
+            <div style="width: 6px; height: 100px; background: rgba(255,255,255,0.8); border-radius: 9999px; transform-origin: bottom; animation: bar-rise 1.4s ease-in-out infinite alternate 0.3s;"></div>
+          </div>
+
+          <div style="position: relative; z-index: 2; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 16px;">
+            <div style="font-size: 18px; font-weight: 700; letter-spacing: -0.2px; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">Music for the whole family. 1 month free.</div>
+            <button class="music-cta-button" style="background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); color: white; border: 1px solid rgba(255,255,255,0.4); font-size: 11px; font-weight: 600; padding: 8px 20px; border-radius: 9999px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.08);" onmouseover="this.style.background='white'; this.style.color='#ff2a54'" onmouseout="this.style.background='rgba(255,255,255,0.2)'; this.style.color='white'">Learn More</button>
+          </div>
+        </div>
+      `;
+    } else if (tabId === 'search') {
+      scrollContent.innerHTML = `
+        <div style="display:flex; flex-direction:column; gap:20px; width:100%;">
+          <div style="position:relative; width:100%;">
+            <input type="text" placeholder="Artists, Songs, Lyrics, and More" style="width:100%; padding:10px 14px 10px 36px; border-radius:10px; border:1px solid rgba(0,0,0,0.1); background:rgba(0,0,0,0.03); outline:none; font-size:14px; box-sizing:border-box;">
+            <i data-lucide="search" style="position:absolute; left:12px; top:12px; width:14px; height:14px; opacity:0.5;"></i>
+          </div>
+
+          <h2 style="font-size:20px; font-weight:600; margin-top:10px;">Browse Categories</h2>
+          <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap:16px;">
+            <div style="height:100px; border-radius:12px; background:linear-gradient(135deg, #ff2d55, #ff9500); padding:12px; color:white; font-weight:bold; font-size:16px; display:flex; align-items:flex-end; box-shadow:0 8px 16px rgba(255,45,85,0.15); cursor:pointer;">Pop</div>
+            <div style="height:100px; border-radius:12px; background:linear-gradient(135deg, #5856d6, #af52de); padding:12px; color:white; font-weight:bold; font-size:16px; display:flex; align-items:flex-end; box-shadow:0 8px 16px rgba(88,86,214,0.15); cursor:pointer;">Hip-Hop</div>
+            <div style="height:100px; border-radius:12px; background:linear-gradient(135deg, #007aff, #34a853); padding:12px; color:white; font-weight:bold; font-size:16px; display:flex; align-items:flex-end; box-shadow:0 8px 16px rgba(0,122,255,0.15); cursor:pointer;">Electronic</div>
+            <div style="height:100px; border-radius:12px; background:linear-gradient(135deg, #ff9500, #ffcc00); padding:12px; color:white; font-weight:bold; font-size:16px; display:flex; align-items:flex-end; box-shadow:0 8px 16px rgba(255,149,0,0.15); cursor:pointer;">Rock</div>
+            <div style="height:100px; border-radius:12px; background:linear-gradient(135deg, #4cd964, #5ac8fa); padding:12px; color:white; font-weight:bold; font-size:16px; display:flex; align-items:flex-end; box-shadow:0 8px 16px rgba(76,217,100,0.15); cursor:pointer;">Jazz</div>
+            <div style="height:100px; border-radius:12px; background:linear-gradient(135deg, #ff3b30, #ff2d55); padding:12px; color:white; font-weight:bold; font-size:16px; display:flex; align-items:flex-end; box-shadow:0 8px 16px rgba(255,59,48,0.15); cursor:pointer;">R&B</div>
+          </div>
+        </div>
+      `;
+    } else if (tabId === 'radio') {
+      scrollContent.innerHTML = `
+        <div style="display:flex; flex-direction:column; gap:20px; width:100%;">
+          <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap:20px;">
+            <div style="border-radius:14px; overflow:hidden; border:1px solid rgba(0,0,0,0.05); background:rgba(0,0,0,0.02); display:flex; flex-direction:column; box-shadow:0 4px 12px rgba(0,0,0,0.03); cursor:pointer;">
+              <div style="height:140px; background:linear-gradient(135deg, #ff2a54, #ff5e3a); display:flex; align-items:center; justify-content:center; color:white; font-size:32px; font-weight:bold; font-family:sans-serif;">1</div>
+              <div style="padding:12px;">
+                <div style="font-weight:600; font-size:14px;">Apple Music 1</div>
+                <div style="font-size:11px; opacity:0.6; margin-top:2px;">The new music flagship</div>
+              </div>
+            </div>
+            <div style="border-radius:14px; overflow:hidden; border:1px solid rgba(0,0,0,0.05); background:rgba(0,0,0,0.02); display:flex; flex-direction:column; box-shadow:0 4px 12px rgba(0,0,0,0.03); cursor:pointer;">
+              <div style="height:140px; background:linear-gradient(135deg, #007aff, #00c6ff); display:flex; align-items:center; justify-content:center; color:white; font-size:32px; font-weight:bold; font-family:sans-serif;">Hits</div>
+              <div style="padding:12px;">
+                <div style="font-weight:600; font-size:14px;">Apple Music Hits</div>
+                <div style="font-size:11px; opacity:0.6; margin-top:2px;">Songs you know and love</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    } else if (tabId === 'recent') {
+      scrollContent.innerHTML = `
+        <div style="display:flex; flex-direction:column; gap:20px; width:100%;">
+          <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap:20px;">
+            <div style="cursor:pointer;" onclick="playSongAt(0)">
+              <div style="aspect-ratio:1; background:linear-gradient(135deg, #222, #444); border-radius:8px; display:flex; align-items:center; justify-content:center; color:white; font-size:24px; font-weight:bold; box-shadow:0 8px 16px rgba(0,0,0,0.1);">SB</div>
+              <div style="font-weight:600; font-size:13px; margin-top:8px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Starboy</div>
+              <div style="font-size:11px; opacity:0.5; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">The Weeknd</div>
+            </div>
+            <div style="cursor:pointer;" onclick="playSongAt(1)">
+              <div style="aspect-ratio:1; background:linear-gradient(135deg, #e44, #811); border-radius:8px; display:flex; align-items:center; justify-content:center; color:white; font-size:24px; font-weight:bold; box-shadow:0 8px 16px rgba(0,0,0,0.1);">BL</div>
+              <div style="font-weight:600; font-size:13px; margin-top:8px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Blinding Lights</div>
+              <div style="font-size:11px; opacity:0.5; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">The Weeknd</div>
+            </div>
+            <div style="cursor:pointer;" onclick="playSongAt(2)">
+              <div style="aspect-ratio:1; background:linear-gradient(135deg, #05f, #025); border-radius:8px; display:flex; align-items:center; justify-content:center; color:white; font-size:24px; font-weight:bold; box-shadow:0 8px 16px rgba(0,0,0,0.1);">GB</div>
+              <div style="font-weight:600; font-size:13px; margin-top:8px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Godberry</div>
+              <div style="font-size:11px; opacity:0.5; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Kid Cudi</div>
+            </div>
+          </div>
+        </div>
+      `;
+    } else if (tabId === 'songs') {
+      let songsHtml = `
+        <div style="display:flex; flex-direction:column; width:100%; border-radius:12px; border:1px solid rgba(0,0,0,0.05); overflow:hidden; background:rgba(0,0,0,0.01);">
+          <div style="display:flex; align-items:center; padding:10px 16px; background:rgba(0,0,0,0.03); border-bottom:1px solid rgba(0,0,0,0.05); font-weight:600; font-size:11px; text-transform:uppercase; color:#888;">
+            <div style="width:40px;">State</div>
+            <div style="flex:1;">Title</div>
+            <div style="flex:1;">Artist</div>
+            <div style="width:40px; text-align:right;">Play</div>
+          </div>
+      `;
+
+      ccSongs.forEach((song, idx) => {
+        const isCurrent = currentSongIndex === idx;
+        const btn = ccButtons.find(b => b.id === 'music');
+        const isPlaying = isCurrent && btn && btn.active;
+
+        songsHtml += `
+          <div style="display:flex; align-items:center; padding:12px 16px; border-bottom:1px solid rgba(0,0,0,0.04); font-size:13px; cursor:pointer; background:${isCurrent ? 'rgba(255,45,85,0.04)' : 'transparent'}; transition:background 0.2s;" class="song-table-row" onclick="playSongAt(${idx})">
+            <div style="width:40px; color:#ff2d55;">
+              ${isPlaying ? '<div style="width:8px; height:8px; border-radius:50%; background:#ff2d55; animation:pulse 1s infinite alternate;"></div>' : isCurrent ? '⏸' : ''}
+            </div>
+            <div style="flex:1; font-weight:${isCurrent ? '600' : '500'}; color:${isCurrent ? '#ff2d55' : 'inherit'};">${song.title}</div>
+            <div style="flex:1; opacity:0.75;">${song.artist}</div>
+            <div style="width:40px; text-align:right; font-size:12px;">
+              <i data-lucide="${isPlaying ? 'pause-circle' : 'play-circle'}" style="width:16px; height:16px; color:#ff2d55;"></i>
+            </div>
+          </div>
+        `;
+      });
+
+      songsHtml += `</div>`;
+      scrollContent.innerHTML = songsHtml;
+    } else if (tabId === 'myshit') {
+      scrollContent.innerHTML = `
+        <div style="display:flex; flex-direction:column; gap:20px; width:100%;">
+          <div style="display:flex; align-items:center; gap:24px; margin-bottom:12px; background:linear-gradient(135deg, rgba(255,45,85,0.08), rgba(255,149,0,0.08)); padding:24px; border-radius:18px; border:1px solid rgba(255,45,85,0.1);">
+            <div style="width: 100px; height: 100px; border-radius: 16px; background: linear-gradient(135deg, #ff2d55, #ff9500); display: flex; align-items: center; justify-content: center; font-size: 48px; color: #fff; font-weight: bold; box-shadow: 0 12px 24px rgba(255,45,85,0.3);">
+              
+            </div>
+            <div>
+              <h2 style="font-size: 24px; font-weight: 700; margin: 0; color: var(--music-text, #000);">MYSHIT Playlist</h2>
+              <p style="font-size: 13px; opacity: 0.7; margin: 6px 0 12px 0;">Curated by Bubuvar. Syncing directly with Spotify's live artist showcase.</p>
+              <div style="display: flex; gap: 8px;">
+                <span style="font-size: 11px; font-weight: 600; text-transform: uppercase; background: rgba(255,45,85,0.1); color: #ff2d55; padding: 4px 10px; border-radius: 9999px;">Spotify Web Embed</span>
+                <span style="font-size: 11px; font-weight: 600; text-transform: uppercase; background: rgba(0,0,0,0.05); padding: 4px 10px; border-radius: 9999px;">Live Stream</span>
+              </div>
+            </div>
+          </div>
+          <div style="width: 100%;">
+            <iframe src="https://open.spotify.com/embed/artist/7mTAlpdLvfX3FJKU1BW5Pn?utm_source=generator&theme=0" width="100%" height="380" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy" style="border-radius: 12px; border: none; box-shadow: 0 8px 24px rgba(0,0,0,0.15);"></iframe>
+          </div>
+        </div>
+      `;
+    } else {
+      scrollContent.innerHTML = `
+        <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; padding:60px; text-align:center; opacity:0.8; gap:16px;">
+          <div style="width:64px; height:64px; border-radius:50%; background:rgba(255,45,85,0.1); display:flex; align-items:center; justify-content:center; color:#ff2d55;">
+            <i data-lucide="music-4" style="width:32px; height:32px;"></i>
+          </div>
+          <div>
+            <h3 style="font-weight:600; font-size:18px;">${tabName}</h3>
+            <p style="font-size:13px; opacity:0.7; margin-top:4px;">Enjoy your personalized audio library. This content is synced automatically with your current account stream.</p>
+          </div>
+        </div>
+      `;
+    }
+
+    if (typeof lucide !== 'undefined' && lucide.createIcons) {
+      lucide.createIcons();
+    }
+  }
+
+  window.playSongAt = function(index) {
+    const btn = ccButtons.find(b => b.id === 'music');
+    if (btn) {
+      currentSongIndex = index;
+      btn.song = ccSongs[currentSongIndex].title;
+      btn.artist = ccSongs[currentSongIndex].artist;
+      btn.active = true;
+      renderCCGrid();
+      syncMusicPlayerUI();
+      const currentTabEl = document.querySelector('.music-sidebar-item.active');
+      if (currentTabEl && currentTabEl.id === 'music-nav-songs') {
+        switchMusicTab('songs', 'Songs');
+      }
+    }
+  };
+
+  // Synchronize Player Bar UI
+  function syncMusicPlayerUI() {
+    const btn = ccButtons.find(b => b.id === 'music');
+    if (!btn) return;
+
+    const isPlaying = btn.active;
+    const currentSong = ccSongs[currentSongIndex];
+
+    const playIcon = document.getElementById('music-play-icon');
+    const badge = document.getElementById('music-badge');
+
+    if (playIcon) {
+      if (isPlaying) {
+        playIcon.setAttribute('data-lucide', 'pause');
+        playIcon.style.fill = 'currentColor';
+      } else {
+        playIcon.setAttribute('data-lucide', 'play');
+        playIcon.style.fill = 'currentColor';
+      }
+      if (typeof lucide !== 'undefined' && lucide.createIcons) {
+        lucide.createIcons();
+      }
+    }
+
+    if (badge) {
+      badge.innerHTML = `<div style="display:flex; flex-direction:column; align-items:center; text-align:center;">
+        <span style="font-size:11px; font-weight:600; color:var(--music-text, #000);">${currentSong.title}</span>
+        <span style="font-size:8.5px; color:#8a8a8e;">${currentSong.artist}</span>
+      </div>`;
+    }
+
+    const wave = document.getElementById('music-audio-vis-wave');
+    if (wave) {
+      if (isPlaying) {
+        wave.style.opacity = '1';
+        wave.querySelectorAll('div').forEach(bar => {
+          bar.style.animationPlayState = 'running';
+        });
+      } else {
+        wave.style.opacity = '0.35';
+        wave.querySelectorAll('div').forEach(bar => {
+          bar.style.animationPlayState = 'paused';
+        });
+      }
+    }
+  }
+
+  // Interactive controls within Floating Player Bar
+  document.getElementById('music-btn-play').addEventListener('click', (e) => {
+    e.stopPropagation();
+    const btn = ccButtons.find(b => b.id === 'music');
+    if (btn) {
+      toggleMusicPlay(btn);
+    }
+  });
+
+  document.getElementById('music-btn-prev').addEventListener('click', (e) => {
+    e.stopPropagation();
+    playPrevSong();
+  });
+
+  document.getElementById('music-btn-next').addEventListener('click', (e) => {
+    e.stopPropagation();
+    playNextSong();
+  });
+
+  // Volume interaction
+  let musicVolume = 0.7;
+  const volTrack = document.getElementById('music-vol-slider-track');
+  const volBar = document.getElementById('music-vol-slider-bar');
+  if (volTrack && volBar) {
+    volTrack.addEventListener('mousedown', (e) => {
+      e.stopPropagation();
+      const rect = volTrack.getBoundingClientRect();
+      const updateVolume = (cx) => {
+        let pct = (cx - rect.left) / rect.width;
+        pct = Math.max(0, Math.min(1, pct));
+        musicVolume = pct;
+        volBar.style.width = `${pct * 100}%`;
+        const volIcon = document.getElementById('music-volume-icon');
+        if (volIcon) {
+          if (pct === 0) volIcon.setAttribute('data-lucide', 'volume-x');
+          else if (pct < 0.4) volIcon.setAttribute('data-lucide', 'volume');
+          else if (pct < 0.7) volIcon.setAttribute('data-lucide', 'volume-1');
+          else volIcon.setAttribute('data-lucide', 'volume-2');
+          if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+        }
+      };
+      updateVolume(e.clientX);
+
+      const onMouseMove = (moveEv) => {
+        updateVolume(moveEv.clientX);
+      };
+      const onMouseUp = () => {
+        document.removeEventListener('mousemove', onMouseMove);
+        document.removeEventListener('mouseup', onMouseUp);
+      };
+      document.addEventListener('mousemove', onMouseMove);
+      document.addEventListener('mouseup', onMouseUp);
+    });
+  }
+
   document.getElementById('word-btn-close').addEventListener('click', () => {
     wordState.targetScaleX = 0.85; wordState.targetScaleY = 0.85;
     wordState.targetOpacity = 0; wordState.isOpen = false;
@@ -6860,6 +8736,66 @@ if (val === 'help') {
     }
   });
 
+  // Apple Music Window dragging (using the music-sidebar)
+  let isMusicDragging = false;
+  let musicStartX, musicStartY, musicInitialDragX, musicInitialDragY;
+
+  // Calendar Window dragging (using the calendar-toolbar)
+  let isCalendarDragging = false;
+  let calendarStartX, calendarStartY, calendarInitialDragX, calendarInitialDragY;
+
+  setTimeout(() => {
+    const musicSidebar = document.querySelector('.music-sidebar');
+    if (musicSidebar) {
+      musicSidebar.addEventListener('mousedown', (e) => {
+        if (e.target.closest('.traffic-lights') || e.target.closest('input') || e.target.closest('button') || e.target.closest('.music-sidebar-item') || e.target.closest('div[style*="padding: 6px 10px;"]')) return;
+        if (musicState.isMaximized) return;
+        isMusicDragging = true;
+        musicStartX = e.clientX;
+        musicStartY = e.clientY;
+        musicInitialDragX = musicState.targetDragX;
+        musicInitialDragY = musicState.targetDragY;
+        document.body.style.userSelect = 'none';
+      });
+    }
+
+    const calendarToolbarObj = document.querySelector('.calendar-toolbar');
+    if (calendarToolbarObj) {
+      calendarToolbarObj.addEventListener('mousedown', (e) => {
+        if (e.target.closest('.traffic-lights') || e.target.closest('input') || e.target.closest('button') || e.target.closest('.cal-segmented-control')) return;
+        if (calendarState.isMaximized) return;
+        isCalendarDragging = true;
+        calendarStartX = e.clientX;
+        calendarStartY = e.clientY;
+        calendarInitialDragX = calendarState.targetDragX;
+        calendarInitialDragY = calendarState.targetDragY;
+        document.body.style.userSelect = 'none';
+      });
+    }
+  }, 100);
+
+  document.addEventListener('mousemove', (e) => {
+    if (isMusicDragging) {
+      musicState.targetDragX = musicInitialDragX + (e.clientX - musicStartX);
+      musicState.targetDragY = musicInitialDragY + (e.clientY - musicStartY);
+    }
+    if (isCalendarDragging) {
+      calendarState.targetDragX = calendarInitialDragX + (e.clientX - calendarStartX);
+      calendarState.targetDragY = calendarInitialDragY + (e.clientY - calendarStartY);
+    }
+  });
+
+  document.addEventListener('mouseup', () => {
+    if (isMusicDragging) {
+      isMusicDragging = false;
+      document.body.style.userSelect = 'auto';
+    }
+    if (isCalendarDragging) {
+      isCalendarDragging = false;
+      document.body.style.userSelect = 'auto';
+    }
+  });
+
   // --- End Terminal Logic ---
 
   // --- Safari Logic ---
@@ -6878,7 +8814,7 @@ if (val === 'help') {
   };
 
   let safariTabs = [
-    { id: 1, url: 'https://wikipedia.org', history: ['https://wikipedia.org'], historyIdx: 0, title: 'Wikipedia', isNewTab: false }
+    { id: 1, url: '', history: [], historyIdx: -1, title: 'Start Page', isNewTab: true }
   ];
   let activeSafariTabId = 1;
   let safariTabCounter = 1;
@@ -6901,16 +8837,16 @@ if (val === 'help') {
     let html = '';
     safariTabs.forEach(tab => {
       const isActive = tab.id === activeSafariTabId ? 'active' : '';
+      const isPopAnim = tab.isAnimated ? 'tab-pop-anim' : '';
       const favicon = tab.isNewTab ? '<i data-lucide="compass" style="width:14px;height:14px;margin-right:6px;"></i>' : `<img src="https://www.google.com/s2/favicons?domain=${tab.url}" class="favicon" onerror="this.style.display='none'">`;
       html += `
-        <div class="safari-tab ${isActive}" data-id="${tab.id}">
+        <div class="safari-tab ${isActive} ${isPopAnim}" data-id="${tab.id}">
           ${favicon}
           <span class="title">${tab.title}</span>
           <div class="close-btn" data-id="${tab.id}">×</div>
         </div>
       `;
     });
-    html += `<div class="safari-add-tab" id="safari-add-tab">+</div>`;
     safariTabsContainer.innerHTML = html;
 
     // Attach events
@@ -6925,9 +8861,6 @@ if (val === 'help') {
         e.stopPropagation();
         closeSafariTab(parseInt(el.getAttribute('data-id')));
       });
-    });
-    document.getElementById('safari-add-tab').addEventListener('click', () => {
-      openSafariNewTab();
     });
   }
 
@@ -6945,7 +8878,11 @@ if (val === 'help') {
       safariNewTabOverlay.classList.add('show');
       safariErrorOverlay.classList.remove('show');
       safariIframe.style.opacity = 0;
-      setTimeout(() => document.getElementById('safari-nt-search-input').focus(), 100);
+      setTimeout(() => {
+        const ntSearch = document.getElementById('safari-nt-search-input');
+        if (ntSearch) ntSearch.focus();
+        else safariAddressInput.focus();
+      }, 100);
     } else {
       safariAddressInput.value = tab.url;
       safariAddressIcon.innerHTML = tab.url.startsWith('https') ? '<i data-lucide="lock" style="width:14px;height:14px;display:block"></i>' : '<i data-lucide="globe" style="width:14px;height:14px;display:block"></i>';
@@ -7042,10 +8979,14 @@ if (val === 'help') {
 
   function openSafariNewTab() {
     safariTabCounter++;
-    const newTab = { id: safariTabCounter, url: '', history: [], historyIdx: -1, title: 'Start Page', isNewTab: true };
+    const newTab = { id: safariTabCounter, url: '', history: [], historyIdx: -1, title: 'Start Page', isNewTab: true, isAnimated: true };
     safariTabs.push(newTab);
     activeSafariTabId = safariTabCounter;
     updateSafariUI();
+    setTimeout(() => {
+      newTab.isAnimated = false;
+      renderSafariTabs();
+    }, 380);
   }
 
   // Address bar events
@@ -7056,11 +8997,23 @@ if (val === 'help') {
       navigateSafari(safariAddressInput.value);
     }
   });
-  document.getElementById('safari-nt-search-input').addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-      navigateSafari(e.target.value);
-    }
-  });
+
+  const ntSearchInput = document.getElementById('safari-nt-search-input');
+  if (ntSearchInput) {
+    ntSearchInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        navigateSafari(e.target.value);
+      }
+    });
+  }
+
+  // Header Add Tab Plus Button
+  const addTabHeader = document.getElementById('safari-add-tab-header');
+  if (addTabHeader) {
+    addTabHeader.addEventListener('click', () => {
+      openSafariNewTab();
+    });
+  }
 
   // Nav buttons
   safariBtnBack.addEventListener('click', () => {
@@ -7081,16 +9034,21 @@ if (val === 'help') {
       updateSafariUI();
     }
   });
-  document.getElementById('safari-btn-reload').addEventListener('click', () => {
-    const tab = getActiveTab();
-    if (tab && !tab.isNewTab) loadSafariUrl(tab.url);
-  });
 
-  // Favorites
-  document.querySelectorAll('.safari-nt-fav').forEach(fav => {
-    fav.addEventListener('click', () => {
-      navigateSafari(fav.getAttribute('data-url'));
+  const reloadBtn = document.getElementById('safari-btn-reload');
+  if (reloadBtn) {
+    reloadBtn.addEventListener('click', () => {
+      const tab = getActiveTab();
+      if (tab && !tab.isNewTab) loadSafariUrl(tab.url);
     });
+  }
+
+  // Favorites (delegation-based click handling)
+  safariNewTabOverlay.addEventListener('click', (e) => {
+    const fav = e.target.closest('.safari-nt-fav');
+    if (fav) {
+      navigateSafari(fav.getAttribute('data-url'));
+    }
   });
 
   // Error page button
@@ -7609,28 +9567,150 @@ if (val === 'help') {
       }
     }
 
+    // Apple Music Window animation
+    const musicForceScaleX = (musicState.targetScaleX - musicState.scaleX) * winStiffness;
+    musicState.velScaleX += musicForceScaleX; musicState.velScaleX *= winDamping; musicState.scaleX += musicState.velScaleX;
+
+    const musicForceScaleY = (musicState.targetScaleY - musicState.scaleY) * winStiffness;
+    musicState.velScaleY += musicForceScaleY; musicState.velScaleY *= winDamping; musicState.scaleY += musicState.velScaleY;
+
+    const musicForceOpacity = (musicState.targetOpacity - musicState.opacity) * winStiffness;
+    musicState.velOpacity += musicForceOpacity; musicState.velOpacity *= winDamping; musicState.opacity += musicState.velOpacity;
+
+    const musicForceTranslateY = (musicState.targetTranslateY - musicState.translateY) * winStiffness;
+    musicState.velTranslateY += musicForceTranslateY; musicState.velTranslateY *= winDamping; musicState.translateY += musicState.velTranslateY;
+
+    const musicForceDragX = (musicState.targetDragX - musicState.dragX) * winStiffness;
+    musicState.velDragX += musicForceDragX; musicState.velDragX *= winDamping; musicState.dragX += musicState.velDragX;
+
+    const musicForceDragY = (musicState.targetDragY - musicState.dragY) * winStiffness;
+    musicState.velDragY += musicForceDragY; musicState.velDragY *= winDamping; musicState.dragY += musicState.velDragY;
+
+    const musicForceWidth = (musicState.targetWidth - musicState.width) * winStiffness;
+    musicState.velWidth += musicForceWidth; musicState.velWidth *= winDamping; musicState.width += musicState.velWidth;
+
+    const musicForceHeight = (musicState.targetHeight - musicState.height) * winStiffness;
+    musicState.velHeight += musicForceHeight; musicState.velHeight *= winDamping; musicState.height += musicState.velHeight;
+
+    const musicWindow = document.getElementById('music-window');
+    const musicMaxDragY = halfWinHeight - musicState.height / 2 - dockHeightLimit;
+    const musicMinDragY = -halfWinHeight + musicState.height / 2 + 28;
+    const musicClampedDragY = Math.max(musicMinDragY, Math.min(musicState.dragY, musicMaxDragY));
+
+    if (musicWindow) {
+      if (musicState.isMinimized || musicState.isMovingGenie) {
+        musicWindow.style.visibility = 'hidden';
+        musicWindow.style.pointerEvents = 'none';
+        musicWindow.style.opacity = '0';
+      } else {
+        musicWindow.style.visibility = 'visible';
+        musicWindow.style.transform = `translate(${musicState.dragX}px, ${musicState.translateY + musicClampedDragY}px) scale(${musicState.scaleX}, ${musicState.scaleY})`;
+        musicWindow.style.opacity = musicState.opacity;
+        musicWindow.style.filter = !musicState.isOpen && musicState.opacity < 0.99 ? `blur(${(1 - musicState.opacity) * 15}px)` : 'none';
+        musicWindow.style.width = `${musicState.width}px`;
+        musicWindow.style.height = `${musicState.height}px`;
+        musicWindow.style.marginLeft = `-${musicState.width / 2}px`;
+        musicWindow.style.marginTop = `-${musicState.height / 2}px`;
+
+        if (musicState.isOpen) {
+          musicWindow.classList.add('interactive');
+          musicIcon && musicIcon.classList.add('active');
+          musicWindow.style.display = 'flex';
+        } else {
+          musicWindow.classList.remove('interactive');
+          musicIcon && musicIcon.classList.remove('active');
+          if (musicState.opacity < 0.01) musicWindow.style.display = 'none';
+          else musicWindow.style.display = 'flex';
+        }
+      }
+    }
+
+    // Calendar Window animation
+    const calendarForceScaleX = (calendarState.targetScaleX - calendarState.scaleX) * winStiffness;
+    calendarState.velScaleX += calendarForceScaleX; calendarState.velScaleX *= winDamping; calendarState.scaleX += calendarState.velScaleX;
+
+    const calendarForceScaleY = (calendarState.targetScaleY - calendarState.scaleY) * winStiffness;
+    calendarState.velScaleY += calendarForceScaleY; calendarState.velScaleY *= winDamping; calendarState.scaleY += calendarState.velScaleY;
+
+    const calendarForceOpacity = (calendarState.targetOpacity - calendarState.opacity) * winStiffness;
+    calendarState.velOpacity += calendarForceOpacity; calendarState.velOpacity *= winDamping; calendarState.opacity += calendarState.velOpacity;
+
+    const calendarForceTranslateY = (calendarState.targetTranslateY - calendarState.translateY) * winStiffness;
+    calendarState.velTranslateY += calendarForceTranslateY; calendarState.velTranslateY *= winDamping; calendarState.translateY += calendarState.velTranslateY;
+
+    const calendarForceDragX = (calendarState.targetDragX - calendarState.dragX) * winStiffness;
+    calendarState.velDragX += calendarForceDragX; calendarState.velDragX *= winDamping; calendarState.dragX += calendarState.velDragX;
+
+    const calendarForceDragY = (calendarState.targetDragY - calendarState.dragY) * winStiffness;
+    calendarState.velDragY += calendarForceDragY; calendarState.velDragY *= winDamping; calendarState.dragY += calendarState.velDragY;
+
+    const calendarForceWidth = (calendarState.targetWidth - calendarState.width) * winStiffness;
+    calendarState.velWidth += calendarForceWidth; calendarState.velWidth *= winDamping; calendarState.width += calendarState.velWidth;
+
+    const calendarForceHeight = (calendarState.targetHeight - calendarState.height) * winStiffness;
+    calendarState.velHeight += calendarForceHeight; calendarState.velHeight *= winDamping; calendarState.height += calendarState.velHeight;
+
+    const calendarWindow = document.getElementById('calendar-window');
+    const calendarMaxDragY = halfWinHeight - calendarState.height / 2 - dockHeightLimit;
+    const calendarMinDragY = -halfWinHeight + calendarState.height / 2 + 28;
+    const calendarClampedDragY = Math.max(calendarMinDragY, Math.min(calendarState.dragY, calendarMaxDragY));
+
+    if (calendarWindow) {
+      if (calendarState.isMinimized || calendarState.isMovingGenie) {
+        calendarWindow.style.visibility = 'hidden';
+        calendarWindow.style.pointerEvents = 'none';
+        calendarWindow.style.opacity = '0';
+      } else {
+        calendarWindow.style.visibility = 'visible';
+        calendarWindow.style.transform = `translate(${calendarState.dragX}px, ${calendarState.translateY + calendarClampedDragY}px) scale(${calendarState.scaleX}, ${calendarState.scaleY})`;
+        calendarWindow.style.opacity = calendarState.opacity;
+        calendarWindow.style.filter = !calendarState.isOpen && calendarState.opacity < 0.99 ? `blur(${(1 - calendarState.opacity) * 15}px)` : 'none';
+        calendarWindow.style.width = `${calendarState.width}px`;
+        calendarWindow.style.height = `${calendarState.height}px`;
+        calendarWindow.style.marginLeft = `-${calendarState.width / 2}px`;
+        calendarWindow.style.marginTop = `-${calendarState.height / 2}px`;
+
+        if (calendarState.isOpen) {
+          calendarWindow.classList.add('interactive');
+          calendarIcon && calendarIcon.classList.add('active');
+          calendarWindow.style.display = 'flex';
+        } else {
+          calendarWindow.classList.remove('interactive');
+          calendarIcon && calendarIcon.classList.remove('active');
+          if (calendarState.opacity < 0.01) calendarWindow.style.display = 'none';
+          else calendarWindow.style.display = 'flex';
+        }
+      }
+    }
+
     const isAnimating = 
         Math.abs(terminalState.velDragX) > 0.1 || Math.abs(terminalState.velDragY) > 0.1 ||
         Math.abs(winState.velDragX) > 0.1 || Math.abs(winState.velDragY) > 0.1 ||
         Math.abs(safariState.velDragX) > 0.1 || Math.abs(safariState.velDragY) > 0.1 ||
         Math.abs(settingsState.velDragX) > 0.1 || Math.abs(settingsState.velDragY) > 0.1 ||
         Math.abs(wordState.velDragX) > 0.1 || Math.abs(wordState.velDragY) > 0.1 ||
+        Math.abs(musicState.velDragX) > 0.1 || Math.abs(musicState.velDragY) > 0.1 ||
+        Math.abs(calendarState.velDragX) > 0.1 || Math.abs(calendarState.velDragY) > 0.1 ||
         Math.abs(launchpadState.velDragX) > 0.1 || Math.abs(launchpadState.velDragY) > 0.1 ||
         Math.abs(terminalState.velWidth) > 0.1 || Math.abs(terminalState.velHeight) > 0.1 ||
         Math.abs(winState.velWidth) > 0.1 || Math.abs(winState.velHeight) > 0.1 ||
         Math.abs(safariState.velWidth) > 0.1 || Math.abs(safariState.velHeight) > 0.1 ||
         Math.abs(settingsState.velWidth) > 0.1 || Math.abs(settingsState.velHeight) > 0.1 ||
         Math.abs(wordState.velWidth) > 0.1 || Math.abs(wordState.velHeight) > 0.1 ||
+        Math.abs(musicState.velWidth) > 0.1 || Math.abs(musicState.velHeight) > 0.1 ||
+        Math.abs(calendarState.velWidth) > 0.1 || Math.abs(calendarState.velHeight) > 0.1 ||
         Math.abs(terminalState.velScaleX) > 0.005 || Math.abs(terminalState.velScaleY) > 0.005 ||
         Math.abs(winState.velScaleX) > 0.005 || Math.abs(winState.velScaleY) > 0.005 ||
         Math.abs(safariState.velScaleX) > 0.005 || Math.abs(safariState.velScaleY) > 0.005 ||
         Math.abs(settingsState.velScaleX) > 0.005 || Math.abs(settingsState.velScaleY) > 0.005 ||
         Math.abs(wordState.velScaleX) > 0.005 || Math.abs(wordState.velScaleY) > 0.005 ||
+        Math.abs(musicState.velScaleX) > 0.005 || Math.abs(musicState.velScaleY) > 0.005 ||
+        Math.abs(calendarState.velScaleX) > 0.005 || Math.abs(calendarState.velScaleY) > 0.005 ||
         Math.abs(launchpadState.velScaleX) > 0.005 || Math.abs(launchpadState.velScaleY) > 0.005 ||
         Math.abs(terminalState.velOpacity) > 0.005 || Math.abs(winState.velOpacity) > 0.005 ||
         Math.abs(safariState.velOpacity) > 0.005 || Math.abs(settingsState.velOpacity) > 0.005 ||
-        Math.abs(wordState.velOpacity) > 0.005 || Math.abs(launchpadState.velOpacity) > 0.005 ||
-        isTerminalDragging || isDraggingWindow || isDraggingSafari || isSettingsDragging || isWordDragging || isLaunchpadDragging;
+        Math.abs(wordState.velOpacity) > 0.005 || Math.abs(musicState.velOpacity) > 0.005 || Math.abs(calendarState.velOpacity) > 0.005 || Math.abs(launchpadState.velOpacity) > 0.005 ||
+        isTerminalDragging || isDraggingWindow || isDraggingSafari || isSettingsDragging || isWordDragging || isMusicDragging || isCalendarDragging || isLaunchpadDragging;
 
     // CC Depth Animation
     if (Math.abs(currentCCDepth - targetCCDepth) > 0.001) {
@@ -8376,6 +10456,7 @@ if (val === 'help') {
       btn.artist = ccSongs[currentSongIndex].artist;
       btn.active = true;
       renderCCGrid();
+      if (typeof syncMusicPlayerUI === 'function') syncMusicPlayerUI();
     }
   }
 
@@ -8387,6 +10468,7 @@ if (val === 'help') {
       btn.artist = ccSongs[currentSongIndex].artist;
       btn.active = true;
       renderCCGrid();
+      if (typeof syncMusicPlayerUI === 'function') syncMusicPlayerUI();
     }
   }
 
@@ -8394,6 +10476,7 @@ if (val === 'help') {
     btn.active = !btn.active;
     btn.subtitle = btn.active ? "Playing" : "Paused";
     renderCCGrid();
+    if (typeof syncMusicPlayerUI === 'function') syncMusicPlayerUI();
   }
 
   let currentCCDepth = 0.05;
