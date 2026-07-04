@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WebGL2 Liquid Glass Overlay</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body, html {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: #09090b;
+    }
+
+    /* Container for your background desktop layers (Wallpapers, Desktop Widgets, etc.) */
+    #desktop-wrapper {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Your high-quality desktop wallpaper */
+    #desktop-wallpaper {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      pointer-events: none;
+    }
+
+    /* Static decorative elements under the glass to prove refraction is live */
+    .desktop-icon {
+      position: absolute;
+      top: 150px;
+      left: 100px;
+      width: 80px;
+      text-align: center;
+      color: white;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+      font-size: 12px;
+      user-select: none;
+    }
+    .desktop-icon img {
+      width: 48px;
+      height: 48px;
+      margin-bottom: 6px;
+    }
+
+    /* The canvas where the WebGL2 glass is rendered */
+    #glass-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 10;
+      pointer-events: none; /* Let pointer events fall through to window interaction elements */
+    }
+
+    /* Invisible HTML window overlay handles to control window dragging/resizing */
+    #glass-window-handle {
+      position: absolute;
+      left: calc(50% - 250px);
+      top: calc(50% - 175px);
+      width: 500px;
+      height: 350px;
+      z-index: 20;
+      cursor: grab;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 37px;
+      box-shadow: inset 0 1px 1px rgba(255,255,255,0.1);
+    }
+    #glass-window-handle:active {
+      cursor: grabbing;
+    }
+
+    /* Window content placed directly over the refraction area */
+    #window-content {
+      position: absolute;
+      inset: 24px;
+      pointer-events: none;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      color: rgba(255, 255, 255, 0.9);
+    }
+    .window-header {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+    .window-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+    .dot-close { background: #ff5f56; }
+    .dot-min { background: #ffbd2e; }
+    .dot-max { background: #27c93f; }
+  </style>
+</head>
+<body>
+
+  <div id="desktop-wrapper">
+    <!-- 1. Background Wallpaper -->
+    <img id="desktop-wallpaper" src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1600&q=80" crossorigin="anonymous" />
+
+    <!-- 2. Desktop Items Underneath -->
+    <div class="desktop-icon">
+      <img src="https://cdn-icons-png.flaticon.com/512/564/564419.png" alt="folder" />
+      <p>Documents</p>
+    </div>
+
+    <!-- 3. WebGL Rendering Canvas -->
+    <canvas id="glass-canvas"></canvas>
+
+    <!-- 4. HTML Window controller with standard UI -->
+    <div id="glass-window-handle">
+      <div id="window-content">
+        <div class="window-header">
+          <div class="window-dot dot-close"></div>
+          <div class="window-dot dot-min"></div>
+          <div class="window-dot dot-max"></div>
+          <span style="font-size: 11px; font-weight: 500; margin-left: 8px; color: rgba(255,255,255,0.4); font-family: monospace;">TAHOE_REFRACTION_OS</span>
+        </div>
+        <div style="font-size: 14px; line-height: 1.5; color: rgba(255,255,255,0.8);">
+          <h2 style="font-size: 24px; font-weight: 600; color: #fff; margin-bottom: 8px;">Liquid Glass</h2>
+          <p>Drag this panel around. Notice how the background lines and colors warp dynamically through the rounded bevels in real-time.</p>
+        </div>
+        <div style="font-family: monospace; font-size: 10px; color: rgba(255,255,255,0.3);">
+          REFRACTION_INDEX: 200% • BEVEL_WIDTH: 7px • CHROMATIC_ABBERATION: 0.02
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- WebGL2 Liquid Glass Core Shader Pipeline ---
+
+    const canvas = document.getElementById('glass-canvas');
+    const gl = canvas.getContext('webgl2', { alpha: false, antialias: true });
+
+    if (!gl) {
+      alert('WebGL2 not supported in this browser!');
+    }
+
+    // Physical configurations matching our tuned settings
+    const config = {
+      refractionStrength: 2.0, // 200%
+      edgeThickness: 7.0,     // 7px Bevel
+      chromaticAberration: 0.02,
+      frostedOpacity: 0.08,
+      grainOpacity: 0.05,
+      cornerRadius: 37.0,
+      shadowOpacity: 0.5,
+      shadowSoftness: 30.0,
+      glassColor: [1.0, 1.0, 1.0] // White tint
+    };
+
+    // Tracking structural Window Boundaries
+    const winHandle = document.getElementById('glass-window-handle');
+    let winPos = {
+      left: winHandle.offsetLeft,
+      top: winHandle.offsetTop,
+      width: winHandle.offsetWidth,
+      height: winHandle.offsetHeight
+    };
+
+    // Setup drag events
+    let isDragging = false;
+    let dragStart = { x: 0, y: 0, startLeft: 0, startTop: 0 };
+
+    winHandle.addEventListener('mousedown', (e) => {
+      isDragging = true;
+      dragStart = {
+        x: e.clientX,
+        y: e.clientY,
+        startLeft: winPos.left,
+        startTop: winPos.top
+      };
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (!isDragging) return;
+      const dx = e.clientX - dragStart.x;
+      const dy = e.clientY - dragStart.y;
+      winPos.left = dragStart.startLeft + dx;
+      winPos.top = dragStart.startTop + dy;
+
+      winHandle.style.left = `${winPos.left}px`;
+      winHandle.style.top = `${winPos.top}px`;
+    });
+
+    window.addEventListener('mouseup', () => {
+      isDragging = false;
+    });
+
+    // Vertex shader: Full-screen Quad mapping
+    const vsSource = `#version 300 es
+      in vec2 position;
+      out vec2 v_uv;
+      void main() {
+        v_uv = position * 0.5 + 0.5;
+        gl_Position = vec4(position, 0.0, 1.0);
+      }
+    `;
+
+    // Fragment Shader: Calculates rounded box SDF, Numerical Normal Gradients, and Chromatic Displacement
+    const fsSource = `#version 300 es
+      precision highp float;
+      in vec2 v_uv;
+      out vec4 fragColor;
+
+      uniform sampler2D u_backgroundTexture;
+      uniform vec2 u_resolution;
+      uniform float u_time;
+
+      uniform vec2 u_glassCenter;
+      uniform vec2 u_glassSize;
+      uniform float u_refractionStrength;
+      uniform float u_edgeThickness;
+      uniform float u_chromaticAberration;
+      uniform float u_frostedOpacity;
+      uniform float u_grainOpacity;
+      uniform float u_cornerRadius;
+      uniform float u_shadowOpacity;
+      uniform float u_shadowSoftness;
+      uniform vec3 u_glassColor;
+
+      float sdRoundRect(vec2 p, vec2 b, float r) {
+        vec2 d = abs(p) - b + vec2(r);
+        return min(max(d.x, d.y), 0.0) + length(max(d, 0.0)) - r;
+      }
+
+      float noise(vec2 co) {
+        return fract(sin(dot(co.xy, vec2(12.9898, 78.233))) * 43758.5453);
+      }
+
+      void main() {
+        vec2 pixelCoord = v_uv * u_resolution;
+        vec2 p = pixelCoord - u_glassCenter;
+        vec2 halfSize = u_glassSize * 0.5;
+
+        float sd = sdRoundRect(p, halfSize, u_cornerRadius);
+
+        // Drop shadow calculations
+        vec2 shadowOffset = vec2(10.0, -16.0);
+        vec2 pShadow = pixelCoord - (u_glassCenter + shadowOffset);
+        float sdShadow = sdRoundRect(pShadow, halfSize, u_cornerRadius);
+
+        vec4 baseBg = texture(u_backgroundTexture, v_uv);
+        vec4 finalColor = baseBg;
+
+        if (sdShadow > 0.0) {
+          float shadowIntensity = u_shadowOpacity * exp(-sdShadow / u_shadowSoftness);
+          finalColor.rgb *= (1.0 - shadowIntensity);
+        } else {
+          finalColor.rgb *= (1.0 - u_shadowOpacity);
+        }
+
+        if (sd < 0.0) {
+          float d_edge = -sd;
+          
+          // Numerical Normal gradient approximation
+          float eps = 1.0;
+          float sd_dx = sdRoundRect(p + vec2(eps, 0.0), halfSize, u_cornerRadius);
+          float sd_dy = sdRoundRect(p + vec2(0.0, eps), halfSize, u_cornerRadius);
+          vec2 grad = vec2(sd_dx - sd, sd_dy - sd) / eps;
+          vec2 n_dir = length(grad) > 0.001 ? normalize(grad) : vec2(0.0);
+
+          float normalized_dist = d_edge / u_edgeThickness;
+          float slope = exp(-normalized_dist) / u_edgeThickness;
+          
+          float borderRim = d_edge < 4.0 ? (4.0 - d_edge) * 0.12 : 0.0;
+          vec2 normal2D = -n_dir * (slope * u_refractionStrength * 120.0 + borderRim * 25.0);
+          vec2 uvOffset = normal2D / u_resolution;
+
+          // Chromatic dispersion UV split
+          vec2 uvR = clamp(v_uv + uvOffset * (1.0 + u_chromaticAberration * 4.0), 0.001, 0.999);
+          vec2 uvG = clamp(v_uv + uvOffset, 0.001, 0.999);
+          vec2 uvB = clamp(v_uv + uvOffset * (1.0 - u_chromaticAberration * 4.0), 0.001, 0.999);
+
+          float r_val = texture(u_backgroundTexture, uvR).r;
+          float g_val = texture(u_backgroundTexture, uvG).g;
+          float b_val = texture(u_backgroundTexture, uvB).b;
+          vec3 refractedColor = vec3(r_val, g_val, b_val);
+
+          // Matte frosted blending & animated noise grain
+          vec3 glassColor = mix(refractedColor, u_glassColor, u_frostedOpacity);
+          float grain = (noise(pixelCoord + vec2(u_time * 12.0)) - 0.5) * u_grainOpacity;
+          glassColor += vec3(grain);
+
+          // Bevel light highlights
+          float hairlineEdge = smoothstep(1.5, 0.0, abs(sd));
+          glassColor += vec3(0.25) * hairlineEdge;
+
+          finalColor = vec4(glassColor, 1.0);
+        }
+
+        fragColor = finalColor;
+      }
+    `;
+
+    // Compiling & Linking
+    function createShader(gl, source, type) {
+      const shader = gl.createShader(type);
+      gl.shaderSource(shader, source);
+      gl.compileShader(shader);
+      if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+        console.error(gl.getShaderInfoLog(shader));
+        return null;
+      }
+      return shader;
+    }
+
+    const vs = createShader(gl, vsSource, gl.VERTEX_SHADER);
+    const fs = createShader(gl, fsSource, gl.FRAGMENT_SHADER);
+    const program = gl.createProgram();
+    gl.attachShader(program, vs);
+    gl.attachShader(program, fs);
+    gl.linkProgram(program);
+
+    // Geometry buffers
+    const vertices = new Float32Array([-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1]);
+    const buffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+    gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+
+    const vao = gl.createVertexArray();
+    gl.bindVertexArray(vao);
+    const posLoc = gl.getAttribLocation(program, 'position');
+    gl.enableVertexAttribArray(posLoc);
+    gl.vertexAttribPointer(posLoc, 2, gl.FLOAT, false, 0, 0);
+
+    // Create 2D Canvas to capture the background DOM image
+    const bgCanvas = document.createElement('canvas');
+    const bgCtx = bgCanvas.getContext('2d');
+    const wallpaperImg = document.getElementById('desktop-wallpaper');
+
+    const bgTexture = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, bgTexture);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+
+    // Responsive Canvas Resizing
+    function resize() {
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      canvas.width = w;
+      canvas.height = h;
+      bgCanvas.width = w;
+      bgCanvas.height = h;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    // Render loop
+    function render(time) {
+      // 1. Draw current background content onto offscreen canvas texture
+      if (wallpaperImg.complete) {
+        bgCtx.drawImage(wallpaperImg, 0, 0, bgCanvas.width, bgCanvas.height);
+      }
+
+      // Draw other elements if needed or simple gradients
+      gl.bindTexture(gl.TEXTURE_2D, bgTexture);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, bgCanvas);
+
+      // 2. Bind shaders & set uniforms
+      gl.viewport(0, 0, canvas.width, canvas.height);
+      gl.useProgram(program);
+      gl.bindVertexArray(vao);
+
+      gl.uniform2f(gl.getUniformLocation(program, 'u_resolution'), canvas.width, canvas.height);
+      gl.uniform1f(gl.getUniformLocation(program, 'u_time'), time * 0.001);
+
+      // Coordinates conversion: HTML (top-left) to WebGL (bottom-left)
+      const webglCenterY = canvas.height - (winPos.top + winPos.height * 0.5);
+      gl.uniform2f(
+        gl.getUniformLocation(program, 'u_glassCenter'), 
+        winPos.left + winPos.width * 0.5, 
+        webglCenterY
+      );
+      gl.uniform2f(gl.getUniformLocation(program, 'u_glassSize'), winPos.width, winPos.height);
+
+      // Bind custom physical settings
+      gl.uniform1f(gl.getUniformLocation(program, 'u_refractionStrength'), config.refractionStrength);
+      gl.uniform1f(gl.getUniformLocation(program, 'u_edgeThickness'), config.edgeThickness);
+      gl.uniform1f(gl.getUniformLocation(program, 'u_chromaticAberration'), config.chromaticAberration);
+      gl.uniform1f(gl.getUniformLocation(program, 'u_frostedOpacity'), config.frostedOpacity);
+      gl.uniform1f(gl.getUniformLocation(program, 'u_grainOpacity'), config.grainOpacity);
+      gl.uniform1f(gl.getUniformLocation(program, 'u_cornerRadius'), config.cornerRadius);
+      gl.uniform1f(gl.getUniformLocation(program, 'u_shadowOpacity'), config.shadowOpacity);
+      gl.uniform1f(gl.getUniformLocation(program, 'u_shadowSoftness'), config.shadowSoftness);
+      gl.uniform3f(gl.getUniformLocation(program, 'u_glassColor'), config.glassColor[0], config.glassColor[1], config.glassColor[2]);
+
+      // Draw full screen
+      gl.drawArrays(gl.TRIANGLES, 0, 6);
+
+      requestAnimationFrame(render);
+    }
+
+    wallpaperImg.onload = () => {
+      requestAnimationFrame(render);
+    };
+    // Fallback if cached
+    if (wallpaperImg.complete) {
+      requestAnimationFrame(render);
+    }
+  </script>
+</body>
+</html>

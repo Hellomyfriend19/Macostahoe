@@ -289,14 +289,15 @@
   .icon-image-layer {
     position: absolute;
     inset: 0;
-    transition: filter 0.3s;
+    transition: filter 0.3s, opacity 0.3s;
     background-repeat: no-repeat;
     background-position: center;
     transform: translateZ(0);
+    filter: brightness(var(--icon-brightness, 1));
   }
   
-  body.icons-transparent .icon-image-layer {
-    filter: url(#icon-transparent-filter);
+  body.icons-transparent.icons-dark-active .icon-image-layer {
+    filter: url(#icon-transparent-filter) brightness(var(--icon-brightness, 1));
   }
 
   body.dark-mode .window, 
@@ -653,6 +654,61 @@
     display: inline-block;
   }
 
+  /* Desktop Folder Styling */
+  .desktop-item.folder-item {
+    pointer-events: auto;
+  }
+  .desktop-item.folder-item:hover {
+    background: none !important;
+    border: none !important;
+  }
+  .desktop-item.folder-item.selected {
+    background: none !important;
+    border: none !important;
+  }
+  .desktop-item.folder-item .name {
+    background: none !important;
+    white-space: nowrap !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8) !important;
+    display: inline-block;
+    max-width: none !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+  }
+  .desktop-item.folder-item.selected .icon {
+    background-color: rgba(0, 0, 0, 0.25) !important;
+    border-radius: 8px;
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.15);
+  }
+  .desktop-item.folder-item.selected .name {
+    background: #007aff !important;
+    color: white !important;
+    text-shadow: none !important;
+    border-radius: 4px;
+    padding: 2px 6px !important;
+    white-space: nowrap !important;
+    max-width: none !important;
+    overflow: visible !important;
+  }
+
+  /* Folder Context Menu */
+  #folder-context-menu-glass {
+    box-shadow: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    overflow: visible !important;
+  }
+  .folder-ctx-item {
+    transition: background-color 0.1s ease, color 0.1s ease;
+  }
+  .folder-ctx-item:hover {
+    background-color: var(--context-menu-item-hover-bg, #007aff) !important;
+    color: white !important;
+  }
+  .folder-ctx-item:hover .ctx-icon-wrapper i {
+    color: white !important;
+  }
+
   /* Context Menu CSS Variables */
   :root {
     --context-menu-bg: rgba(255, 255, 255, 0.76);
@@ -665,6 +721,8 @@
     --safari-titlebar-bg: rgba(236, 236, 236, 0.7);
     --finder-titlebar-bg: rgba(255, 255, 255, 0.5);
     --settings-titlebar-bg: rgba(255, 255, 255, 0.5);
+    --tooltip-bg: rgba(255, 255, 255, 0.25);
+    --icon-brightness: 1.0;
   }
   body.dark-mode {
     --context-menu-bg: rgba(45, 45, 45, 0.7);
@@ -677,6 +735,7 @@
     --safari-titlebar-bg: rgba(44, 44, 44, 0.7);
     --finder-titlebar-bg: rgba(37, 37, 37, 0.7);
     --settings-titlebar-bg: rgba(37, 37, 37, 0.7);
+    --tooltip-bg: rgba(45, 45, 45, 0.25);
   }
 
   /* Glass Dropdowns and Context Menu Styling */
@@ -1174,9 +1233,9 @@
 
   /* Launchpad Styles */
   #launchpad-window {
-    background: rgba(255, 255, 255, 0.45) !important;
-    backdrop-filter: blur(25px) !important;
-    -webkit-backdrop-filter: blur(25px) !important;
+    background: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
     box-shadow: 0 30px 80px rgba(0,0,0,0.6), var(--window-stroke) !important;
     border-radius: 24px;
     display: none;
@@ -1186,9 +1245,9 @@
   }
   
   body.dark-mode #launchpad-window {
-    background: rgba(30, 30, 30, 0.75) !important;
-    backdrop-filter: blur(35px) !important;
-    -webkit-backdrop-filter: blur(35px) !important;
+    background: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
   }
   .launchpad-titlebar {
     height: 64px;
@@ -2554,6 +2613,142 @@
     <span class="ctx-icon-wrapper"><i data-lucide="settings"></i></span>
     <span class="ctx-text">Show View Options</span>
   </div>
+</div>
+</glass-element>
+
+<glass-element id="folder-context-menu-glass" style="position:fixed; z-index:100000; display:none;" radius="12" depth="5" blur="15" strength="40" background-color="var(--context-menu-bg)" chromatic-aberration="1" auto-size>
+<div class="folder-context-menu" id="folder-context-menu" style="position:relative; background:transparent; backdrop-filter:none; -webkit-backdrop-filter:none; box-shadow:none; border:none; opacity:1; pointer-events:auto; transform:none; border-radius:0; width: 230px; padding: 6px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+  
+  <div class="folder-ctx-item" id="folder-ctx-open" style="display: flex; align-items: center; justify-content: space-between; padding: 5px 8px; border-radius: 6px; cursor: pointer; color: var(--context-menu-color); font-size: 13px; line-height: 1.4;">
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <span class="ctx-icon-wrapper" style="display: inline-flex; width: 16px; justify-content: center; opacity: 0.85;"><i data-lucide="square-arrow-up-right" style="width: 14px; height: 14px;"></i></span>
+      <span>Open</span>
+    </div>
+  </div>
+
+  <div class="folder-ctx-item" id="folder-ctx-trash" style="display: flex; align-items: center; justify-content: space-between; padding: 5px 8px; border-radius: 6px; cursor: pointer; color: var(--context-menu-color); font-size: 13px; line-height: 1.4;">
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <span class="ctx-icon-wrapper" style="display: inline-flex; width: 16px; justify-content: center; opacity: 0.85;"><i data-lucide="trash-2" style="width: 14px; height: 14px;"></i></span>
+      <span>Move to Trash</span>
+    </div>
+  </div>
+
+  <div style="height: 1px; background: rgba(128,128,128,0.2); margin: 5px 4px;"></div>
+
+  <div class="folder-ctx-item" id="folder-ctx-info" style="display: flex; align-items: center; justify-content: space-between; padding: 5px 8px; border-radius: 6px; cursor: pointer; color: var(--context-menu-color); font-size: 13px; line-height: 1.4;">
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <span class="ctx-icon-wrapper" style="display: inline-flex; width: 16px; justify-content: center; opacity: 0.85;"><i data-lucide="info" style="width: 14px; height: 14px;"></i></span>
+      <span>Get Info</span>
+    </div>
+  </div>
+
+  <div class="folder-ctx-item" id="folder-ctx-rename" style="display: flex; align-items: center; justify-content: space-between; padding: 5px 8px; border-radius: 6px; cursor: pointer; color: var(--context-menu-color); font-size: 13px; line-height: 1.4;">
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <span class="ctx-icon-wrapper" style="display: inline-flex; width: 16px; justify-content: center; opacity: 0.85;"><i data-lucide="pencil" style="width: 14px; height: 14px;"></i></span>
+      <span>Rename</span>
+    </div>
+  </div>
+
+  <div class="folder-ctx-item" id="folder-ctx-compress" style="display: flex; align-items: center; justify-content: space-between; padding: 5px 8px; border-radius: 6px; cursor: pointer; color: var(--context-menu-color); font-size: 13px; line-height: 1.4;">
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <span class="ctx-icon-wrapper" style="display: inline-flex; width: 16px; justify-content: center; opacity: 0.85;"><i data-lucide="archive" style="width: 14px; height: 14px;"></i></span>
+      <span id="folder-ctx-compress-text">Compress "untitled folder"</span>
+    </div>
+  </div>
+
+  <div class="folder-ctx-item" id="folder-ctx-duplicate" style="display: flex; align-items: center; justify-content: space-between; padding: 5px 8px; border-radius: 6px; cursor: pointer; color: var(--context-menu-color); font-size: 13px; line-height: 1.4;">
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <span class="ctx-icon-wrapper" style="display: inline-flex; width: 16px; justify-content: center; opacity: 0.85;"><i data-lucide="files" style="width: 14px; height: 14px;"></i></span>
+      <span>Duplicate</span>
+    </div>
+  </div>
+
+  <div class="folder-ctx-item" id="folder-ctx-alias" style="display: flex; align-items: center; justify-content: space-between; padding: 5px 8px; border-radius: 6px; cursor: pointer; color: var(--context-menu-color); font-size: 13px; line-height: 1.4;">
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <span class="ctx-icon-wrapper" style="display: inline-flex; width: 16px; justify-content: center; opacity: 0.85;"><i data-lucide="corner-up-right" style="width: 14px; height: 14px;"></i></span>
+      <span>Make Alias</span>
+    </div>
+  </div>
+
+  <div class="folder-ctx-item" id="folder-ctx-quicklook" style="display: flex; align-items: center; justify-content: space-between; padding: 5px 8px; border-radius: 6px; cursor: pointer; color: var(--context-menu-color); font-size: 13px; line-height: 1.4;">
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <span class="ctx-icon-wrapper" style="display: inline-flex; width: 16px; justify-content: center; opacity: 0.85;"><i data-lucide="eye" style="width: 14px; height: 14px;"></i></span>
+      <span>Quick Look</span>
+    </div>
+  </div>
+
+  <div style="height: 1px; background: rgba(128,128,128,0.2); margin: 5px 4px;"></div>
+
+  <div class="folder-ctx-item" id="folder-ctx-copy" style="display: flex; align-items: center; justify-content: space-between; padding: 5px 8px; border-radius: 6px; cursor: pointer; color: var(--context-menu-color); font-size: 13px; line-height: 1.4;">
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <span class="ctx-icon-wrapper" style="display: inline-flex; width: 16px; justify-content: center; opacity: 0.85;"><i data-lucide="copy" style="width: 14px; height: 14px;"></i></span>
+      <span>Copy</span>
+    </div>
+  </div>
+
+  <div class="folder-ctx-item" id="folder-ctx-share" style="display: flex; align-items: center; justify-content: space-between; padding: 5px 8px; border-radius: 6px; cursor: pointer; color: var(--context-menu-color); font-size: 13px; line-height: 1.4;">
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <span class="ctx-icon-wrapper" style="display: inline-flex; width: 16px; justify-content: center; opacity: 0.85;"><i data-lucide="share" style="width: 14px; height: 14px;"></i></span>
+      <span>Share...</span>
+    </div>
+  </div>
+
+  <div style="height: 1px; background: rgba(128,128,128,0.2); margin: 5px 4px;"></div>
+
+  <!-- Row of Colored Circles (Tags) -->
+  <div style="display: flex; justify-content: space-between; align-items: center; padding: 4px 8px; margin: 2px 0;">
+    <div class="folder-tag-circle" data-tag="red" style="width: 14px; height: 14px; border-radius: 50%; background: #ff453a; cursor: pointer; border: 1px solid rgba(0,0,0,0.15); transition: transform 0.1s;"></div>
+    <div class="folder-tag-circle" data-tag="orange" style="width: 14px; height: 14px; border-radius: 50%; background: #ff9f0a; cursor: pointer; border: 1px solid rgba(0,0,0,0.15); transition: transform 0.1s;"></div>
+    <div class="folder-tag-circle" data-tag="yellow" style="width: 14px; height: 14px; border-radius: 50%; background: #ffd60a; cursor: pointer; border: 1px solid rgba(0,0,0,0.15); transition: transform 0.1s;"></div>
+    <div class="folder-tag-circle" data-tag="green" style="width: 14px; height: 14px; border-radius: 50%; background: #30d158; cursor: pointer; border: 1px solid rgba(0,0,0,0.15); transition: transform 0.1s;"></div>
+    <div class="folder-tag-circle" data-tag="blue" style="width: 14px; height: 14px; border-radius: 50%; background: #0a84ff; cursor: pointer; border: 1px solid rgba(0,0,0,0.15); transition: transform 0.1s;"></div>
+    <div class="folder-tag-circle" data-tag="purple" style="width: 14px; height: 14px; border-radius: 50%; background: #bf5af2; cursor: pointer; border: 1px solid rgba(0,0,0,0.15); transition: transform 0.1s;"></div>
+    <div class="folder-tag-circle" data-tag="gray" style="width: 14px; height: 14px; border-radius: 50%; background: #8e8e93; cursor: pointer; border: 1px solid rgba(0,0,0,0.15); transition: transform 0.1s;"></div>
+  </div>
+
+  <div class="folder-ctx-item" id="folder-ctx-customize" style="display: flex; align-items: center; justify-content: space-between; padding: 5px 8px; border-radius: 6px; cursor: pointer; color: var(--context-menu-color); font-size: 13px; line-height: 1.4;">
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <span class="ctx-icon-wrapper" style="display: inline-flex; width: 16px; justify-content: center; opacity: 0.85;"><i data-lucide="tag" style="width: 14px; height: 14px;"></i></span>
+      <span>Customize Folder...</span>
+    </div>
+  </div>
+
+  <div style="height: 1px; background: rgba(128,128,128,0.2); margin: 5px 4px;"></div>
+
+  <div class="folder-ctx-item" id="folder-ctx-import" style="display: flex; align-items: center; justify-content: space-between; padding: 5px 8px; border-radius: 6px; cursor: pointer; color: var(--context-menu-color); font-size: 13px; line-height: 1.4;">
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <span class="ctx-icon-wrapper" style="display: inline-flex; width: 16px; justify-content: center; opacity: 0.85;"><i data-lucide="smartphone" style="width: 14px; height: 14px;"></i></span>
+      <span>Import from iPhone</span>
+    </div>
+    <span style="opacity: 0.5; font-size: 10px;">&gt;</span>
+  </div>
+
+  <div class="folder-ctx-item" id="folder-ctx-quickactions" style="display: flex; align-items: center; justify-content: space-between; padding: 5px 8px; border-radius: 6px; cursor: pointer; color: var(--context-menu-color); font-size: 13px; line-height: 1.4;">
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <span class="ctx-icon-wrapper" style="display: inline-flex; width: 16px; justify-content: center; opacity: 0.85;"><i data-lucide="zap" style="width: 14px; height: 14px;"></i></span>
+      <span>Quick Actions</span>
+    </div>
+    <span style="opacity: 0.5; font-size: 10px;">&gt;</span>
+  </div>
+
+  <div style="height: 1px; background: rgba(128,128,128,0.2); margin: 5px 4px;"></div>
+
+  <div class="folder-ctx-item" id="folder-ctx-setup" style="display: flex; align-items: center; padding: 5px 8px; border-radius: 6px; cursor: pointer; color: var(--context-menu-color); font-size: 13px; line-height: 1.4; padding-left: 24px;">
+    Folder Actions Setup...
+  </div>
+
+  <div class="folder-ctx-item" id="folder-ctx-term" style="display: flex; align-items: center; padding: 5px 8px; border-radius: 6px; cursor: pointer; color: var(--context-menu-color); font-size: 13px; line-height: 1.4; padding-left: 24px;">
+    New Terminal at Folder
+  </div>
+
+  <div class="folder-ctx-item" id="folder-ctx-term-tab" style="display: flex; align-items: center; padding: 5px 8px; border-radius: 6px; cursor: pointer; color: var(--context-menu-color); font-size: 13px; line-height: 1.4; padding-left: 24px;">
+    New Terminal Tab at Folder
+  </div>
+
+  <div class="folder-ctx-item" id="folder-ctx-hammerspoon" style="display: flex; align-items: center; padding: 5px 8px; border-radius: 6px; cursor: pointer; color: var(--context-menu-color); font-size: 13px; line-height: 1.4; padding-left: 24px;">
+    Send to Hammerspoon
+  </div>
+
 </div>
 </glass-element>
 
@@ -4767,6 +4962,55 @@
               <span class="toggle-slider"></span>
             </label>
           </div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <span style="font-weight: 500; font-size: 14px; color: #ff9f0a; display: flex; align-items: center; gap: 6px;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:#ff9f0a;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+              Warp Grid & Glass Diagnostics
+            </span>
+            <label class="toggle-switch">
+              <input type="checkbox" id="diagnostics-toggle">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+
+          <div id="icon-transparency-settings" style="display: none; background: rgba(0,0,0,0.03); padding: 12px; border-radius: 8px; margin-bottom: 16px;">
+            <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-weight: 500; font-size: 13px;">White Values Alpha</span>
+                <span id="ita-white-alpha-val" style="font-size: 12px; opacity: 0.7;">100%</span>
+              </div>
+              <input type="range" id="ita-white-alpha" min="0" max="100" step="1" value="100" style="width: 100%;">
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-weight: 500; font-size: 13px;">White Threshold</span>
+                <span id="ita-white-thresh-val" style="font-size: 12px; opacity: 0.7;">198</span>
+              </div>
+              <input type="range" id="ita-white-thresh" min="0" max="255" step="1" value="198" style="width: 100%;">
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-weight: 500; font-size: 13px;">Black Values Alpha</span>
+                <span id="ita-black-alpha-val" style="font-size: 12px; opacity: 0.7;">0%</span>
+              </div>
+              <input type="range" id="ita-black-alpha" min="0" max="100" step="1" value="0" style="width: 100%;">
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-weight: 500; font-size: 13px;">Black Threshold</span>
+                <span id="ita-black-thresh-val" style="font-size: 12px; opacity: 0.7;">23</span>
+              </div>
+              <input type="range" id="ita-black-thresh" min="0" max="255" step="1" value="23" style="width: 100%;">
+            </div>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-weight: 500; font-size: 14px;">Icon Brightness</span>
+              <span id="icon-brightness-value" style="font-size: 13px; opacity: 0.7;">100%</span>
+            </div>
+            <input type="range" id="icon-brightness-slider" min="20" max="250" step="1" value="100" style="width: 100%;">
+          </div>
 
           <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
             <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -4826,6 +5070,31 @@
               <span id="dock-strength-value" style="font-size: 13px; opacity: 0.7;">120</span>
             </div>
             <input type="range" id="dock-strength-slider" min="0" max="200" step="5" value="120" style="width: 100%;">
+          </div>
+        </div>
+
+        <h3 style="margin: 24px 0 12px 0; font-weight: 600; font-size: 16px;">Apple Music Liquid Glass</h3>
+        <div style="background: rgba(0, 0, 0, 0.05); padding: 20px; border-radius: 12px; border: 1px solid rgba(0, 0, 0, 0.1);">
+          <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-weight: 500; font-size: 14px;">Glass Depth</span>
+              <span id="music-depth-value" style="font-size: 13px; opacity: 0.7;">2</span>
+            </div>
+            <input type="range" id="music-depth-slider" min="0" max="50" step="1" value="2" style="width: 100%;">
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-weight: 500; font-size: 14px;">Glass Blur</span>
+              <span id="music-blur-value" style="font-size: 13px; opacity: 0.7;">1</span>
+            </div>
+            <input type="range" id="music-blur-slider" min="0" max="50" step="1" value="1" style="width: 100%;">
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-weight: 500; font-size: 14px;">Glass Strength</span>
+              <span id="music-strength-value" style="font-size: 13px; opacity: 0.7;">117</span>
+            </div>
+            <input type="range" id="music-strength-slider" min="0" max="400" step="1" value="117" style="width: 100%;">
           </div>
         </div>
 
@@ -4977,6 +5246,7 @@
 </div>
 
 <div id="launchpad-window" class="window" style="position:absolute; top:50%; left:50%; width:800px; height:500px; margin-left:-400px; margin-top:-250px; display:none; flex-direction:column; z-index:100; overflow:hidden;">
+  <glass-element id="launchpad-glass" style="position:absolute; top:0; left:0; width:100%; height:100%; z-index:-1; pointer-events:none;" radius="24" depth="5" blur="2" strength="40" background-color="rgba(255, 255, 255, 0.45)" chromatic-aberration="1" auto-size="false"></glass-element>
   <div class="window-inner" style="position:relative; width:100%; height:100%; display:flex; flex-direction:column; background:transparent; backdrop-filter:none; -webkit-backdrop-filter:none; box-shadow:none; border-radius:0; border:none; padding:0; overflow:hidden;">
     <div class="launchpad-titlebar">
       <!-- Hidden traffic lights to maintain script functionality -->
@@ -5048,7 +5318,7 @@
     
     <!-- Sidebar / Left Panel -->
     <div class="music-sidebar" style="position: relative; width: 220px; height: 100%; display: flex; flex-direction: column; justify-content: space-between; padding: 18px 0 18px 0; box-sizing: border-box; flex-shrink: 0; border-right: 1px solid var(--music-sidebar-border); cursor: default;">
-      <glass-element style="position:absolute; top:0; left:0; width:100%; height:100%; z-index:-1; pointer-events:none;" radius="12" radius-config="left" depth="3" blur="15" strength="35" background-color="var(--music-sidebar-bg)" chromatic-aberration="1" auto-size="false"></glass-element>
+      <glass-element id="music-sidebar-glass" style="position:absolute; top:0; left:0; width:100%; height:100%; z-index:-1; pointer-events:none;" radius="12" radius-config="left" depth="2" blur="1" strength="117" background-color="var(--music-sidebar-bg)" chromatic-aberration="1" auto-size="false"></glass-element>
       
       <div>
         <!-- Traffic lights / Top Gutter -->
@@ -5195,7 +5465,7 @@
       </div>
 
       <!-- FLOATING LIQUID GLASS CAPSULE PLAYER -->
-      <glass-element id="music-player-bar" radius="25" depth="15" blur="1" strength="110" background-color="var(--music-player-bg)" chromatic-aberration="1" auto-size="false" style="position: sticky; bottom: 20px; align-self: center; width: 90%; height: 50px; z-index: 1000; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; box-sizing: border-box; box-shadow: 0 8px 32px rgba(0,0,0,0.1), 0 0px 1px rgba(255,255,255,0.25) inset; transition: filter 0.3s ease; flex-shrink: 0;">
+      <glass-element id="music-player-bar" radius="25" depth="2" blur="1" strength="117" background-color="var(--music-player-bg)" chromatic-aberration="1" auto-size="false" style="position: sticky; bottom: 20px; align-self: center; width: 90%; height: 50px; z-index: 1000; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; box-sizing: border-box; box-shadow: 0 8px 32px rgba(0,0,0,0.1), 0 0px 1px rgba(255,255,255,0.25) inset; transition: filter 0.3s ease; flex-shrink: 0;">
         <div class="player-bar-inner" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: space-between; color: var(--music-text); font-family: system-ui, sans-serif;">
           <!-- Left side: Controls (shuffle, back, play/pause, next, repeat) -->
           <div style="display: flex; align-items: center; gap: 16px; min-width: 140px;">
@@ -5520,16 +5790,16 @@
 </div>
 
 <div class="dock-tooltip" id="remove-tooltip" style="position: fixed !important; transform: translateX(-50%) scale(0.85); opacity: 0; pointer-events: none; z-index: 2147483647; transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);">
-  <div class="dock-tooltip-glass" id="remove-tooltip-glass"></div>
+  <glass-element id="remove-tooltip-glass" style="position:absolute; top:0; left:0; width:100%; height:100%; z-index:0; pointer-events:none;" radius="14" depth="3" blur="2" strength="100" background-color="var(--tooltip-bg)" chromatic-aberration="1" auto-size="false"></glass-element>
   <svg class="dock-tooltip-svg" id="remove-tooltip-svg" style="pointer-events: none; overflow: visible;"></svg>
   <span class="dock-tooltip-text" id="remove-tooltip-text">Remove</span>
 </div>
 
-<glass-element id="dock-glass-wrapper" style="position:fixed; bottom:20px; left:50%; transform:translateX(-50%); z-index:2147483647;" radius="21" depth="5" blur="2" strength="120" background-color="transparent" chromatic-aberration="1" auto-size>
+<glass-element id="dock-glass-wrapper" style="position:fixed; bottom:7px; left:50%; transform:translateX(-50%); z-index:2147483647;" radius="21" depth="5" blur="1" strength="120" background-color="transparent" chromatic-aberration="1" auto-size>
 <div class="dock-container" id="dock" style="margin-bottom:0; background:transparent; backdrop-filter:none; -webkit-backdrop-filter:none; box-shadow:none; border-radius:21px; position:relative;">
   
-  <div class="dock-tooltip" id="tooltip">
-    <div class="dock-tooltip-glass" id="tooltip-glass"></div>
+  <div class="dock-tooltip" id="tooltip" style="position: fixed !important; pointer-events: none; z-index: 2147483647;">
+    <glass-element id="tooltip-glass" style="position:absolute; top:0; left:0; width:100%; height:100%; z-index:0; pointer-events:none;" radius="14" depth="3" blur="2" strength="100" background-color="var(--tooltip-bg)" chromatic-aberration="1" auto-size="false"></glass-element>
     <svg class="dock-tooltip-svg" id="tooltip-svg" style="pointer-events: none;"></svg>
     <span class="dock-tooltip-text" id="tooltip-text"></span>
   </div>
@@ -5559,32 +5829,49 @@
       0.333 0.333 0.333 0 0
     "/>
     
-    <!-- Curve the Alpha to make gray more transparent (white visible, gray nearly invisible) -->
+    <!-- Curve the Alpha to map Luma to Transparency based on settings -->
     <feComponentTransfer in="luma" result="curvedAlpha">
-      <feFuncA type="gamma" exponent="1.5"/>
+      <feFuncA id="icon-alpha-curve" type="table" tableValues="0 1"/>
     </feComponentTransfer>
 
     <!-- Restrict to Original Alpha -->
     <feComposite in="curvedAlpha" in2="SourceGraphic" operator="in" result="transparentIcon"/>
 
-    <!-- 2. Actual Bevel and Light Reflection Effect -->
-    <!-- Blur the alpha for bevel geometry -->
-    <feGaussianBlur in="SourceAlpha" stdDeviation="0.8" result="blurAlpha" id="ibf-blur"/>
-
-    <!-- Specular Lighting for glossy reflection -->
-    <feSpecularLighting in="blurAlpha" surfaceScale="0.5" specularConstant="1.5" specularExponent="32" lighting-color="#ffffff" result="specularLight" id="ibf-specular">
-      <feDistantLight azimuth="233" elevation="36" id="ibf-light"/>
-    </feSpecularLighting>
-
-    <!-- Crop specular light within icon bounds -->
-    <feComposite in="specularLight" in2="SourceAlpha" operator="in" result="specularHighlight"/>
-
-    <!-- 3. Final Merge -->
+    <!-- Final Merge (no bevel/specular highlights) -->
     <feMerge>
       <feMergeNode in="transparentIcon"/>
-      <feMergeNode in="specularHighlight"/>
     </feMerge>
 
+  </filter>
+
+  <filter id="dock-specular-filter" color-interpolation-filters="sRGB">
+    <!-- 1. Blur the original alpha of the dock to define edge boundary -->
+    <feGaussianBlur in="SourceAlpha" stdDeviation="0.4" result="blurAlpha"/>
+
+    <!-- Specular Light 1: Top-Left (Azimuth 225) -->
+    <feSpecularLighting in="blurAlpha" surfaceScale="1.2" specularConstant="1.5" specularExponent="35" lighting-color="#ffffff" result="spec1">
+      <feDistantLight azimuth="225" elevation="55"/>
+    </feSpecularLighting>
+
+    <!-- Specular Light 2: Bottom-Right (Azimuth 45) -->
+    <feSpecularLighting in="blurAlpha" surfaceScale="1.2" specularConstant="1.5" specularExponent="35" lighting-color="#ffffff" result="spec2">
+      <feDistantLight azimuth="45" elevation="55"/>
+    </feSpecularLighting>
+
+    <!-- Combine both specular highlights -->
+    <feMerge result="combinedSpecs">
+      <feMergeNode in="spec1"/>
+      <feMergeNode in="spec2"/>
+    </feMerge>
+
+    <!-- Crop the specular highlights within the dock's alpha bounds -->
+    <feComposite in="combinedSpecs" in2="SourceAlpha" operator="in" result="specularStroke"/>
+
+    <!-- Final Merge (SourceGraphic under the 1px specular light highlight) -->
+    <feMerge>
+      <feMergeNode in="SourceGraphic"/>
+      <feMergeNode in="specularStroke"/>
+    </feMerge>
   </filter>
 
   <filter id="text-bevel-filter">
@@ -6529,10 +6816,8 @@
     }
 
     // 6. Launchpad window
+    // Disabled squircle to allow liquid glass backdrop-filter to work perfectly without clip-path issues
     const launchpad = document.getElementById('launchpad-window');
-    if (launchpad) {
-      window.applySquircle(launchpad, { getRoundness: () => window.squircleSettings.launchpad, isWindow: true });
-    }
 
     // 7. About window
     const about = document.getElementById('about-window');
@@ -6728,16 +7013,51 @@
 <script>
 // ============ displacement-utils.js ============
 function getDisplacementMap({ height, width, radius, depth }) {
+    // Ensure radius is not larger than half of the width or height to avoid overlapping gradients
+    const rX = Math.min(radius, width / 2);
+    const rY = Math.min(radius, height / 2);
+
+    const x1 = ((rX / width) * 100).toFixed(4);
+    const x2 = (100 - (rX / width) * 100).toFixed(4);
+
+    const y1 = ((rY / height) * 100).toFixed(4);
+    const y2 = (100 - (rY / height) * 100).toFixed(4);
+
+    let innerShape = `<rect x="${depth}" y="${depth}" height="${height - 2 * depth}" width="${width - 2 * depth}" fill="#808080" rx="${radius}" ry="${radius}" filter="blur(${depth}px)" />`;
+    if (window.clipSquircle) {
+        try {
+            const innerW = Math.max(10, width - 2 * depth);
+            const innerH = Math.max(10, height - 2 * depth);
+            const innerRadius = Math.max(0, radius - depth);
+            const clipVal = window.clipSquircle({
+                width: innerW,
+                height: innerH,
+                roundness: 0.2,
+                curveLength: innerRadius
+            });
+            const pathMatch = clipVal.match(/path\(['"]([^'"]+)['"]\)/);
+            if (pathMatch && pathMatch[1]) {
+                innerShape = `<path d="${pathMatch[1]}" fill="#808080" transform="translate(${depth}, ${depth})" filter="blur(${depth}px)" />`;
+            }
+        } catch (e) {
+            console.warn("Displacement map inner squircle generation failed, using fallback:", e);
+        }
+    }
+
     const svg = `<svg height="${height}" width="${width}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
         <style>.mix { mix-blend-mode: screen; }</style>
         <defs>
-            <linearGradient id="Y" x1="0" x2="0" y1="${Math.ceil((radius / height) * 15)}%" y2="${Math.floor(100 - (radius / height) * 15)}%">
-                <stop offset="0%" stop-color="#0F0" />
-                <stop offset="100%" stop-color="#000" />
+            <linearGradient id="Y" x1="0" x2="0" y1="0%" y2="100%">
+                <stop offset="0%" stop-color="#000000" />
+                <stop offset="${y1}%" stop-color="#008000" />
+                <stop offset="${y2}%" stop-color="#008000" />
+                <stop offset="100%" stop-color="#00ff00" />
             </linearGradient>
-            <linearGradient id="X" x1="${Math.ceil((radius / width) * 15)}%" x2="${Math.floor(100 - (radius / width) * 15)}%" y1="0" y2="0">
-                <stop offset="0%" stop-color="#F00" />
-                <stop offset="100%" stop-color="#000" />
+            <linearGradient id="X" x1="0%" x2="100%" y1="0" y2="0">
+                <stop offset="0%" stop-color="#000000" />
+                <stop offset="${x1}%" stop-color="#800000" />
+                <stop offset="${x2}%" stop-color="#800000" />
+                <stop offset="100%" stop-color="#ff0000" />
             </linearGradient>
         </defs>
         <rect x="0" y="0" height="${height}" width="${width}" fill="#808080" />
@@ -6745,7 +7065,7 @@ function getDisplacementMap({ height, width, radius, depth }) {
           <rect x="0" y="0" height="${height}" width="${width}" fill="#000080" />
           <rect x="0" y="0" height="${height}" width="${width}" fill="url(#Y)" class="mix" />
           <rect x="0" y="0" height="${height}" width="${width}" fill="url(#X)" class="mix" />
-          <rect x="${depth}" y="${depth}" height="${height - 2 * depth}" width="${width - 2 * depth}" fill="#808080" rx="${radius}" ry="${radius}" filter="blur(${depth}px)" />
+          ${innerShape}
         </g>
     </svg>`;
     return "data:image/svg+xml;utf8," + encodeURIComponent(svg);
@@ -6804,12 +7124,24 @@ class GlassElement extends HTMLElement {
         } catch(e) { return false; }
     }
     get hasSVGFilterSupport() { return GlassElement._svgFilterSupport; }
+    get isLiquidWebGL() {
+        return this.id === 'launchpad-glass' || this.hasAttribute('liquid');
+    }
     static get observedAttributes() {
         return ['width','height','radius','depth','blur','strength','chromatic-aberration','debug','background-color','responsive','base-width','base-height','auto-size','min-width','min-height'];
     }
     connectedCallback() {
         this.render();
         this.setupEventListeners();
+        
+        if (this.isLiquidWebGL) {
+            this.initWebGL();
+            window.activeLiquidGlassElements = window.activeLiquidGlassElements || [];
+            if (!window.activeLiquidGlassElements.includes(this)) {
+                window.activeLiquidGlassElements.push(this);
+            }
+        }
+
         if (window.ResizeObserver) {
             this._resizeObserver = new ResizeObserver((entries) => {
                 if (!Array.isArray(entries) || !entries.length) return;
@@ -6842,6 +7174,16 @@ class GlassElement extends HTMLElement {
         if (this._forceGlassListener) {
             this.removeEventListener('force-liquid-glass', this._forceGlassListener);
         }
+        const filterWrapper = document.getElementById('svg-wrapper-' + this._id);
+        if (filterWrapper) {
+            filterWrapper.remove();
+        }
+        if (this.isLiquidWebGL) {
+            if (window.activeLiquidGlassElements) {
+                window.activeLiquidGlassElements = window.activeLiquidGlassElements.filter(el => el !== this);
+            }
+            this.cleanupWebGL();
+        }
     }
     attributeChangedCallback(name, oldValue, newValue) {
         if (oldValue === newValue) return;
@@ -6851,6 +7193,10 @@ class GlassElement extends HTMLElement {
                 this.updateStyles();
             } else {
                 this.render();
+                if (this.isLiquidWebGL) {
+                    this.cleanupWebGL();
+                    this.initWebGL();
+                }
             }
         }
     }
@@ -6859,7 +7205,10 @@ class GlassElement extends HTMLElement {
     get radius() { return parseInt(this.getAttribute('radius')) || 50; }
     get radiusConfig() { return this.getAttribute('radius-config') || 'all'; }
     get baseDepth() { return parseInt(this.getAttribute('depth')) || 10; }
-    get blur() { return parseInt(this.getAttribute('blur')) || 2; }
+    get blur() {
+        const val = this.getAttribute('blur');
+        return val !== null && !isNaN(parseFloat(val)) ? parseFloat(val) : 2;
+    }
     get strength() { return parseInt(this.getAttribute('strength')) || 100; }
     get chromaticAberration() { return parseInt(this.getAttribute('chromatic-aberration')) || 0; }
     get debug() { return this.getAttribute('debug') === 'true'; }
@@ -6872,11 +7221,253 @@ class GlassElement extends HTMLElement {
         this._forceGlassListener = () => this.updateStyles();
         this.addEventListener('force-liquid-glass', this._forceGlassListener);
     }
+    initWebGL() {
+        const canvas = this.shadowRoot.querySelector('.glass-webgl-canvas');
+        if (!canvas) return;
+        const gl = canvas.getContext('webgl2', { alpha: true, antialias: true, premultipliedAlpha: false });
+        if (!gl) {
+            console.warn('WebGL2 not supported on GlassElement');
+            return;
+        }
+        this._gl = gl;
+
+        const vsSource = `#version 300 es
+          in vec2 position;
+          out vec2 v_uv;
+          void main() {
+            v_uv = position * 0.5 + 0.5;
+            gl_Position = vec4(position, 0.0, 1.0);
+          }
+        `;
+
+        const fsSource = `#version 300 es
+          precision highp float;
+          in vec2 v_uv;
+          out vec4 fragColor;
+
+          uniform sampler2D u_backgroundTexture;
+          uniform vec2 u_screenResolution;
+          uniform vec2 u_dockPos;
+          uniform vec2 u_dockSize;
+
+          uniform float u_time;
+          uniform float u_refractionStrength;
+          uniform float u_edgeThickness;
+          uniform float u_chromaticAberration;
+          uniform float u_frostedOpacity;
+          uniform float u_grainOpacity;
+          uniform float u_cornerRadius;
+          uniform vec3 u_glassColor;
+
+          float sdRoundRect(vec2 p, vec2 b, float r) {
+            vec2 d = abs(p) - b + vec2(r);
+            return min(max(d.x, d.y), 0.0) + length(max(d, 0.0)) - r;
+          }
+
+          float noise(vec2 co) {
+            return fract(sin(dot(co.xy, vec2(12.9898, 78.233))) * 43758.5453);
+          }
+
+          float sampleChannelWithBlur(sampler2D tex, vec2 uv, int channel, vec2 onePixel) {
+            vec4 val = texture(tex, uv) * 0.25;
+            val += texture(tex, uv + vec2(-onePixel.x, 0.0)) * 0.125;
+            val += texture(tex, uv + vec2(onePixel.x, 0.0)) * 0.125;
+            val += texture(tex, uv + vec2(0.0, -onePixel.y)) * 0.125;
+            val += texture(tex, uv + vec2(0.0, onePixel.y)) * 0.125;
+            val += texture(tex, uv + vec2(-onePixel.x, -onePixel.y)) * 0.0625;
+            val += texture(tex, uv + vec2(onePixel.x, -onePixel.y)) * 0.0625;
+            val += texture(tex, uv + vec2(-onePixel.x, onePixel.y)) * 0.0625;
+            val += texture(tex, uv + vec2(onePixel.x, onePixel.y)) * 0.0625;
+            if (channel == 0) return val.r;
+            if (channel == 1) return val.g;
+            return val.b;
+          }
+
+          void main() {
+            vec2 localPixel = v_uv * u_dockSize;
+            vec2 p = localPixel - (u_dockSize * 0.5);
+            
+            float sd = sdRoundRect(p, u_dockSize * 0.5, u_cornerRadius);
+
+            if (sd > 1.5) {
+              fragColor = vec4(0.0, 0.0, 0.0, 0.0);
+              return;
+            }
+
+            float screenX = u_dockPos.x + localPixel.x;
+            float screenY = u_dockPos.y + u_dockSize.y - localPixel.y;
+            vec2 baseScreenUV = vec2(screenX, screenY) / u_screenResolution;
+
+            float d_edge = -sd;
+            float eps = 1.0;
+            float sd_dx = sdRoundRect(p + vec2(eps, 0.0), u_dockSize * 0.5, u_cornerRadius);
+            float sd_dy = sdRoundRect(p + vec2(0.0, eps), u_dockSize * 0.5, u_cornerRadius);
+            vec2 grad = vec2(sd_dx - sd, sd_dy - sd) / eps;
+            vec2 n_dir = length(grad) > 0.001 ? normalize(grad) : vec2(0.0);
+
+            float normalized_dist = d_edge / u_edgeThickness;
+            float slope = exp(-normalized_dist) / u_edgeThickness;
+            
+            float borderRim = d_edge < 4.0 ? (4.0 - d_edge) * 0.12 : 0.0;
+            vec2 normal2D = -n_dir * (slope * u_refractionStrength * 120.0 + borderRim * 25.0);
+            vec2 uvOffset = vec2(normal2D.x, -normal2D.y) / u_screenResolution;
+
+            vec2 uvR = clamp(baseScreenUV + uvOffset * (1.0 + u_chromaticAberration * 4.0), 0.001, 0.999);
+            vec2 uvG = clamp(baseScreenUV + uvOffset, 0.001, 0.999);
+            vec2 uvB = clamp(baseScreenUV + uvOffset * (1.0 - u_chromaticAberration * 4.0), 0.001, 0.999);
+
+            vec2 onePixel = 1.0 / u_screenResolution;
+            float r_val = sampleChannelWithBlur(u_backgroundTexture, uvR, 0, onePixel);
+            float g_val = sampleChannelWithBlur(u_backgroundTexture, uvG, 1, onePixel);
+            float b_val = sampleChannelWithBlur(u_backgroundTexture, uvB, 2, onePixel);
+            vec3 refractedColor = vec3(r_val, g_val, b_val);
+
+            vec3 glassColor = mix(refractedColor, u_glassColor, u_frostedOpacity);
+            float grain = (noise(localPixel + vec2(u_time * 12.0)) - 0.5) * u_grainOpacity;
+            glassColor += vec3(grain);
+
+            glassColor *= 1.0056;
+
+            float hairlineEdge = smoothstep(1.5, 0.0, abs(sd));
+            glassColor += vec3(0.25) * hairlineEdge;
+
+            float edgeAlpha = smoothstep(1.5, 0.0, sd);
+            fragColor = vec4(glassColor, edgeAlpha);
+          }
+        `;
+
+        function compileShader(gl, source, type) {
+            const shader = gl.createShader(type);
+            gl.shaderSource(shader, source);
+            gl.compileShader(shader);
+            if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+                console.error('Shader compilation error:', gl.getShaderInfoLog(shader));
+                return null;
+            }
+            return shader;
+        }
+
+        const vs = compileShader(gl, vsSource, gl.VERTEX_SHADER);
+        const fs = compileShader(gl, fsSource, gl.FRAGMENT_SHADER);
+        if (!vs || !fs) return;
+
+        const program = gl.createProgram();
+        gl.attachShader(program, vs);
+        gl.attachShader(program, fs);
+        gl.linkProgram(program);
+        if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+            console.error('Program link error:', gl.getProgramInfoLog(program));
+            return;
+        }
+        this._program = program;
+
+        const vertices = new Float32Array([-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1]);
+        const vertexBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+
+        const vao = gl.createVertexArray();
+        gl.bindVertexArray(vao);
+        const posLoc = gl.getAttribLocation(program, 'position');
+        gl.enableVertexAttribArray(posLoc);
+        gl.vertexAttribPointer(posLoc, 2, gl.FLOAT, false, 0, 0);
+        this._vao = vao;
+    }
+    cleanupWebGL() {
+        if (this._gl) {
+            const gl = this._gl;
+            if (this._bgTexture) gl.deleteTexture(this._bgTexture);
+            if (this._vao) gl.deleteVertexArray(this._vao);
+            if (this._program) gl.deleteProgram(this._program);
+            this._gl = null;
+        }
+    }
+    renderWebGL(bgCanvas, time) {
+        if (!this._gl) return;
+        const gl = this._gl;
+        const canvas = gl.canvas;
+        const rect = this.getBoundingClientRect();
+        if (rect.width <= 0 || rect.height <= 0) return;
+
+        if (canvas.width !== Math.ceil(rect.width) || canvas.height !== Math.ceil(rect.height)) {
+            canvas.width = Math.ceil(rect.width);
+            canvas.height = Math.ceil(rect.height);
+        }
+
+        gl.viewport(0, 0, canvas.width, canvas.height);
+        gl.useProgram(this._program);
+        gl.bindVertexArray(this._vao);
+
+        if (!this._bgTexture) {
+            this._bgTexture = gl.createTexture();
+        }
+        gl.bindTexture(gl.TEXTURE_2D, this._bgTexture);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, bgCanvas);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+
+        const sw = document.documentElement.clientWidth;
+        const sh = document.documentElement.clientHeight;
+
+        gl.uniform2f(gl.getUniformLocation(this._program, 'u_screenResolution'), sw, sh);
+        gl.uniform2f(gl.getUniformLocation(this._program, 'u_dockPos'), rect.left, rect.top);
+        gl.uniform2f(gl.getUniformLocation(this._program, 'u_dockSize'), rect.width, rect.height);
+        gl.uniform1f(gl.getUniformLocation(this._program, 'u_time'), time * 0.001);
+
+        const isDark = document.body.classList.contains('dark-mode');
+        const rStrength = (this.strength || 40) / 100.0 * 1.8;
+        const cAberration = (this.chromaticAberration || 0) / 100.0 * 0.015;
+
+        let glassColor = isDark ? [0.08, 0.08, 0.1] : [1.0, 1.0, 1.0];
+        let frostedOpacity = isDark ? 0.38 : 0.12;
+        const bgCol = this.backgroundColor;
+        if (bgCol && (bgCol.startsWith('rgba') || bgCol.startsWith('rgb'))) {
+            const parts = bgCol.match(/[\d.]+/g);
+            if (parts && parts.length >= 3) {
+                glassColor = [parseFloat(parts[0]) / 255.0, parseFloat(parts[1]) / 255.0, parseFloat(parts[2]) / 255.0];
+                if (parts.length >= 4) {
+                    frostedOpacity = parseFloat(parts[3]);
+                }
+            }
+        }
+
+        gl.uniform1f(gl.getUniformLocation(this._program, 'u_refractionStrength'), rStrength);
+        gl.uniform1f(gl.getUniformLocation(this._program, 'u_edgeThickness'), 7.0);
+        gl.uniform1f(gl.getUniformLocation(this._program, 'u_chromaticAberration'), cAberration);
+        gl.uniform1f(gl.getUniformLocation(this._program, 'u_frostedOpacity'), frostedOpacity);
+        gl.uniform1f(gl.getUniformLocation(this._program, 'u_grainOpacity'), 0.025);
+        gl.uniform1f(gl.getUniformLocation(this._program, 'u_cornerRadius'), this.radius);
+        gl.uniform3f(gl.getUniformLocation(this._program, 'u_glassColor'), glassColor[0], glassColor[1], glassColor[2]);
+
+        gl.drawArrays(gl.TRIANGLES, 0, 6);
+    }
     updateStyles() {
         const glassBox = this.shadowRoot.querySelector('.glass-box');
         if (glassBox) this.applyDynamicStyles(glassBox);
     }
     applyDynamicStyles(element) {
+        if (this.id === 'dock-glass-wrapper') {
+            element.style.display = 'none';
+            return;
+        }
+        if (this.isLiquidWebGL) {
+            element.style.background = 'transparent';
+            element.style.backdropFilter = 'none';
+            element.style.webkitBackdropFilter = 'none';
+            element.style.boxShadow = 'none';
+            if (this.radiusConfig === 'top') {
+                element.style.borderRadius = `${this.radius}px ${this.radius}px 0 0`;
+            } else if (this.radiusConfig === 'left') {
+                element.style.borderRadius = `${this.radius}px 0 0 ${this.radius}px`;
+            } else if (this.radiusConfig === 'none') {
+                element.style.borderRadius = `0px`;
+            } else {
+                element.style.borderRadius = `${this.radius}px`;
+            }
+            return;
+        }
         const { getDisplacementMap } = window.DisplacementUtils;
         
         if (element.__squircleOptions) {
@@ -6958,26 +7549,44 @@ class GlassElement extends HTMLElement {
             element.style.boxShadow = 'none';
         } else {
             const displacementMapUrl = getDisplacementMap({ height: runHeight, width: runWidth, radius: this.radius, depth: this.depth });
-            const filterContainer = this.shadowRoot.getElementById('svg-filter-container');
-            if (filterContainer) {
-                filterContainer.innerHTML = `
-                <svg height="${runHeight}" width="${runWidth}" viewBox="0 0 ${runWidth} ${runHeight}" xmlns="http://www.w3.org/2000/svg">
-                    <style>#${filterId} { color-interpolation-filters: sRGB; }</style>
-                    <defs>
-                        <filter id="${filterId}" x="-50%" y="-50%" width="200%" height="200%">
-                            <feImage x="0" y="0" height="${runHeight}" width="${runWidth}" href="${displacementMapUrl}" result="displacementMap" />
-                            <feDisplacementMap in="SourceGraphic" in2="displacementMap" scale="${this.strength + this.chromaticAberration * 2}" xChannelSelector="R" yChannelSelector="G" />
-                            <feColorMatrix type="matrix" values="1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0" result="displacedR" />
-                            <feDisplacementMap in="SourceGraphic" in2="displacementMap" scale="${this.strength + this.chromaticAberration}" xChannelSelector="R" yChannelSelector="G" />
-                            <feColorMatrix type="matrix" values="0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 1 0" result="displacedG" />
-                            <feDisplacementMap in="SourceGraphic" in2="displacementMap" scale="${this.strength}" xChannelSelector="R" yChannelSelector="G" />
-                            <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 0" result="displacedB" />
-                            <feBlend in="displacedR" in2="displacedG" mode="screen"/>
-                            <feBlend in2="displacedB" mode="screen"/>
-                        </filter>
-                    </defs>
-                </svg>`;
+            
+            // Put the SVG filter into the global Light DOM instead of the Shadow DOM to ensure backdrop-filter url() resolution in all browsers
+            let globalFilters = document.getElementById('global-liquid-glass-filters');
+            if (!globalFilters) {
+                globalFilters = document.createElement('div');
+                globalFilters.id = 'global-liquid-glass-filters';
+                globalFilters.style.position = 'absolute';
+                globalFilters.style.width = '0';
+                globalFilters.style.height = '0';
+                globalFilters.style.overflow = 'hidden';
+                globalFilters.style.pointerEvents = 'none';
+                document.body.appendChild(globalFilters);
             }
+
+            let filterWrapper = document.getElementById('svg-wrapper-' + this._id);
+            if (!filterWrapper) {
+                filterWrapper = document.createElement('div');
+                filterWrapper.id = 'svg-wrapper-' + this._id;
+                globalFilters.appendChild(filterWrapper);
+            }
+
+            filterWrapper.innerHTML = `
+            <svg height="${runHeight}" width="${runWidth}" viewBox="0 0 ${runWidth} ${runHeight}" xmlns="http://www.w3.org/2000/svg">
+                <style>#${filterId} { color-interpolation-filters: sRGB; }</style>
+                <defs>
+                    <filter id="${filterId}" x="-50%" y="-50%" width="200%" height="200%">
+                        <feImage x="0" y="0" height="${runHeight}" width="${runWidth}" href="${displacementMapUrl}" result="displacementMap" />
+                        <feDisplacementMap in="SourceGraphic" in2="displacementMap" scale="${this.strength + this.chromaticAberration * 2}" xChannelSelector="R" yChannelSelector="G" />
+                        <feColorMatrix type="matrix" values="1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0" result="displacedR" />
+                        <feDisplacementMap in="SourceGraphic" in2="displacementMap" scale="${this.strength + this.chromaticAberration}" xChannelSelector="R" yChannelSelector="G" />
+                        <feColorMatrix type="matrix" values="0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 1 0" result="displacedG" />
+                        <feDisplacementMap in="SourceGraphic" in2="displacementMap" scale="${this.strength}" xChannelSelector="R" yChannelSelector="G" />
+                        <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 0" result="displacedB" />
+                        <feBlend in="displacedR" in2="displacedG" mode="screen"/>
+                        <feBlend in2="displacedB" mode="screen"/>
+                    </filter>
+                </defs>
+            </svg>`;
 
             element.style.backdropFilter = `blur(${this.blur / 2}px) url('#${filterId}') blur(${this.blur}px) brightness(1.0) saturate(1.0)`;
             element.style.background = this.backgroundColor;
@@ -7011,6 +7620,9 @@ class GlassElement extends HTMLElement {
                     height: 100%;
                     box-sizing: border-box;
                     pointer-events: none;
+                }
+                :host(#dock-glass-wrapper) .glass-box {
+                    filter: url(#dock-specular-filter);
                 }
                 .glass-box::before {
                     content: "";
@@ -7052,7 +7664,9 @@ class GlassElement extends HTMLElement {
             </style>
             <div id="svg-filter-container"></div>
             <div class="glass-container">
-                <div class="glass-box"></div>
+                <div class="glass-box">
+                    ${this.isLiquidWebGL ? '<canvas class="glass-webgl-canvas" style="position: absolute; inset: 0; width: 100%; height: 100%; border-radius: inherit; pointer-events: none;"></canvas>' : ''}
+                </div>
                 <div class="content"><slot></slot></div>
             </div>`;
         const glassBox = this.shadowRoot.querySelector('.glass-box');
@@ -7079,13 +7693,17 @@ customElements.define('glass-element', GlassElement);
     if (dockGlass) {
       dockGlass.setAttribute('background-color', 'transparent');
     }
+    const lpGlassEl = document.getElementById('launchpad-glass');
+    if (lpGlassEl) {
+      if (isDarkMode) {
+        lpGlassEl.setAttribute('background-color', 'rgba(30, 30, 30, 0.75)');
+      } else {
+        lpGlassEl.setAttribute('background-color', 'rgba(255, 255, 255, 0.45)');
+      }
+    }
     const lpGlass = document.getElementById('launchpad-window');
     if (lpGlass) {
-      if (isDarkMode) {
-        lpGlass.style.setProperty('background', 'rgba(30, 30, 30, 0.75)', 'important');
-      } else {
-        lpGlass.style.setProperty('background', 'rgba(255, 255, 255, 0.45)', 'important');
-      }
+      lpGlass.style.setProperty('background', 'transparent', 'important');
     }
     const termGlass = document.getElementById('terminal-window');
     if (termGlass) {
@@ -7122,6 +7740,9 @@ customElements.define('glass-element', GlassElement);
   
   let icons = Array.from(document.querySelectorAll('.dock-icon'));
   const tooltip = document.getElementById('tooltip');
+  if (tooltip) {
+    document.body.appendChild(tooltip);
+  }
 
   let baseSize = 48;
   const distanceLimit = 220;
@@ -7177,7 +7798,7 @@ customElements.define('glass-element', GlassElement);
   function renderRemoveTooltip() {
     if (!removeTooltip || !removeTooltipSvg) return;
     const isDarkMode = document.body.classList.contains('dark-mode');
-    const fill = isDarkMode ? "rgba(0,0,0,0.7)" : "rgba(255,255,255,0.7)";
+    const fill = isDarkMode ? "rgba(0,0,0,0.25)" : "rgba(255,255,255,0.25)";
     const strokeColor = isDarkMode ? "rgba(255,255,255,0.15)" : "rgba(255,255,255,0.35)";
 
     const w = 90; 
@@ -7197,12 +7818,17 @@ customElements.define('glass-element', GlassElement);
         </radialGradient>
       </defs>
       <clipPath id="remove-tooltip-clip"><path d="${pathD}"/></clipPath>
-      <path d="${pathD}" fill="${fill}" stroke="url(#remove-tooltip-stroke-grad)" stroke-width="1"/>
+      <path d="${pathD}" fill="rgba(255, 59, 48, 0.2)" stroke="transparent" stroke-width="1.25" />
     `;
     const glass = document.getElementById('remove-tooltip-glass');
     if (glass) {
       glass.style.clipPath = 'url(#remove-tooltip-clip)';
       glass.style.webkitClipPath = 'url(#remove-tooltip-clip)';
+      if (typeof glass.updateStyles === 'function') {
+        glass.updateStyles();
+      } else {
+        glass.dispatchEvent(new Event('force-liquid-glass'));
+      }
     }
     removeTooltipSvg.style.width = w + 'px';
     removeTooltipSvg.style.height = h + 'px';
@@ -7502,7 +8128,7 @@ customElements.define('glass-element', GlassElement);
       const pathD = `M ${rad} 0 L ${w-rad} 0 Q ${w} 0 ${w} ${rad} L ${w} ${h-ah-rad} Q ${w} ${h-ah} ${w-rad} ${h-ah} L ${w/2 + aw/2 + tailBaseR} ${h-ah} Q ${w/2 + aw/2} ${h-ah} ${w/2 + aw/2 - tailBaseR/2} ${h-ah + tailBaseR/2} L ${w/2 + tailTipR} ${h - tailTipR} Q ${w/2} ${h} ${w/2 - tailTipR} ${h - tailTipR} L ${w/2 - aw/2 + tailBaseR/2} ${h-ah + tailBaseR/2} Q ${w/2 - aw/2} ${h-ah} ${w/2 - aw/2 - tailBaseR} ${h-ah} L ${rad} ${h-ah} Q 0 ${h-ah} 0 ${h-ah-rad} L 0 ${rad} Q 0 0 ${rad} 0 Z`;
 
       const isDarkMode = document.body.classList.contains('dark-mode');
-      const fill = isDarkMode ? "rgba(0,0,0,0.7)" : "rgba(255,255,255,0.7)";
+      const fill = isDarkMode ? "rgba(0,0,0,0.25)" : "rgba(255,255,255,0.25)";
       
       tooltipSvg.innerHTML = `
         <defs>
@@ -7513,12 +8139,17 @@ customElements.define('glass-element', GlassElement);
           </radialGradient>
         </defs>
         <clipPath id="tooltip-clip"><path d="${pathD}"/></clipPath>
-        <path d="${pathD}" fill="${fill}" stroke="url(#tooltip-stroke-grad)" stroke-width="1"/>
+        <path d="${pathD}" fill="${fill}" stroke="url(#tooltip-stroke-grad)" stroke-width="1.25" />
       `;
       const glass = document.getElementById('tooltip-glass');
       if (glass) {
         glass.style.clipPath = 'url(#tooltip-clip)';
         glass.style.webkitClipPath = 'url(#tooltip-clip)';
+        if (typeof glass.updateStyles === 'function') {
+          glass.updateStyles();
+        } else {
+          glass.dispatchEvent(new Event('force-liquid-glass'));
+        }
       }
       tooltipSvg.style.width = w + 'px';
       tooltipSvg.style.height = h + 'px';
@@ -7726,20 +8357,65 @@ customElements.define('glass-element', GlassElement);
   document.addEventListener('contextmenu', (e) => {
     e.preventDefault();
     
-    // Determine context target
+    // Store coordinates for potential folder creation
+    window.lastContextX = e.clientX;
+    window.lastContextY = e.clientY;
+
+    // Check if right-clicking a specific folder on desktop
+    const folderEl = e.target.closest('.desktop-item.folder-item');
+    if (folderEl) {
+      contextMenuTarget = 'folder-item';
+      const index = parseInt(folderEl.getAttribute('data-index'));
+      window.activeFolderIndex = index;
+      window.selectedDesktopIndex = index;
+      if (typeof renderDesktop === 'function') renderDesktop();
+
+      // Close standard menus
+      contextMenu.classList.remove('show');
+      const cgw_rem = document.getElementById('context-menu-glass');
+      if (cgw_rem) cgw_rem.style.display = 'none';
+
+      // Update folder label Compress "name"
+      const folderItem = fileSystem['Desktop'][index];
+      const compressText = document.getElementById('folder-ctx-compress-text');
+      if (compressText && folderItem) {
+        compressText.textContent = `Compress "${folderItem.name}"`;
+      }
+
+      // Show folder context menu
+      const f_cgw = document.getElementById('folder-context-menu-glass');
+      if (f_cgw) {
+        f_cgw.style.display = 'block';
+        f_cgw.style.left = `${e.clientX}px`;
+        f_cgw.style.top = `${e.clientY}px`;
+        if (typeof lucide !== 'undefined' && lucide.createIcons) {
+          lucide.createIcons();
+        }
+        f_cgw.dispatchEvent(new Event('force-liquid-glass', { bubbles: true }));
+      }
+      return;
+    }
+
+    // Determine standard context target
     if (e.target.closest('#content-area')) {
       contextMenuTarget = 'finder';
     } else if (!e.target.closest('.window') && !e.target.closest('.menubar') && !e.target.closest('.dock-container') && !e.target.closest('.modal-overlay')) {
       contextMenuTarget = 'desktop';
     } else {
       contextMenu.classList.remove('show');
-    const cgw_rem = document.getElementById('context-menu-glass');
-    if(cgw_rem) cgw_rem.style.display = 'none';
+      const cgw_rem = document.getElementById('context-menu-glass');
+      if (cgw_rem) cgw_rem.style.display = 'none';
+      const f_cgw_rem = document.getElementById('folder-context-menu-glass');
+      if (f_cgw_rem) f_cgw_rem.style.display = 'none';
       return;
     }
 
+    // Hide folder context menu
+    const f_cgw_rem = document.getElementById('folder-context-menu-glass');
+    if (f_cgw_rem) f_cgw_rem.style.display = 'none';
+
     const cgw_add = document.getElementById('context-menu-glass');
-    if(cgw_add) {
+    if (cgw_add) {
       cgw_add.style.display = 'block';
       cgw_add.style.left = `${e.clientX}px`;
       cgw_add.style.top = `${e.clientY}px`;
@@ -7757,10 +8433,18 @@ customElements.define('glass-element', GlassElement);
   });
 
   document.addEventListener('click', (e) => {
-    if (!e.target.closest('.context-menu')) {
+    if (!e.target.closest('.context-menu') && !e.target.closest('#folder-context-menu')) {
       contextMenu.classList.remove('show');
-    const cgw_rem = document.getElementById('context-menu-glass');
-    if(cgw_rem) cgw_rem.style.display = 'none';
+      const cgw_rem = document.getElementById('context-menu-glass');
+      if (cgw_rem) cgw_rem.style.display = 'none';
+      const f_cgw_rem = document.getElementById('folder-context-menu-glass');
+      if (f_cgw_rem) f_cgw_rem.style.display = 'none';
+    }
+
+    // Clears desktop icons selection if click is on desktop empty space
+    if (!e.target.closest('.desktop-item')) {
+      window.selectedDesktopIndex = null;
+      if (typeof renderDesktop === 'function') renderDesktop();
     }
   });
 
@@ -7773,12 +8457,44 @@ customElements.define('glass-element', GlassElement);
     contextMenu.classList.remove('show');
     const cgw_rem = document.getElementById('context-menu-glass');
     if(cgw_rem) cgw_rem.style.display = 'none';
-    newFolderModal.classList.add('show');
-    const modalInner = newFolderModal.querySelector('.modal');
-    if(modalInner) modalInner.dispatchEvent(new Event('force-liquid-glass', { bubbles: true }));
-    newFolderInput.value = "untitled folder";
-    newFolderInput.focus();
-    newFolderInput.select();
+
+    if (contextMenuTarget === 'desktop') {
+      const rect = desktopIcons.getBoundingClientRect();
+      const x = (window.lastContextX || 100) - rect.left - 40;
+      const y = (window.lastContextY || 100) - rect.top - 40;
+
+      // Make unique name untitled folder, untitled folder 2...
+      let folderName = 'untitled folder';
+      let baseName = 'untitled folder';
+      let counter = 1;
+      const existing = fileSystem['Desktop'] || [];
+      while (existing.some(item => item.name === folderName)) {
+        counter++;
+        folderName = `${baseName} ${counter}`;
+      }
+
+      const newFolder = {
+        name: folderName,
+        date: 'Today',
+        size: '--',
+        icon: FOLDER_ICON,
+        type: 'folder',
+        x: x,
+        y: y
+      };
+
+      if (!fileSystem['Desktop']) fileSystem['Desktop'] = [];
+      fileSystem['Desktop'].push(newFolder);
+      renderDesktop();
+      if (currentFolder === 'Desktop' && winState.isOpen) renderContent();
+    } else {
+      newFolderModal.classList.add('show');
+      const modalInner = newFolderModal.querySelector('.modal');
+      if (modalInner) modalInner.dispatchEvent(new Event('force-liquid-glass', { bubbles: true }));
+      newFolderInput.value = "untitled folder";
+      newFolderInput.focus();
+      newFolderInput.select();
+    }
   });
 
   document.getElementById('ctx-change-bg').addEventListener('click', () => {
@@ -7857,22 +8573,71 @@ customElements.define('glass-element', GlassElement);
     let html = '';
     const items = fileSystem['Desktop'] || [];
     items.forEach((item, index) => {
-      const bgStyle = item.type === 'folder' ? `background-image: ${item.icon}` : '';
-      const textIcon = item.type === 'folder' ? '' : item.icon;
+      const isFolder = item.type === 'folder';
+      const folderClass = isFolder ? 'folder-item' : '';
+      const isSelected = window.selectedDesktopIndex === index;
+      const selectedClass = isSelected ? 'selected' : '';
+      const bgStyle = isFolder ? `background-image: ${item.icon}` : '';
+      const textIcon = isFolder ? '' : item.icon;
       let posStyle = '';
       if (item.x !== undefined && item.y !== undefined) {
          posStyle = `position: absolute; left: ${item.x}px; top: ${item.y}px;`;
       }
+
+      // Check for tag colored dot
+      let tagDotHtml = '';
+      if (item.tagColor) {
+        const colorMap = {
+          red: '#ff453a',
+          orange: '#ff9f0a',
+          yellow: '#ffd60a',
+          green: '#30d158',
+          blue: '#0a84ff',
+          purple: '#bf5af2',
+          gray: '#8e8e93'
+        };
+        const colorHex = colorMap[item.tagColor] || '#8e8e93';
+        tagDotHtml = `<span class="tag-dot" style="display: inline-block; width: 7px; height: 7px; border-radius: 50%; background-color: ${colorHex}; margin-left: 5px; vertical-align: middle; box-shadow: 0 0 2px rgba(0,0,0,0.3);"></span>`;
+      }
+
       html += `
-        <div class="desktop-item" draggable="true" data-index="${index}" style="${posStyle}">
+        <div class="desktop-item ${folderClass} ${selectedClass}" draggable="true" data-index="${index}" style="${posStyle}">
           <div class="icon" style="${bgStyle}">${textIcon}</div>
-          <div class="name">${item.name}</div>
+          <div class="name-container" style="display: flex; align-items: center; justify-content: center; gap: 2px;">
+            <div class="name">${item.name}</div>${tagDotHtml}
+          </div>
         </div>
       `;
     });
     desktopIcons.innerHTML = html;
 
     document.querySelectorAll('.desktop-item').forEach(el => {
+      // Single click select
+      el.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const index = parseInt(el.getAttribute('data-index'));
+        window.selectedDesktopIndex = index;
+        renderDesktop();
+      });
+
+      // Double click open folder
+      el.addEventListener('dblclick', (e) => {
+        e.stopPropagation();
+        const index = parseInt(el.getAttribute('data-index'));
+        const item = fileSystem['Desktop'][index];
+        if (item && item.type === 'folder') {
+          if (!fileSystem[item.name]) {
+            fileSystem[item.name] = [];
+          }
+          currentFolder = item.name;
+          history = [item.name];
+          historyIdx = 0;
+          bringWindowToFront('finder-window', 'Finder');
+          window.restoreWindowById('finder-window');
+          renderContent();
+        }
+      });
+
       el.addEventListener('dragstart', (e) => {
         e.dataTransfer.setData('text/plain', e.target.getAttribute('data-index'));
         setTimeout(() => e.target.style.opacity = '0.5', 0);
@@ -7900,6 +8665,195 @@ customElements.define('glass-element', GlassElement);
       items[index].x = x;
       items[index].y = y;
       renderDesktop();
+    }
+  });
+
+  const trashIcon = document.querySelector('.dock-icon[data-name="Trash"]');
+  if (trashIcon) {
+    trashIcon.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      trashIcon.style.transform = 'scale(1.2)';
+    });
+    trashIcon.addEventListener('dragleave', (e) => {
+      e.stopPropagation();
+      trashIcon.style.transform = '';
+    });
+    trashIcon.addEventListener('drop', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      trashIcon.style.transform = '';
+      const index = parseInt(e.dataTransfer.getData('text/plain'));
+      if (isNaN(index)) return;
+      
+      const items = fileSystem['Desktop'];
+      if (items && items[index]) {
+        items.splice(index, 1);
+        renderDesktop();
+        if (currentFolder === 'Desktop' && winState.isOpen) renderContent();
+      }
+    });
+  }
+
+  // Folder Context Menu Action Listeners
+  const folderCtxGlass = document.getElementById('folder-context-menu-glass');
+
+  // Helper to retrieve active folder details
+  const getActiveFolder = () => {
+    const idx = window.activeFolderIndex;
+    const items = fileSystem['Desktop'] || [];
+    return { folder: items[idx], items, idx };
+  };
+
+  document.getElementById('folder-ctx-open').addEventListener('click', () => {
+    const { folder } = getActiveFolder();
+    if (folder) {
+      if (!fileSystem[folder.name]) fileSystem[folder.name] = [];
+      currentFolder = folder.name;
+      history = [folder.name];
+      historyIdx = 0;
+      bringWindowToFront('finder-window', 'Finder');
+      window.restoreWindowById('finder-window');
+      renderContent();
+    }
+    folderCtxGlass.style.display = 'none';
+  });
+
+  document.getElementById('folder-ctx-trash').addEventListener('click', () => {
+    const { items, idx } = getActiveFolder();
+    if (idx !== undefined && items && items[idx]) {
+      items.splice(idx, 1);
+      renderDesktop();
+      if (currentFolder === 'Desktop' && winState.isOpen) renderContent();
+    }
+    folderCtxGlass.style.display = 'none';
+  });
+
+  document.getElementById('folder-ctx-info').addEventListener('click', () => {
+    const { folder } = getActiveFolder();
+    if (folder) {
+      alert(`Folder Info:\nName: ${folder.name}\nType: Folder\nCreated: Just Now\nSize: 0 items`);
+    }
+    folderCtxGlass.style.display = 'none';
+  });
+
+  document.getElementById('folder-ctx-rename').addEventListener('click', () => {
+    const { folder } = getActiveFolder();
+    if (folder) {
+      const newName = prompt('Rename Folder:', folder.name);
+      if (newName && newName.trim()) {
+        folder.name = newName.trim();
+        renderDesktop();
+        if (currentFolder === 'Desktop' && winState.isOpen) renderContent();
+      }
+    }
+    folderCtxGlass.style.display = 'none';
+  });
+
+  document.getElementById('folder-ctx-compress').addEventListener('click', () => {
+    const { folder, items } = getActiveFolder();
+    if (folder && items) {
+      items.push({
+        name: `${folder.name}.zip`,
+        date: 'Today',
+        size: '1 KB',
+        icon: '<i data-lucide="file-archive" style="width: 24px; height: 24px; color: #ff9500;"></i>',
+        type: 'file',
+        x: (folder.x || 0) + 20,
+        y: (folder.y || 0) + 20
+      });
+      renderDesktop();
+    }
+    folderCtxGlass.style.display = 'none';
+  });
+
+  document.getElementById('folder-ctx-duplicate').addEventListener('click', () => {
+    const { folder, items } = getActiveFolder();
+    if (folder && items) {
+      items.push({
+        ...folder,
+        name: `${folder.name} copy`,
+        x: (folder.x || 0) + 22,
+        y: (folder.y || 0) + 22
+      });
+      renderDesktop();
+    }
+    folderCtxGlass.style.display = 'none';
+  });
+
+  document.getElementById('folder-ctx-alias').addEventListener('click', () => {
+    const { folder, items } = getActiveFolder();
+    if (folder && items) {
+      items.push({
+        name: `${folder.name} alias`,
+        date: 'Today',
+        size: '--',
+        icon: FOLDER_ICON,
+        type: 'folder',
+        x: (folder.x || 0) + 24,
+        y: (folder.y || 0) + 24,
+        isAlias: true
+      });
+      renderDesktop();
+    }
+    folderCtxGlass.style.display = 'none';
+  });
+
+  document.getElementById('folder-ctx-quicklook').addEventListener('click', () => {
+    const { folder } = getActiveFolder();
+    if (folder) {
+      alert(`Quick Look:\n"${folder.name}" is an empty Mac folder.`);
+    }
+    folderCtxGlass.style.display = 'none';
+  });
+
+  document.getElementById('folder-ctx-copy').addEventListener('click', () => {
+    const { folder } = getActiveFolder();
+    if (folder) {
+      window.copiedFolderItem = { ...folder };
+      console.log('Copied folder to clipboard:', folder.name);
+    }
+    folderCtxGlass.style.display = 'none';
+  });
+
+  document.getElementById('folder-ctx-share').addEventListener('click', () => {
+    const { folder } = getActiveFolder();
+    if (folder) {
+      alert(`Sharing folder "${folder.name}" is not configured.`);
+    }
+    folderCtxGlass.style.display = 'none';
+  });
+
+  document.getElementById('folder-ctx-customize').addEventListener('click', () => {
+    alert('Customize Folder is not configured.');
+    folderCtxGlass.style.display = 'none';
+  });
+
+  // Tag colors click listeners
+  document.querySelectorAll('.folder-tag-circle').forEach(circle => {
+    circle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const color = circle.getAttribute('data-tag');
+      const { folder } = getActiveFolder();
+      if (folder) {
+        if (folder.tagColor === color) {
+          delete folder.tagColor;
+        } else {
+          folder.tagColor = color;
+        }
+        renderDesktop();
+      }
+      folderCtxGlass.style.display = 'none';
+    });
+  });
+
+  // Other folder actions list click handling
+  ['folder-ctx-import', 'folder-ctx-quickactions', 'folder-ctx-setup', 'folder-ctx-term', 'folder-ctx-term-tab', 'folder-ctx-hammerspoon'].forEach(id => {
+    const btn = document.getElementById(id);
+    if (btn) {
+      btn.addEventListener('click', () => {
+        folderCtxGlass.style.display = 'none';
+      });
     }
   });
 
@@ -8306,13 +9260,125 @@ customElements.define('glass-element', GlassElement);
   });
 
   const iconTransparencyToggle = document.getElementById('icon-transparency-toggle');
+  const itaSettings = document.getElementById('icon-transparency-settings');
+  const itaWhiteAlpha = document.getElementById('ita-white-alpha');
+  const itaWhiteThresh = document.getElementById('ita-white-thresh');
+  const itaBlackAlpha = document.getElementById('ita-black-alpha');
+  const itaBlackThresh = document.getElementById('ita-black-thresh');
+  const itaWhiteAlphaVal = document.getElementById('ita-white-alpha-val');
+  const itaWhiteThreshVal = document.getElementById('ita-white-thresh-val');
+  const itaBlackAlphaVal = document.getElementById('ita-black-alpha-val');
+  const itaBlackThreshVal = document.getElementById('ita-black-thresh-val');
+  const iconAlphaCurve = document.getElementById('icon-alpha-curve');
+
+  function updateIconTransparencyCurve() {
+    if (!iconAlphaCurve) return;
+    const wA = parseFloat(itaWhiteAlpha.value) / 100;
+    const wT = parseInt(itaWhiteThresh.value);
+    const bA = parseFloat(itaBlackAlpha.value) / 100;
+    const bT = parseInt(itaBlackThresh.value);
+
+    let values = [];
+    for (let i = 0; i < 256; i++) {
+      if (wT === bT) {
+        values.push(i >= wT ? wA : bA);
+      } else if (i <= bT) {
+        values.push(bA);
+      } else if (i >= wT) {
+        values.push(wA);
+      } else {
+        const t = (i - bT) / (wT - bT);
+        values.push(bA + (wA - bA) * t);
+      }
+    }
+    iconAlphaCurve.setAttribute('tableValues', values.join(' '));
+  }
+
   if (iconTransparencyToggle) {
     iconTransparencyToggle.addEventListener('change', (e) => {
-      if (e.target.checked) {
+      const isChecked = e.target.checked;
+      const dmiToggle = document.getElementById('dark-mode-icons-toggle');
+      const bSlider = document.getElementById('icon-brightness-slider');
+      const bValue = document.getElementById('icon-brightness-value');
+
+      if (isChecked) {
         document.body.classList.add('icons-transparent');
+        if (itaSettings) itaSettings.style.display = 'block';
+        
+        // Auto-enable dark mode icons
+        if (dmiToggle && !dmiToggle.checked) {
+          dmiToggle.checked = true;
+          dmiToggle.dispatchEvent(new Event('change'));
+        }
+        
+        // Auto-set brightness to 250%
+        if (bSlider) {
+          bSlider.value = 250;
+          if (bValue) bValue.textContent = '250%';
+          document.documentElement.style.setProperty('--icon-brightness', '2.5');
+        }
+
+        updateIconTransparencyCurve();
       } else {
         document.body.classList.remove('icons-transparent');
+        if (itaSettings) itaSettings.style.display = 'none';
+
+        // Auto-disable dark mode icons
+        if (dmiToggle && dmiToggle.checked) {
+          dmiToggle.checked = false;
+          dmiToggle.dispatchEvent(new Event('change'));
+        }
+
+        // Auto-set brightness to 100%
+        if (bSlider) {
+          bSlider.value = 100;
+          if (bValue) bValue.textContent = '100%';
+          document.documentElement.style.setProperty('--icon-brightness', '1.0');
+        }
       }
+    });
+  }
+
+  if (itaWhiteAlpha) {
+    itaWhiteAlpha.addEventListener('input', (e) => {
+      if (itaWhiteAlphaVal) itaWhiteAlphaVal.textContent = e.target.value + '%';
+      updateIconTransparencyCurve();
+    });
+    itaWhiteThresh.addEventListener('input', (e) => {
+      if (itaWhiteThreshVal) itaWhiteThreshVal.textContent = e.target.value;
+      if (parseInt(itaWhiteThresh.value) <= parseInt(itaBlackThresh.value)) {
+        itaBlackThresh.value = Math.max(0, parseInt(itaWhiteThresh.value) - 1);
+        if (itaBlackThreshVal) itaBlackThreshVal.textContent = itaBlackThresh.value;
+      }
+      updateIconTransparencyCurve();
+    });
+    itaBlackAlpha.addEventListener('input', (e) => {
+      if (itaBlackAlphaVal) itaBlackAlphaVal.textContent = e.target.value + '%';
+      updateIconTransparencyCurve();
+    });
+    itaBlackThresh.addEventListener('input', (e) => {
+      if (itaBlackThreshVal) itaBlackThreshVal.textContent = e.target.value;
+      if (parseInt(itaBlackThresh.value) >= parseInt(itaWhiteThresh.value)) {
+        itaWhiteThresh.value = Math.min(255, parseInt(itaBlackThresh.value) + 1);
+        if (itaWhiteThreshVal) itaWhiteThreshVal.textContent = itaWhiteThresh.value;
+      }
+      updateIconTransparencyCurve();
+    });
+  }
+
+  // Pre-initialize curve on load
+  updateIconTransparencyCurve();
+
+  const iconBrightnessSlider = document.getElementById('icon-brightness-slider');
+  const iconBrightnessValue = document.getElementById('icon-brightness-value');
+  if (iconBrightnessSlider) {
+    const initialBValue = parseInt(iconBrightnessSlider.value);
+    if (iconBrightnessValue) iconBrightnessValue.textContent = initialBValue + '%';
+    document.documentElement.style.setProperty('--icon-brightness', initialBValue / 100);
+    iconBrightnessSlider.addEventListener('input', (e) => {
+      const bValue = parseInt(e.target.value);
+      if (iconBrightnessValue) iconBrightnessValue.textContent = bValue + '%';
+      document.documentElement.style.setProperty('--icon-brightness', bValue / 100);
     });
   }
 
@@ -8379,6 +9445,45 @@ customElements.define('glass-element', GlassElement);
       if (dockGlassWrapper) {
         dockGlassWrapper.setAttribute('strength', strength);
       }
+    });
+  }
+
+  const musicDepthSlider = document.getElementById('music-depth-slider');
+  const musicDepthValue = document.getElementById('music-depth-value');
+  if (musicDepthSlider) {
+    musicDepthSlider.addEventListener('input', (e) => {
+      const depth = parseInt(e.target.value);
+      musicDepthValue.textContent = depth;
+      const musicSidebarGlass = document.getElementById('music-sidebar-glass');
+      const musicPlayerBar = document.getElementById('music-player-bar');
+      if (musicSidebarGlass) musicSidebarGlass.setAttribute('depth', depth);
+      if (musicPlayerBar) musicPlayerBar.setAttribute('depth', depth);
+    });
+  }
+
+  const musicBlurSlider = document.getElementById('music-blur-slider');
+  const musicBlurValue = document.getElementById('music-blur-value');
+  if (musicBlurSlider) {
+    musicBlurSlider.addEventListener('input', (e) => {
+      const blur = parseInt(e.target.value);
+      musicBlurValue.textContent = blur;
+      const musicSidebarGlass = document.getElementById('music-sidebar-glass');
+      const musicPlayerBar = document.getElementById('music-player-bar');
+      if (musicSidebarGlass) musicSidebarGlass.setAttribute('blur', blur);
+      if (musicPlayerBar) musicPlayerBar.setAttribute('blur', blur);
+    });
+  }
+
+  const musicStrengthSlider = document.getElementById('music-strength-slider');
+  const musicStrengthValue = document.getElementById('music-strength-value');
+  if (musicStrengthSlider) {
+    musicStrengthSlider.addEventListener('input', (e) => {
+      const strength = parseInt(e.target.value);
+      musicStrengthValue.textContent = strength;
+      const musicSidebarGlass = document.getElementById('music-sidebar-glass');
+      const musicPlayerBar = document.getElementById('music-player-bar');
+      if (musicSidebarGlass) musicSidebarGlass.setAttribute('strength', strength);
+      if (musicPlayerBar) musicPlayerBar.setAttribute('strength', strength);
     });
   }
 
@@ -8458,7 +9563,674 @@ customElements.define('glass-element', GlassElement);
   // Run once to initialize
   updateTerminalCustomization();
 
+  // ============ WebGL2 Liquid Glass for Dock ============
+  (function() {
+    const dock = document.getElementById('dock');
+    if (!dock) return;
+
+    // Create WebGL Canvas
+    const canvas = document.createElement('canvas');
+    canvas.id = 'dock-webgl-canvas';
+    canvas.style.cssText = 'position: absolute; inset: 0; pointer-events: none; z-index: -1; border-radius: inherit;';
+    dock.insertBefore(canvas, dock.firstChild);
+
+    const gl = canvas.getContext('webgl2', { alpha: true, antialias: true, premultipliedAlpha: false });
+    if (!gl) {
+      console.warn('WebGL2 not supported, falling back to standard glass.');
+      return;
+    }
+
+    // Vertex Shader
+    const vsSource = `#version 300 es
+      in vec2 position;
+      out vec2 v_uv;
+      void main() {
+        v_uv = position * 0.5 + 0.5;
+        gl_Position = vec4(position, 0.0, 1.0);
+      }
+    `;
+
+    // Fragment Shader: Calculates rounded box SDF, Numerical Normal Gradients, and Chromatic Displacement
+    const fsSource = `#version 300 es
+      precision highp float;
+      in vec2 v_uv;
+      out vec4 fragColor;
+
+      uniform sampler2D u_backgroundTexture;
+      uniform vec2 u_screenResolution;
+      uniform vec2 u_dockPos;
+      uniform vec2 u_dockSize;
+
+      uniform float u_time;
+      uniform float u_refractionStrength;
+      uniform float u_edgeThickness;
+      uniform float u_chromaticAberration;
+      uniform float u_frostedOpacity;
+      uniform float u_grainOpacity;
+      uniform float u_cornerRadius;
+      uniform vec3 u_glassColor;
+
+      float sdRoundRect(vec2 p, vec2 b, float r) {
+        vec2 d = abs(p) - b + vec2(r);
+        return min(max(d.x, d.y), 0.0) + length(max(d, 0.0)) - r;
+      }
+
+      float noise(vec2 co) {
+        return fract(sin(dot(co.xy, vec2(12.9898, 78.233))) * 43758.5453);
+      }
+
+      float sampleChannelWithBlur(sampler2D tex, vec2 uv, int channel, vec2 onePixel) {
+        vec4 val = texture(tex, uv) * 0.25;
+        val += texture(tex, uv + vec2(-onePixel.x, 0.0)) * 0.125;
+        val += texture(tex, uv + vec2(onePixel.x, 0.0)) * 0.125;
+        val += texture(tex, uv + vec2(0.0, -onePixel.y)) * 0.125;
+        val += texture(tex, uv + vec2(0.0, onePixel.y)) * 0.125;
+        val += texture(tex, uv + vec2(-onePixel.x, -onePixel.y)) * 0.0625;
+        val += texture(tex, uv + vec2(onePixel.x, -onePixel.y)) * 0.0625;
+        val += texture(tex, uv + vec2(-onePixel.x, onePixel.y)) * 0.0625;
+        val += texture(tex, uv + vec2(onePixel.x, onePixel.y)) * 0.0625;
+        if (channel == 0) return val.r;
+        if (channel == 1) return val.g;
+        return val.b;
+      }
+
+      void main() {
+        vec2 localPixel = v_uv * u_dockSize;
+        vec2 p = localPixel - (u_dockSize * 0.5);
+        
+        float sd = sdRoundRect(p, u_dockSize * 0.5, u_cornerRadius);
+
+        if (sd > 1.5) {
+          fragColor = vec4(0.0, 0.0, 0.0, 0.0);
+          return;
+        }
+
+        // Convert coordinates from screen pixel space to screen UV
+        // Since backgroundTexture is captured as a 2D Canvas with top-left origin (Y down),
+        // we map WebGL's local bottom-up Y coordinate to the corresponding top-down screen coordinate.
+        float screenX = u_dockPos.x + localPixel.x;
+        float screenY = u_dockPos.y + u_dockSize.y - localPixel.y;
+        vec2 baseScreenUV = vec2(screenX, screenY) / u_screenResolution;
+
+        float d_edge = -sd;
+
+        // Numerical Normal gradient approximation
+        float eps = 1.0;
+        float sd_dx = sdRoundRect(p + vec2(eps, 0.0), u_dockSize * 0.5, u_cornerRadius);
+        float sd_dy = sdRoundRect(p + vec2(0.0, eps), u_dockSize * 0.5, u_cornerRadius);
+        vec2 grad = vec2(sd_dx - sd, sd_dy - sd) / eps;
+        vec2 n_dir = length(grad) > 0.001 ? normalize(grad) : vec2(0.0);
+
+        float normalized_dist = d_edge / u_edgeThickness;
+        float slope = exp(-normalized_dist) / u_edgeThickness;
+        
+        float borderRim = d_edge < 4.0 ? (4.0 - d_edge) * 0.12 : 0.0;
+        vec2 normal2D = -n_dir * (slope * u_refractionStrength * 120.0 + borderRim * 25.0);
+        // Negate the Y coordinate of the refraction offset because the texture space Y points down
+        vec2 uvOffset = vec2(normal2D.x, -normal2D.y) / u_screenResolution;
+
+        // Chromatic dispersion UV split
+        vec2 uvR = clamp(baseScreenUV + uvOffset * (1.0 + u_chromaticAberration * 4.0), 0.001, 0.999);
+        vec2 uvG = clamp(baseScreenUV + uvOffset, 0.001, 0.999);
+        vec2 uvB = clamp(baseScreenUV + uvOffset * (1.0 - u_chromaticAberration * 4.0), 0.001, 0.999);
+
+        vec2 onePixel = 1.0 / u_screenResolution;
+        float r_val = sampleChannelWithBlur(u_backgroundTexture, uvR, 0, onePixel);
+        float g_val = sampleChannelWithBlur(u_backgroundTexture, uvG, 1, onePixel);
+        float b_val = sampleChannelWithBlur(u_backgroundTexture, uvB, 2, onePixel);
+        vec3 refractedColor = vec3(r_val, g_val, b_val);
+
+        // Blending & noise grain
+        vec3 glassColor = mix(refractedColor, u_glassColor, u_frostedOpacity);
+        float grain = (noise(localPixel + vec2(u_time * 12.0)) - 0.5) * u_grainOpacity;
+        glassColor += vec3(grain);
+
+        // Make it 0.56% brighter
+        glassColor *= 1.0056;
+
+        // Highlights
+        float hairlineEdge = smoothstep(1.5, 0.0, abs(sd));
+        glassColor += vec3(0.25) * hairlineEdge;
+
+        float edgeAlpha = smoothstep(1.5, 0.0, sd);
+
+        fragColor = vec4(glassColor, edgeAlpha);
+      }
+    `;
+
+    function compileShader(gl, source, type) {
+      const shader = gl.createShader(type);
+      gl.shaderSource(shader, source);
+      gl.compileShader(shader);
+      if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+        console.error('Shader compilation error:', gl.getShaderInfoLog(shader));
+        return null;
+      }
+      return shader;
+    }
+
+    const vs = compileShader(gl, vsSource, gl.VERTEX_SHADER);
+    const fs = compileShader(gl, fsSource, gl.FRAGMENT_SHADER);
+    if (!vs || !fs) return;
+
+    const program = gl.createProgram();
+    gl.attachShader(program, vs);
+    gl.attachShader(program, fs);
+    gl.linkProgram(program);
+    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+      console.error('Program link error:', gl.getProgramInfoLog(program));
+      return;
+    }
+
+    // Geometry buffer
+    const vertices = new Float32Array([-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1]);
+    const vertexBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+
+    const vao = gl.createVertexArray();
+    gl.bindVertexArray(vao);
+    const posLoc = gl.getAttribLocation(program, 'position');
+    gl.enableVertexAttribArray(posLoc);
+    gl.vertexAttribPointer(posLoc, 2, gl.FLOAT, false, 0, 0);
+
+    // Offscreen Canvas for Wallpaper Capture
+    const bgCanvas = document.createElement('canvas');
+    const bgCtx = bgCanvas.getContext('2d');
+
+    const bgTexture = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, bgTexture);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+
+    let currentWallpaperUrl = '';
+    const wallpaperImg = new Image();
+    wallpaperImg.crossOrigin = 'anonymous';
+    let wallpaperLoaded = false;
+
+    wallpaperImg.onload = () => {
+      wallpaperLoaded = true;
+    };
+    wallpaperImg.onerror = () => {
+      wallpaperLoaded = false;
+    };
+
+    function updateWallpaperSource() {
+      const activeLayer = document.querySelector('.bg-layer.active');
+      if (!activeLayer) return;
+      const bgImg = activeLayer.style.backgroundImage;
+      if (!bgImg) return;
+      const match = bgImg.match(/url\(['"]?([^'")]*)['"]?\)/);
+      if (match && match[1]) {
+        let url = match[1];
+        if (currentWallpaperUrl !== url) {
+          currentWallpaperUrl = url;
+          wallpaperLoaded = false;
+          wallpaperImg.src = url;
+        }
+      }
+    }
+
+    // Enable Alpha Blending
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+
+    function render(time) {
+      updateWallpaperSource();
+
+      const rect = dock.getBoundingClientRect();
+      if (rect.width <= 0 || rect.height <= 0) {
+        requestAnimationFrame(render);
+        return;
+      }
+
+      if (canvas.width !== Math.ceil(rect.width) || canvas.height !== Math.ceil(rect.height)) {
+        canvas.width = Math.ceil(rect.width);
+        canvas.height = Math.ceil(rect.height);
+      }
+
+      const sw = document.documentElement.clientWidth;
+      const sh = document.documentElement.clientHeight;
+      if (bgCanvas.width !== sw || bgCanvas.height !== sh) {
+        bgCanvas.width = sw;
+        bgCanvas.height = sh;
+      }
+
+      bgCtx.fillStyle = '#1c1c1e';
+      bgCtx.fillRect(0, 0, sw, sh);
+
+      if (wallpaperLoaded && wallpaperImg.complete && wallpaperImg.naturalWidth > 0) {
+        const iw = wallpaperImg.naturalWidth;
+        const ih = wallpaperImg.naturalHeight;
+        const rCanvas = sw / sh;
+        const rImg = iw / ih;
+        let sx, sy, swCrop, shCrop;
+        if (rCanvas > rImg) {
+          swCrop = iw;
+          shCrop = iw / rCanvas;
+          sx = 0;
+          sy = (ih - shCrop) / 2;
+        } else {
+          swCrop = ih * rCanvas;
+          shCrop = ih;
+          sx = (iw - swCrop) / 2;
+          sy = 0;
+        }
+        bgCtx.drawImage(wallpaperImg, sx, sy, swCrop, shCrop, 0, 0, sw, sh);
+      }
+
+      // Draw visible windows on top of the wallpaper in correct z-index order
+      const windows = Array.from(document.querySelectorAll('.window'));
+      const visibleWindows = windows.filter(win => {
+        if (win.style.display === 'none' || win.style.opacity === '0' || win.style.visibility === 'hidden') return false;
+        const r = win.getBoundingClientRect();
+        if (r.width === 0 || r.height === 0) return false;
+        return true;
+      });
+
+      // Sort windows by zIndex so the lowest zIndex window is drawn first (below the others)
+      visibleWindows.sort((a, b) => {
+        const zA = parseInt(a.style.zIndex || '20000', 10);
+        const zB = parseInt(b.style.zIndex || '20000', 10);
+        return zA - zB;
+      });
+
+      // Draw each window onto our full-screen backdrop canvas safely using vector shapes to avoid security errors and ensure high FPS
+      visibleWindows.forEach(win => {
+        const r = win.getBoundingClientRect();
+        
+        // 0. Render WebGL liquid glass elements inside this window BEFORE drawing this window's solid elements onto bgCanvas!
+        const glassElements = win.querySelectorAll('glass-element');
+        glassElements.forEach(gel => {
+          if (gel._gl && typeof gel.renderWebGL === 'function') {
+            gel.renderWebGL(bgCanvas, time);
+          }
+        });
+
+        // Optimize: Check if window intersects with a reasonable bottom area of the viewport (near the dock)
+        // If a window is entirely above the dock's top position with a small safety margin, we can skip drawing it.
+        // But if there is any active window glass element, we must draw all windows to allow layered refraction.
+        const hasWindowGlass = window.activeLiquidGlassElements && window.activeLiquidGlassElements.some(el => el.id !== 'dock-glass-wrapper');
+        if (!hasWindowGlass && r.bottom < rect.top - 50) return;
+
+        // Get computed style of the window to mirror colors, borders, and rounded corners perfectly
+        const style = window.getComputedStyle(win);
+        const bgColor = style.backgroundColor || 'rgba(255, 255, 255, 0.9)';
+        const borderRadius = parseFloat(style.borderRadius) || 12;
+
+        bgCtx.save();
+
+        // 1. Draw subtle soft shadow behind the window
+        bgCtx.shadowColor = 'rgba(0, 0, 0, 0.25)';
+        bgCtx.shadowBlur = 30;
+        bgCtx.shadowOffsetX = 0;
+        bgCtx.shadowOffsetY = 15;
+
+        // 2. Draw the main window body rounded rectangle
+        bgCtx.fillStyle = bgColor;
+        bgCtx.beginPath();
+        if (typeof bgCtx.roundRect === 'function') {
+          bgCtx.roundRect(r.left, r.top, r.width, r.height, borderRadius);
+        } else {
+          bgCtx.rect(r.left, r.top, r.width, r.height);
+        }
+        bgCtx.fill();
+
+        // Turn off shadows for internal panels
+        bgCtx.shadowColor = 'transparent';
+        bgCtx.shadowBlur = 0;
+        bgCtx.shadowOffsetX = 0;
+        bgCtx.shadowOffsetY = 0;
+
+        // 3. Clip subsequent operations to the window's rounded rectangle
+        bgCtx.beginPath();
+        if (typeof bgCtx.roundRect === 'function') {
+          bgCtx.roundRect(r.left, r.top, r.width, r.height, borderRadius);
+        } else {
+          bgCtx.rect(r.left, r.top, r.width, r.height);
+        }
+        bgCtx.clip();
+
+        // 4. Draw sidebar if visible inside the window
+        const sidebar = win.querySelector('.finder-sidebar-wrapper, .settings-sidebar, .music-sidebar, .sidebar');
+        if (sidebar && sidebar.getBoundingClientRect().width > 0) {
+          const sbRect = sidebar.getBoundingClientRect();
+          const sbStyle = window.getComputedStyle(sidebar);
+          bgCtx.fillStyle = sbStyle.backgroundColor && sbStyle.backgroundColor !== 'rgba(0, 0, 0, 0)' ? sbStyle.backgroundColor : 'rgba(0,0,0,0.05)';
+          bgCtx.fillRect(sbRect.left, sbRect.top, sbRect.width, sbRect.height);
+        }
+
+        // 5. Draw titlebar / toolbar if visible inside the window
+        const titlebar = win.querySelector('.titlebar, .safari-toolbar, .calendar-toolbar, [id$="-titlebar"]');
+        if (titlebar && titlebar.getBoundingClientRect().height > 0) {
+          const tbRect = titlebar.getBoundingClientRect();
+          const tbStyle = window.getComputedStyle(titlebar);
+          bgCtx.fillStyle = tbStyle.backgroundColor && tbStyle.backgroundColor !== 'rgba(0, 0, 0, 0)' ? tbStyle.backgroundColor : 'rgba(0,0,0,0.03)';
+          bgCtx.fillRect(tbRect.left, tbRect.top, tbRect.width, tbRect.height);
+        }
+
+        // 6. Draw any primary active elements like inputs/address-bars to represent active layout
+        const inputs = win.querySelectorAll('input, .safari-address-container');
+        inputs.forEach(input => {
+          const inputRect = input.getBoundingClientRect();
+          if (inputRect.width > 0 && inputRect.height > 0) {
+            const inputStyle = window.getComputedStyle(input);
+            bgCtx.fillStyle = inputStyle.backgroundColor || 'rgba(255,255,255,0.8)';
+            bgCtx.beginPath();
+            const inputRadius = parseFloat(inputStyle.borderRadius) || 6;
+            if (typeof bgCtx.roundRect === 'function') {
+              bgCtx.roundRect(inputRect.left, inputRect.top, inputRect.width, inputRect.height, inputRadius);
+            } else {
+              bgCtx.rect(inputRect.left, inputRect.top, inputRect.width, inputRect.height);
+            }
+            bgCtx.fill();
+          }
+        });
+
+        // 7. Draw Traffic Lights (Mac-style Close/Minimize/Maximize circles)
+        const trafficLights = win.querySelector('.traffic-lights');
+        if (trafficLights) {
+          const tlRect = trafficLights.getBoundingClientRect();
+          const radius = 5;
+          const spacing = 6;
+          const startX = tlRect.left + radius + 4;
+          const cy = tlRect.top + tlRect.height / 2;
+          
+          // Close
+          bgCtx.fillStyle = '#ff5f56';
+          bgCtx.beginPath();
+          bgCtx.arc(startX, cy, radius, 0, Math.PI * 2);
+          bgCtx.fill();
+
+          // Minimize
+          bgCtx.fillStyle = '#ffbd2e';
+          bgCtx.beginPath();
+          bgCtx.arc(startX + (radius * 2 + spacing), cy, radius, 0, Math.PI * 2);
+          bgCtx.fill();
+
+          // Maximize
+          bgCtx.fillStyle = '#27c93f';
+          bgCtx.beginPath();
+          bgCtx.arc(startX + (radius * 2 + spacing) * 2, cy, radius, 0, Math.PI * 2);
+          bgCtx.fill();
+        }
+
+        // 7.5 Draw text elements inside the window to render actual text in reflection
+        const textElements = Array.from(win.querySelectorAll('h1, h2, h3, h4, h5, h6, p, span, a, button, li, td, th, [role="button"], .text, .title'));
+        let textCount = 0;
+        for (let k = 0; k < textElements.length && textCount < 60; k++) {
+          const el = textElements[k];
+          // Skip large parent containers with nested layouts to ensure we only render leaf/text-level elements
+          if (el.children.length > 2) continue;
+          const text = el.textContent ? el.textContent.trim() : '';
+          if (!text || text.length === 0) continue;
+
+          const elRect = el.getBoundingClientRect();
+          if (elRect.width === 0 || elRect.height === 0) continue;
+
+          // Check if it intersects with the viewport/window boundaries
+          if (elRect.bottom < r.top || elRect.top > r.bottom || elRect.right < r.left || elRect.left > r.right) continue;
+
+          const elStyle = window.getComputedStyle(el);
+          if (elStyle.display === 'none' || elStyle.visibility === 'hidden' || parseFloat(elStyle.opacity) === 0) continue;
+
+          // Safely build the font descriptor
+          const fontSize = elStyle.fontSize || '13px';
+          const fontFamily = elStyle.fontFamily || 'Inter, sans-serif';
+          const fontWeight = elStyle.fontWeight || 'normal';
+          const color = elStyle.color || '#000000';
+
+          bgCtx.fillStyle = color;
+          bgCtx.font = `${fontWeight} ${fontSize} ${fontFamily}`;
+          bgCtx.textBaseline = 'top';
+          bgCtx.textAlign = elStyle.textAlign === 'center' ? 'center' : (elStyle.textAlign === 'right' ? 'right' : 'left');
+
+          let x = elRect.left;
+          if (bgCtx.textAlign === 'center') {
+            x = elRect.left + elRect.width / 2;
+          } else if (bgCtx.textAlign === 'right') {
+            x = elRect.right;
+          }
+
+          bgCtx.fillText(text, x, elRect.top, elRect.width);
+          textCount++;
+        }
+
+        // 8. Restore clipping to draw standard outer window stroke/border
+        bgCtx.restore();
+
+        // 9. Draw precise computed outer window border stroke
+        bgCtx.save();
+        const borderWidth = parseFloat(style.borderWidth) || 0;
+        const borderColor = style.borderColor;
+        if (borderWidth > 0 && borderColor) {
+          bgCtx.strokeStyle = borderColor;
+          bgCtx.lineWidth = borderWidth;
+        } else {
+          const isDark = document.body.classList.contains('dark-mode');
+          bgCtx.strokeStyle = isDark ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.12)';
+          bgCtx.lineWidth = 1;
+        }
+        bgCtx.beginPath();
+        if (typeof bgCtx.roundRect === 'function') {
+          bgCtx.roundRect(r.left, r.top, r.width, r.height, borderRadius);
+        } else {
+          bgCtx.rect(r.left, r.top, r.width, r.height);
+        }
+        bgCtx.stroke();
+
+        bgCtx.restore();
+      });
+
+      gl.bindTexture(gl.TEXTURE_2D, bgTexture);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, bgCanvas);
+
+      gl.viewport(0, 0, canvas.width, canvas.height);
+      gl.useProgram(program);
+      gl.bindVertexArray(vao);
+
+      gl.uniform2f(gl.getUniformLocation(program, 'u_screenResolution'), sw, sh);
+      gl.uniform2f(gl.getUniformLocation(program, 'u_dockPos'), rect.left, rect.top);
+      gl.uniform2f(gl.getUniformLocation(program, 'u_dockSize'), rect.width, rect.height);
+      gl.uniform1f(gl.getUniformLocation(program, 'u_time'), time * 0.001);
+
+      const isDark = document.body.classList.contains('dark-mode');
+      const glassColor = isDark ? [0.08, 0.08, 0.1] : [1.0, 1.0, 1.0];
+      const frostedOpacity = isDark ? 0.38 : 0.12;
+
+      gl.uniform1f(gl.getUniformLocation(program, 'u_refractionStrength'), 1.8);
+      gl.uniform1f(gl.getUniformLocation(program, 'u_edgeThickness'), 7.0);
+      gl.uniform1f(gl.getUniformLocation(program, 'u_chromaticAberration'), 0.015);
+      gl.uniform1f(gl.getUniformLocation(program, 'u_frostedOpacity'), frostedOpacity);
+      gl.uniform1f(gl.getUniformLocation(program, 'u_grainOpacity'), 0.025);
+      gl.uniform1f(gl.getUniformLocation(program, 'u_cornerRadius'), 21.0);
+      gl.uniform3f(gl.getUniformLocation(program, 'u_glassColor'), glassColor[0], glassColor[1], glassColor[2]);
+
+      gl.drawArrays(gl.TRIANGLES, 0, 6);
+
+      requestAnimationFrame(render);
+    }
+
+    requestAnimationFrame(render);
+  })();
+
+  // Trigger window recaptures on user interaction to ensure the dock glass always reflects up-to-date window contents
+  document.addEventListener('mouseup', () => {
+    const windows = Array.from(document.querySelectorAll('.window'));
+    windows.forEach(win => {
+      if (win.style.display !== 'none' && win.style.opacity !== '0' && win.style.visibility !== 'hidden') {
+        if (window.preCaptureWindow) {
+          window.preCaptureWindow(win.id);
+        }
+      }
+    });
+  });
+
+  document.addEventListener('keyup', (e) => {
+    const win = e.target.closest('.window');
+    if (win && window.preCaptureWindow) {
+      window.preCaptureWindow(win.id);
+    }
+  });
+
+  document.addEventListener('input', (e) => {
+    const win = e.target.closest('.window');
+    if (win && window.preCaptureWindow) {
+      window.preCaptureWindow(win.id);
+    }
+  });
+
   window.genieMinimizeEnabled = true;
+
+  // --- Diagnostics Overlay & HUD Setup ---
+  window.updateDiagnosticsHUD = function() {
+    const isChecked = document.getElementById('diagnostics-toggle')?.checked;
+    let hud = document.getElementById('diagnostics-hud');
+    let overlay = document.getElementById('dock-diagnostic-svg');
+    
+    if (!isChecked) {
+      if (hud) hud.remove();
+      if (overlay) overlay.remove();
+      return;
+    }
+    
+    if (!hud) {
+      hud = document.createElement('div');
+      hud.id = 'diagnostics-hud';
+      hud.style.cssText = `
+        position: fixed;
+        bottom: 80px;
+        right: 20px;
+        width: 290px;
+        background: rgba(28, 28, 30, 0.9);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 12px;
+        padding: 14px;
+        color: #fff;
+        font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
+        font-size: 11px;
+        z-index: 999999999;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+        pointer-events: auto;
+      `;
+      document.body.appendChild(hud);
+    }
+    
+    const dockWrapper = document.getElementById('dock-glass-wrapper');
+    const dock = document.getElementById('dock');
+    if (!dockWrapper || !dock) return;
+    
+    const w = dockWrapper.offsetWidth;
+    const h = dockWrapper.offsetHeight;
+    const radius = parseInt(dockWrapper.getAttribute('radius')) || 21;
+    const depth = parseInt(dockWrapper.getAttribute('depth')) || 5;
+    
+    let innerPathData = 'N/A';
+    const innerW = Math.max(10, w - 2 * depth);
+    const innerH = Math.max(10, h - 2 * depth);
+    const innerRadius = Math.max(0, radius - depth);
+    if (window.clipSquircle) {
+      const clipVal = window.clipSquircle({
+        width: innerW,
+        height: innerH,
+        roundness: 0.2,
+        curveLength: innerRadius
+      });
+      const pathMatch = clipVal.match(/path\(['"]([^'"]+)['"]\)/);
+      if (pathMatch) innerPathData = pathMatch[1];
+    }
+    
+    let outerPathData = 'N/A';
+    const globGlass = dockWrapper.shadowRoot?.querySelector('.glass-box');
+    if (globGlass) {
+      const cp = window.getComputedStyle(globGlass).clipPath;
+      const pathMatch = cp.match(/path\(['"]([^'"]+)['"]\)/);
+      if (pathMatch) outerPathData = pathMatch[1];
+    }
+    
+    const displacementMapUrl = window.DisplacementUtils.getDisplacementMap({ height: h, width: w, radius, depth });
+    
+    hud.innerHTML = `
+      <div style="font-weight: 600; font-size: 12px; margin-bottom: 10px; color: #ff9f0a; display: flex; justify-content: space-between; align-items: center;">
+        <span>Dock & Warp Grid Diagnostics</span>
+        <span style="font-family: monospace; font-size: 9px; padding: 2px 4px; background: rgba(255,159,10,0.15); border: 1px solid rgba(255,159,10,0.3); border-radius: 4px; color: #ff9f0a;">ACTIVE</span>
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 10px; font-family: monospace; font-size: 10px; background: rgba(255,255,255,0.05); padding: 8px; border-radius: 6px;">
+        <div>Size: <strong style="color: #30d158;">${w}x${h}px</strong></div>
+        <div>Radius: <strong style="color: #0a84ff;">${radius}px</strong></div>
+        <div>Depth: <strong style="color: #bf5af2;">${depth}px</strong></div>
+        <div>Grid Size: <strong>8 x 8</strong></div>
+        <div>Mesh Verts: <strong>81</strong></div>
+        <div>Polys: <strong>128 Tris</strong></div>
+      </div>
+      
+      <div style="margin-bottom: 10px;">
+        <div style="font-weight: bold; margin-bottom: 4px; opacity: 0.8;">Visual Paths Legend:</div>
+        <div style="display: flex; flex-direction: column; gap: 4px; background: rgba(0,0,0,0.2); padding: 6px; border-radius: 6px;">
+          <div style="display: flex; align-items: center; gap: 6px;"><span style="display:inline-block; width:10px; height:2px; background:#30d158;"></span> Outer Squircle (Real Edge)</div>
+          <div style="display: flex; align-items: center; gap: 6px;"><span style="display:inline-block; width:10px; height:2px; background:#0a84ff;"></span> Inner Squircle (Displacement)</div>
+          <div style="display: flex; align-items: center; gap: 6px;"><span style="display:inline-block; width:10px; height:2px; border-top: 1.5px dashed #ff9f0a;"></span> Std Rect (Corner Mismatch)</div>
+        </div>
+      </div>
+      
+      <div>
+        <div style="font-weight: bold; margin-bottom: 4px; opacity: 0.8;">SVG Displacement Normal Map:</div>
+        <div style="display: flex; justify-content: center; background: #444; padding: 4px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.15);">
+          <img src="${displacementMapUrl}" style="max-width: 100%; height: 36px; object-fit: contain; border-radius: 2px;" />
+        </div>
+        <div style="font-size: 8.5px; color: #aaa; text-align: center; margin-top: 4px; font-style: italic;">
+          Squirclified gradient maps translate normal vertices perfectly
+        </div>
+      </div>
+    `;
+    
+    if (!overlay) {
+      overlay = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      overlay.id = 'dock-diagnostic-svg';
+      overlay.setAttribute('style', 'position: fixed; pointer-events: none; z-index: 2147483647; overflow: visible;');
+      document.body.appendChild(overlay);
+    }
+    
+    const rect = dockWrapper.getBoundingClientRect();
+    overlay.setAttribute('width', rect.width.toString());
+    overlay.setAttribute('height', rect.height.toString());
+    overlay.style.left = `${rect.left}px`;
+    overlay.style.top = `${rect.top}px`;
+    
+    let pathsHTML = '';
+    if (outerPathData && outerPathData !== 'N/A') {
+      pathsHTML += `<path d="${outerPathData}" fill="none" stroke="#30d158" stroke-width="2" />`;
+    }
+    if (innerPathData && innerPathData !== 'N/A') {
+      pathsHTML += `<path d="${innerPathData}" fill="none" stroke="#0a84ff" stroke-width="2" transform="translate(${depth}, ${depth})" />`;
+    }
+    pathsHTML += `<rect x="0" y="0" width="${rect.width}" height="${rect.height}" rx="${radius}" ry="${radius}" fill="none" stroke="#ff9f0a" stroke-width="1.5" stroke-dasharray="4,4" />`;
+    
+    overlay.innerHTML = pathsHTML;
+  };
+
+  const diagnosticsToggle = document.getElementById('diagnostics-toggle');
+  if (diagnosticsToggle) {
+    diagnosticsToggle.addEventListener('change', () => {
+      window.updateDiagnosticsHUD();
+    });
+  }
+
+  window.addEventListener('liquid-glass-tick', () => {
+    if (document.getElementById('diagnostics-toggle')?.checked) {
+      window.updateDiagnosticsHUD();
+    }
+  });
+
+  window.addEventListener('resize', () => {
+    if (document.getElementById('diagnostics-toggle')?.checked) {
+      window.updateDiagnosticsHUD();
+    }
+  });
 
   const darkModeToggle = document.getElementById('dark-mode-toggle');
   if (darkModeToggle) {
@@ -8573,8 +10345,10 @@ customElements.define('glass-element', GlassElement);
 
   const darkModeIconsToggle = document.getElementById('dark-mode-icons-toggle');
   if (darkModeIconsToggle) {
+    document.body.classList.toggle('icons-dark-active', darkModeIconsToggle.checked);
     darkModeIconsToggle.addEventListener('change', (e) => {
       const isDark = e.target.checked;
+      document.body.classList.toggle('icons-dark-active', isDark);
       
       // Update dock icons
       document.querySelectorAll('.dock-icon').forEach(icon => {
@@ -11297,12 +13071,11 @@ if (val === 'help') {
     });
 
     if (hoveredIcon) {
-      const dockRect = dock.getBoundingClientRect();
       const iconRect = hoveredIcon.getBoundingClientRect();
       
       const tooltipHeight = tooltip.offsetHeight;
-      const centerX = (iconRect.left - dockRect.left) + (iconRect.width / 2);
-      const topY = (iconRect.top - dockRect.top) - tooltipHeight - 12; 
+      const centerX = iconRect.left + (iconRect.width / 2);
+      const topY = iconRect.top - tooltipHeight - 12; 
       
       tooltip.style.transform = `translate(${centerX}px, ${topY}px) translateX(-50%)`;
     }
