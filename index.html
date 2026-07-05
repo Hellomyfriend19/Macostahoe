@@ -142,7 +142,7 @@
 
   .dock-container {
     margin-bottom: 20px;
-    padding: 10px;
+    padding: 10px 14px;
     border-radius: 24px;
     background: rgba(255, 255, 255, 0.25);
     backdrop-filter: blur(20px);
@@ -4931,6 +4931,10 @@
             <div class="wallpaper-thumb" style="background-image: url('https://github.com/Hellomyfriend19/Nice/blob/main/26-Tahoe-Light-6K-thumb.jpg?raw=true$0');"></div>
             <div class="wallpaper-name">Tahoe Purple</div>
           </div>
+          <div class="wallpaper-item" data-bg="https://github.com/Hellomyfriend19/Nice/blob/main/New%20Project.png?raw=true">
+            <div class="wallpaper-thumb" style="background-image: url('https://github.com/Hellomyfriend19/Nice/blob/main/New%20Project.png?raw=true');"></div>
+            <div class="wallpaper-name">Test1</div>
+          </div>
         </div>
       </div>
       
@@ -5046,16 +5050,16 @@
           <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
             <div style="display: flex; justify-content: space-between; align-items: center;">
               <span style="font-weight: 500; font-size: 14px;">Dock Hover Smoothness</span>
-              <span id="dock-smoothness-value" style="font-size: 13px; opacity: 0.7;">0.63</span>
+              <span id="dock-smoothness-value" style="font-size: 13px; opacity: 0.7;">0.47</span>
             </div>
-            <input type="range" id="dock-smoothness-slider" min="0.05" max="1.0" step="0.01" value="0.63" style="width: 100%;">
+            <input type="range" id="dock-smoothness-slider" min="0.05" max="1.0" step="0.01" value="0.47" style="width: 100%;">
           </div>
           <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
             <div style="display: flex; justify-content: space-between; align-items: center;">
               <span style="font-weight: 500; font-size: 14px;">Dock Depth</span>
-              <span id="dock-depth-value" style="font-size: 13px; opacity: 0.7;">5px</span>
+              <span id="dock-depth-value" style="font-size: 13px; opacity: 0.7;">4px</span>
             </div>
-            <input type="range" id="dock-depth-slider" min="0" max="30" step="1" value="5" style="width: 100%;">
+            <input type="range" id="dock-depth-slider" min="0" max="30" step="1" value="4" style="width: 100%;">
           </div>
           <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
             <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -5067,9 +5071,34 @@
           <div style="display: flex; flex-direction: column; gap: 8px;">
             <div style="display: flex; justify-content: space-between; align-items: center;">
               <span style="font-weight: 500; font-size: 14px;">Dock Strength</span>
-              <span id="dock-strength-value" style="font-size: 13px; opacity: 0.7;">120</span>
+              <span id="dock-strength-value" style="font-size: 13px; opacity: 0.7;">170</span>
             </div>
-            <input type="range" id="dock-strength-slider" min="0" max="200" step="5" value="120" style="width: 100%;">
+            <input type="range" id="dock-strength-slider" min="0" max="400" step="5" value="170" style="width: 100%;">
+          </div>
+        </div>
+
+        <h3 style="margin: 24px 0 12px 0; font-weight: 600; font-size: 16px;">Apps (Launchpad) Liquid Glass</h3>
+        <div style="background: rgba(0, 0, 0, 0.05); padding: 20px; border-radius: 12px; border: 1px solid rgba(0, 0, 0, 0.1);">
+          <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-weight: 500; font-size: 14px;">Glass Depth</span>
+              <span id="apps-depth-value" style="font-size: 13px; opacity: 0.7;">5</span>
+            </div>
+            <input type="range" id="apps-depth-slider" min="0" max="50" step="1" value="5" style="width: 100%;">
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-weight: 500; font-size: 14px;">Glass Blur</span>
+              <span id="apps-blur-value" style="font-size: 13px; opacity: 0.7;">2</span>
+            </div>
+            <input type="range" id="apps-blur-slider" min="0" max="50" step="1" value="2" style="width: 100%;">
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-weight: 500; font-size: 14px;">Glass Strength</span>
+              <span id="apps-strength-value" style="font-size: 13px; opacity: 0.7;">40</span>
+            </div>
+            <input type="range" id="apps-strength-slider" min="0" max="400" step="1" value="40" style="width: 100%;">
           </div>
         </div>
 
@@ -5795,7 +5824,7 @@
   <span class="dock-tooltip-text" id="remove-tooltip-text">Remove</span>
 </div>
 
-<glass-element id="dock-glass-wrapper" style="position:fixed; bottom:7px; left:50%; transform:translateX(-50%); z-index:2147483647;" radius="21" depth="5" blur="1" strength="120" background-color="transparent" chromatic-aberration="1" auto-size>
+<glass-element id="dock-glass-wrapper" style="position:fixed; bottom:7px; left:50%; transform:translateX(-50%); z-index:2147483647;" radius="21" depth="4" blur="2" strength="170" background-color="transparent" chromatic-aberration="1" auto-size>
 <div class="dock-container" id="dock" style="margin-bottom:0; background:transparent; backdrop-filter:none; -webkit-backdrop-filter:none; box-shadow:none; border-radius:21px; position:relative;">
   
   <div class="dock-tooltip" id="tooltip" style="position: fixed !important; pointer-events: none; z-index: 2147483647;">
@@ -5813,7 +5842,7 @@
   <div class="dock-icon" data-name="Instagram" style="background-image: url('https://user-images.githubusercontent.com/24403355/33800842-566c09d8-dd17-11e7-88ff-be7f30481d67.png'); background-size: 85%;"></div>
   <div class="dock-icon" data-name="System Settings" style="background-image: url('https://static.wikia.nocookie.net/logopedia/images/a/ac/Settings_2025_II.png/revision/latest/scale-to-width-down/200?cb=20250707103149'); background-size: 85%;"></div>
   <div class="dock-separator" style="width: 1px; height: 32px; background: rgba(255, 255, 255, 0.25); margin: 0 4px; display: none;" id="dock-minimized-separator"></div>
-  <div id="dock-minimized-container" style="display: flex; align-items: center; gap: 8px;"></div>
+  <div id="dock-minimized-container" style="display: none; align-items: center; gap: 8px;"></div>
   <div class="dock-icon" data-name="Trash" style="background-image: url('https://icons.iconarchive.com/icons/wwalczyszyn/iwindows/256/Recycle-Bin-icon.png')"></div>
 </div>
 </glass-element>
@@ -7125,7 +7154,7 @@ class GlassElement extends HTMLElement {
     }
     get hasSVGFilterSupport() { return GlassElement._svgFilterSupport; }
     get isLiquidWebGL() {
-        return this.id === 'launchpad-glass' || this.hasAttribute('liquid');
+        return this.id === 'launchpad-glass' || this.hasAttribute('liquid') || (this.id && this.id.includes('tooltip'));
     }
     static get observedAttributes() {
         return ['width','height','radius','depth','blur','strength','chromatic-aberration','debug','background-color','responsive','base-width','base-height','auto-size','min-width','min-height'];
@@ -7258,6 +7287,8 @@ class GlassElement extends HTMLElement {
           uniform float u_grainOpacity;
           uniform float u_cornerRadius;
           uniform vec3 u_glassColor;
+          uniform float u_blur;
+          uniform float u_noClip;
 
           float sdRoundRect(vec2 p, vec2 b, float r) {
             vec2 d = abs(p) - b + vec2(r);
@@ -7269,15 +7300,16 @@ class GlassElement extends HTMLElement {
           }
 
           float sampleChannelWithBlur(sampler2D tex, vec2 uv, int channel, vec2 onePixel) {
+            vec2 offset = onePixel * u_blur;
             vec4 val = texture(tex, uv) * 0.25;
-            val += texture(tex, uv + vec2(-onePixel.x, 0.0)) * 0.125;
-            val += texture(tex, uv + vec2(onePixel.x, 0.0)) * 0.125;
-            val += texture(tex, uv + vec2(0.0, -onePixel.y)) * 0.125;
-            val += texture(tex, uv + vec2(0.0, onePixel.y)) * 0.125;
-            val += texture(tex, uv + vec2(-onePixel.x, -onePixel.y)) * 0.0625;
-            val += texture(tex, uv + vec2(onePixel.x, -onePixel.y)) * 0.0625;
-            val += texture(tex, uv + vec2(-onePixel.x, onePixel.y)) * 0.0625;
-            val += texture(tex, uv + vec2(onePixel.x, onePixel.y)) * 0.0625;
+            val += texture(tex, uv + vec2(-offset.x, 0.0)) * 0.125;
+            val += texture(tex, uv + vec2(offset.x, 0.0)) * 0.125;
+            val += texture(tex, uv + vec2(0.0, -offset.y)) * 0.125;
+            val += texture(tex, uv + vec2(0.0, offset.y)) * 0.125;
+            val += texture(tex, uv + vec2(-offset.x, -offset.y)) * 0.0625;
+            val += texture(tex, uv + vec2(offset.x, -offset.y)) * 0.0625;
+            val += texture(tex, uv + vec2(-offset.x, offset.y)) * 0.0625;
+            val += texture(tex, uv + vec2(offset.x, offset.y)) * 0.0625;
             if (channel == 0) return val.r;
             if (channel == 1) return val.g;
             return val.b;
@@ -7289,7 +7321,7 @@ class GlassElement extends HTMLElement {
             
             float sd = sdRoundRect(p, u_dockSize * 0.5, u_cornerRadius);
 
-            if (sd > 1.5) {
+            if (u_noClip < 0.5 && sd > 1.5) {
               fragColor = vec4(0.0, 0.0, 0.0, 0.0);
               return;
             }
@@ -7298,7 +7330,7 @@ class GlassElement extends HTMLElement {
             float screenY = u_dockPos.y + u_dockSize.y - localPixel.y;
             vec2 baseScreenUV = vec2(screenX, screenY) / u_screenResolution;
 
-            float d_edge = -sd;
+            float d_edge = u_noClip > 0.5 ? max(4.0, -sd) : -sd;
             float eps = 1.0;
             float sd_dx = sdRoundRect(p + vec2(eps, 0.0), u_dockSize * 0.5, u_cornerRadius);
             float sd_dy = sdRoundRect(p + vec2(0.0, eps), u_dockSize * 0.5, u_cornerRadius);
@@ -7308,7 +7340,7 @@ class GlassElement extends HTMLElement {
             float normalized_dist = d_edge / u_edgeThickness;
             float slope = exp(-normalized_dist) / u_edgeThickness;
             
-            float borderRim = d_edge < 4.0 ? (4.0 - d_edge) * 0.12 : 0.0;
+            float borderRim = u_noClip > 0.5 ? 0.0 : (d_edge < 4.0 ? (4.0 - d_edge) * 0.12 : 0.0);
             vec2 normal2D = -n_dir * (slope * u_refractionStrength * 120.0 + borderRim * 25.0);
             vec2 uvOffset = vec2(normal2D.x, -normal2D.y) / u_screenResolution;
 
@@ -7328,10 +7360,10 @@ class GlassElement extends HTMLElement {
 
             glassColor *= 1.0056;
 
-            float hairlineEdge = smoothstep(1.5, 0.0, abs(sd));
+            float hairlineEdge = u_noClip > 0.5 ? 0.0 : smoothstep(1.5, 0.0, abs(sd));
             glassColor += vec3(0.25) * hairlineEdge;
 
-            float edgeAlpha = smoothstep(1.5, 0.0, sd);
+            float edgeAlpha = u_noClip > 0.5 ? 1.0 : smoothstep(1.5, 0.0, sd);
             fragColor = vec4(glassColor, edgeAlpha);
           }
         `;
@@ -7402,7 +7434,16 @@ class GlassElement extends HTMLElement {
             this._bgTexture = gl.createTexture();
         }
         gl.bindTexture(gl.TEXTURE_2D, this._bgTexture);
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, bgCanvas);
+
+        if (!window._downscaleCanvas) {
+            window._downscaleCanvas = document.createElement('canvas');
+            window._downscaleCtx = window._downscaleCanvas.getContext('2d');
+            window._downscaleCanvas.width = 512;
+            window._downscaleCanvas.height = 512;
+        }
+        window._downscaleCtx.drawImage(bgCanvas, 0, 0, 512, 512);
+
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, window._downscaleCanvas);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
@@ -7434,12 +7475,16 @@ class GlassElement extends HTMLElement {
         }
 
         gl.uniform1f(gl.getUniformLocation(this._program, 'u_refractionStrength'), rStrength);
-        gl.uniform1f(gl.getUniformLocation(this._program, 'u_edgeThickness'), 7.0);
+        gl.uniform1f(gl.getUniformLocation(this._program, 'u_edgeThickness'), parseFloat(this.depth));
+        gl.uniform1f(gl.getUniformLocation(this._program, 'u_blur'), parseFloat(this.blur));
         gl.uniform1f(gl.getUniformLocation(this._program, 'u_chromaticAberration'), cAberration);
         gl.uniform1f(gl.getUniformLocation(this._program, 'u_frostedOpacity'), frostedOpacity);
         gl.uniform1f(gl.getUniformLocation(this._program, 'u_grainOpacity'), 0.025);
         gl.uniform1f(gl.getUniformLocation(this._program, 'u_cornerRadius'), this.radius);
         gl.uniform3f(gl.getUniformLocation(this._program, 'u_glassColor'), glassColor[0], glassColor[1], glassColor[2]);
+
+        const isNoClip = this.hasAttribute('no-clip') || (this.id && this.id.includes('tooltip')) ? 1.0 : 0.0;
+        gl.uniform1f(gl.getUniformLocation(this._program, 'u_noClip'), isNoClip);
 
         gl.drawArrays(gl.TRIANGLES, 0, 6);
     }
@@ -7684,7 +7729,7 @@ customElements.define('glass-element', GlassElement);
   
   window.liquidGlassStrength = 1.0;
   window.dockLiquidGlassBlur = 2;
-  window.dockHoverSmoothness = 0.63;
+  window.dockHoverSmoothness = 0.47;
   const dock = document.getElementById('dock');
   
   function updateDockGlassTheme() {
@@ -8092,6 +8137,22 @@ customElements.define('glass-element', GlassElement);
   let isHovering = false;
 
   dock.addEventListener('mousemove', (e) => {
+    const isWindowDraggingActive = (typeof isTerminalDragging !== 'undefined' && isTerminalDragging) ||
+                                   (typeof isDraggingWindow !== 'undefined' && isDraggingWindow) ||
+                                   (typeof isDraggingSafari !== 'undefined' && isDraggingSafari) ||
+                                   (typeof isSettingsDragging !== 'undefined' && isSettingsDragging) ||
+                                   (typeof isWordDragging !== 'undefined' && isWordDragging) ||
+                                   (typeof isMusicDragging !== 'undefined' && isMusicDragging) ||
+                                   (typeof isCalendarDragging !== 'undefined' && isCalendarDragging) ||
+                                   (typeof isLaunchpadDragging !== 'undefined' && isLaunchpadDragging) ||
+                                   (typeof isDraggingIcon !== 'undefined' && isDraggingIcon);
+    if (isWindowDraggingActive) {
+      isHovering = false;
+      mouseX = null;
+      const tooltip = document.getElementById('tooltip');
+      if (tooltip) tooltip.classList.remove('show');
+      return;
+    }
     isHovering = true;
     mouseX = e.clientX;
   });
@@ -8107,7 +8168,16 @@ customElements.define('glass-element', GlassElement);
 
   icons.forEach(icon => {
     icon.addEventListener('mouseenter', () => {
-      if (isDraggingIcon) return;
+      const isWindowDraggingActive = (typeof isTerminalDragging !== 'undefined' && isTerminalDragging) ||
+                                     (typeof isDraggingWindow !== 'undefined' && isDraggingWindow) ||
+                                     (typeof isDraggingSafari !== 'undefined' && isDraggingSafari) ||
+                                     (typeof isSettingsDragging !== 'undefined' && isSettingsDragging) ||
+                                     (typeof isWordDragging !== 'undefined' && isWordDragging) ||
+                                     (typeof isMusicDragging !== 'undefined' && isMusicDragging) ||
+                                     (typeof isCalendarDragging !== 'undefined' && isCalendarDragging) ||
+                                     (typeof isLaunchpadDragging !== 'undefined' && isLaunchpadDragging) ||
+                                     (typeof isDraggingIcon !== 'undefined' && isDraggingIcon);
+      if (isWindowDraggingActive || isDraggingIcon) return;
       hoveredIcon = icon;
       tooltipText.textContent = icon.getAttribute('data-name');
       tooltip.classList.add('show');
@@ -9487,6 +9557,39 @@ customElements.define('glass-element', GlassElement);
     });
   }
 
+  const appsDepthSlider = document.getElementById('apps-depth-slider');
+  const appsDepthValue = document.getElementById('apps-depth-value');
+  if (appsDepthSlider) {
+    appsDepthSlider.addEventListener('input', (e) => {
+      const depth = parseInt(e.target.value);
+      if (appsDepthValue) appsDepthValue.textContent = depth;
+      const launchpadGlass = document.getElementById('launchpad-glass');
+      if (launchpadGlass) launchpadGlass.setAttribute('depth', depth);
+    });
+  }
+
+  const appsBlurSlider = document.getElementById('apps-blur-slider');
+  const appsBlurValue = document.getElementById('apps-blur-value');
+  if (appsBlurSlider) {
+    appsBlurSlider.addEventListener('input', (e) => {
+      const blur = parseInt(e.target.value);
+      if (appsBlurValue) appsBlurValue.textContent = blur;
+      const launchpadGlass = document.getElementById('launchpad-glass');
+      if (launchpadGlass) launchpadGlass.setAttribute('blur', blur);
+    });
+  }
+
+  const appsStrengthSlider = document.getElementById('apps-strength-slider');
+  const appsStrengthValue = document.getElementById('apps-strength-value');
+  if (appsStrengthSlider) {
+    appsStrengthSlider.addEventListener('input', (e) => {
+      const strength = parseInt(e.target.value);
+      if (appsStrengthValue) appsStrengthValue.textContent = strength;
+      const launchpadGlass = document.getElementById('launchpad-glass');
+      if (launchpadGlass) launchpadGlass.setAttribute('strength', strength);
+    });
+  }
+
   // Helper to convert hex and opacity to rgba
   function hexToRgbaStr(hex, alpha) {
     hex = hex.replace('#', '');
@@ -9609,6 +9712,7 @@ customElements.define('glass-element', GlassElement);
       uniform float u_grainOpacity;
       uniform float u_cornerRadius;
       uniform vec3 u_glassColor;
+      uniform float u_blur;
 
       float sdRoundRect(vec2 p, vec2 b, float r) {
         vec2 d = abs(p) - b + vec2(r);
@@ -9620,15 +9724,16 @@ customElements.define('glass-element', GlassElement);
       }
 
       float sampleChannelWithBlur(sampler2D tex, vec2 uv, int channel, vec2 onePixel) {
+        vec2 offset = onePixel * u_blur;
         vec4 val = texture(tex, uv) * 0.25;
-        val += texture(tex, uv + vec2(-onePixel.x, 0.0)) * 0.125;
-        val += texture(tex, uv + vec2(onePixel.x, 0.0)) * 0.125;
-        val += texture(tex, uv + vec2(0.0, -onePixel.y)) * 0.125;
-        val += texture(tex, uv + vec2(0.0, onePixel.y)) * 0.125;
-        val += texture(tex, uv + vec2(-onePixel.x, -onePixel.y)) * 0.0625;
-        val += texture(tex, uv + vec2(onePixel.x, -onePixel.y)) * 0.0625;
-        val += texture(tex, uv + vec2(-onePixel.x, onePixel.y)) * 0.0625;
-        val += texture(tex, uv + vec2(onePixel.x, onePixel.y)) * 0.0625;
+        val += texture(tex, uv + vec2(-offset.x, 0.0)) * 0.125;
+        val += texture(tex, uv + vec2(offset.x, 0.0)) * 0.125;
+        val += texture(tex, uv + vec2(0.0, -offset.y)) * 0.125;
+        val += texture(tex, uv + vec2(0.0, offset.y)) * 0.125;
+        val += texture(tex, uv + vec2(-offset.x, -offset.y)) * 0.0625;
+        val += texture(tex, uv + vec2(offset.x, -offset.y)) * 0.0625;
+        val += texture(tex, uv + vec2(-offset.x, offset.y)) * 0.0625;
+        val += texture(tex, uv + vec2(offset.x, offset.y)) * 0.0625;
         if (channel == 0) return val.r;
         if (channel == 1) return val.g;
         return val.b;
@@ -9780,15 +9885,29 @@ customElements.define('glass-element', GlassElement);
     function render(time) {
       updateWallpaperSource();
 
-      const rect = dock.getBoundingClientRect();
-      if (rect.width <= 0 || rect.height <= 0) {
+      const stableWidth = window.lastComputedDockWidth;
+      const stableHeight = window.lastComputedDockHeight;
+      const stableLeft = window.lastComputedDockLeft;
+      const stableTop = window.lastComputedDockTop;
+
+      if (!stableWidth || !stableHeight || stableWidth <= 0 || stableHeight <= 0) {
         requestAnimationFrame(render);
         return;
       }
 
-      if (canvas.width !== Math.ceil(rect.width) || canvas.height !== Math.ceil(rect.height)) {
-        canvas.width = Math.ceil(rect.width);
-        canvas.height = Math.ceil(rect.height);
+      const rect = {
+        left: stableLeft,
+        top: stableTop,
+        width: stableWidth,
+        height: stableHeight
+      };
+
+      const ceilWidth = Math.ceil(stableWidth);
+      const ceilHeight = Math.ceil(stableHeight);
+
+      if (canvas.width !== ceilWidth || canvas.height !== ceilHeight) {
+        canvas.width = ceilWidth;
+        canvas.height = ceilHeight;
       }
 
       const sw = document.documentElement.clientWidth;
@@ -9819,6 +9938,66 @@ customElements.define('glass-element', GlassElement);
           sy = 0;
         }
         bgCtx.drawImage(wallpaperImg, sx, sy, swCrop, shCrop, 0, 0, sw, sh);
+      }
+
+      // Draw Desktop Icons' Text onto the background canvas
+      try {
+        const desktop = document.getElementById('desktop-icons');
+        if (desktop && window.getComputedStyle(desktop).display !== 'none') {
+          const desktopNames = desktop.querySelectorAll('.desktop-item .name');
+          desktopNames.forEach(el => {
+            const elRect = el.getBoundingClientRect();
+            if (elRect.width === 0 || elRect.height === 0) return;
+            const text = el.textContent.trim();
+            if (!text) return;
+
+            const style = window.getComputedStyle(el);
+            bgCtx.save();
+            bgCtx.font = style.font || `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+            bgCtx.fillStyle = style.color || '#ffffff';
+            bgCtx.textAlign = 'center';
+            bgCtx.textBaseline = 'middle';
+            bgCtx.shadowColor = 'rgba(0, 0, 0, 0.75)';
+            bgCtx.shadowBlur = 4;
+            bgCtx.shadowOffsetX = 0;
+            bgCtx.shadowOffsetY = 1;
+
+            const lines = text.split('\n');
+            const lineHeight = parseFloat(style.lineHeight) || parseFloat(style.fontSize) * 1.2 || 14;
+            const startY = elRect.top + elRect.height / 2 - ((lines.length - 1) * lineHeight) / 2;
+            lines.forEach((line, index) => {
+              bgCtx.fillText(line.trim(), elRect.left + elRect.width / 2, startY + index * lineHeight);
+            });
+            bgCtx.restore();
+          });
+        }
+      } catch (e) {
+        console.error("Error drawing desktop text to bgCanvas:", e);
+      }
+
+      // Draw Menubar's Text onto the background canvas
+      try {
+        const menubar = document.querySelector('.menubar');
+        if (menubar && window.getComputedStyle(menubar).display !== 'none') {
+          const menuItems = menubar.querySelectorAll('.menu-item, #menubar-time');
+          menuItems.forEach(el => {
+            const elRect = el.getBoundingClientRect();
+            if (elRect.width === 0 || elRect.height === 0) return;
+            const text = el.textContent.trim();
+            if (!text) return;
+
+            const style = window.getComputedStyle(el);
+            bgCtx.save();
+            bgCtx.font = style.font || `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+            bgCtx.fillStyle = style.color || '#ffffff';
+            bgCtx.textAlign = 'center';
+            bgCtx.textBaseline = 'middle';
+            bgCtx.fillText(text, elRect.left + elRect.width / 2, elRect.top + elRect.height / 2);
+            bgCtx.restore();
+          });
+        }
+      } catch (e) {
+        console.error("Error drawing menubar text to bgCanvas:", e);
       }
 
       // Draw visible windows on top of the wallpaper in correct z-index order
@@ -9957,45 +10136,61 @@ customElements.define('glass-element', GlassElement);
           bgCtx.fill();
         }
 
-        // 7.5 Draw text elements inside the window to render actual text in reflection
-        const textElements = Array.from(win.querySelectorAll('h1, h2, h3, h4, h5, h6, p, span, a, button, li, td, th, [role="button"], .text, .title'));
-        let textCount = 0;
-        for (let k = 0; k < textElements.length && textCount < 60; k++) {
-          const el = textElements[k];
-          // Skip large parent containers with nested layouts to ensure we only render leaf/text-level elements
-          if (el.children.length > 2) continue;
-          const text = el.textContent ? el.textContent.trim() : '';
-          if (!text || text.length === 0) continue;
+        // Draw all leaf text elements inside the window
+        try {
+          const winTextElements = win.querySelectorAll('p, h1, h2, h3, h4, h5, h6, li, td, th, button, label, span, .window-title, .terminal-line, .terminal-prompt, .terminal-input, .grid-item .name, .empty-state, .music-sidebar-item, .cc-tile-title, .cc-tile-subtitle, #word-rich-editor, #word-rich-editor *, [class*="-text"], [class*="-title"], [class*="-name"], [class*="-label"], [class*="-item"]');
+          const leafTextElements = Array.from(winTextElements).filter(el => {
+            const text = el.textContent ? el.textContent.trim() : '';
+            if (!text || text.length > 500) return false;
+            if (el.children.length > 0) {
+              const hasMatchedChild = Array.from(winTextElements).some(other => other !== el && el.contains(other));
+              if (hasMatchedChild) return false;
+            }
+            return true;
+          });
 
-          const elRect = el.getBoundingClientRect();
-          if (elRect.width === 0 || elRect.height === 0) continue;
+          leafTextElements.forEach(el => {
+            const elRect = el.getBoundingClientRect();
+            if (elRect.width === 0 || elRect.height === 0) return;
 
-          // Check if it intersects with the viewport/window boundaries
-          if (elRect.bottom < r.top || elRect.top > r.bottom || elRect.right < r.left || elRect.left > r.right) continue;
+            const text = el.textContent.trim();
+            const style = window.getComputedStyle(el);
+            bgCtx.save();
 
-          const elStyle = window.getComputedStyle(el);
-          if (elStyle.display === 'none' || elStyle.visibility === 'hidden' || parseFloat(elStyle.opacity) === 0) continue;
+            bgCtx.font = style.font || `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+            bgCtx.fillStyle = style.color || '#333333';
 
-          // Safely build the font descriptor
-          const fontSize = elStyle.fontSize || '13px';
-          const fontFamily = elStyle.fontFamily || 'Inter, sans-serif';
-          const fontWeight = elStyle.fontWeight || 'normal';
-          const color = elStyle.color || '#000000';
+            const textAlign = style.textAlign || 'left';
+            bgCtx.textAlign = textAlign === 'center' ? 'center' : (textAlign === 'right' ? 'right' : 'left');
+            bgCtx.textBaseline = 'middle';
 
-          bgCtx.fillStyle = color;
-          bgCtx.font = `${fontWeight} ${fontSize} ${fontFamily}`;
-          bgCtx.textBaseline = 'top';
-          bgCtx.textAlign = elStyle.textAlign === 'center' ? 'center' : (elStyle.textAlign === 'right' ? 'right' : 'left');
-
-          let x = elRect.left;
-          if (bgCtx.textAlign === 'center') {
-            x = elRect.left + elRect.width / 2;
-          } else if (bgCtx.textAlign === 'right') {
-            x = elRect.right;
-          }
-
-          bgCtx.fillText(text, x, elRect.top, elRect.width);
-          textCount++;
+            const lines = text.split('\n');
+            if (lines.length > 1) {
+              const lineHeight = parseFloat(style.lineHeight) || parseFloat(style.fontSize) * 1.2 || 16;
+              const startY = elRect.top + elRect.height / 2 - ((lines.length - 1) * lineHeight) / 2;
+              lines.forEach((line, index) => {
+                const y = startY + index * lineHeight;
+                if (bgCtx.textAlign === 'center') {
+                  bgCtx.fillText(line.trim(), elRect.left + elRect.width / 2, y);
+                } else if (bgCtx.textAlign === 'right') {
+                  bgCtx.fillText(line.trim(), elRect.right, y);
+                } else {
+                  bgCtx.fillText(line.trim(), elRect.left, y);
+                }
+              });
+            } else {
+              if (bgCtx.textAlign === 'center') {
+                bgCtx.fillText(text, elRect.left + elRect.width / 2, elRect.top + elRect.height / 2);
+              } else if (bgCtx.textAlign === 'right') {
+                bgCtx.fillText(text, elRect.right, elRect.top + elRect.height / 2);
+              } else {
+                bgCtx.fillText(text, elRect.left, elRect.top + elRect.height / 2);
+              }
+            }
+            bgCtx.restore();
+          });
+        } catch (e) {
+          console.error("Error drawing window text to bgCanvas:", e);
         }
 
         // 8. Restore clipping to draw standard outer window stroke/border
@@ -10024,14 +10219,36 @@ customElements.define('glass-element', GlassElement);
         bgCtx.restore();
       });
 
+      // Render top-level active liquid glass elements that are not inside windows (e.g. tooltips)
+      if (window.activeLiquidGlassElements) {
+        window.activeLiquidGlassElements.forEach(gel => {
+          if (!gel.closest('.window') && gel.id !== 'dock-glass-wrapper') {
+            if (gel._gl && typeof gel.renderWebGL === 'function') {
+              if (gel.offsetWidth > 0 || gel.offsetHeight > 0) {
+                gel.renderWebGL(bgCanvas, time);
+              }
+            }
+          }
+        });
+      }
+
+      if (!window._downscaleCanvas) {
+        window._downscaleCanvas = document.createElement('canvas');
+        window._downscaleCtx = window._downscaleCanvas.getContext('2d');
+        window._downscaleCanvas.width = 512;
+        window._downscaleCanvas.height = 512;
+      }
+      window._downscaleCtx.drawImage(bgCanvas, 0, 0, 512, 512);
+
       gl.bindTexture(gl.TEXTURE_2D, bgTexture);
-      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, bgCanvas);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, window._downscaleCanvas);
 
       gl.viewport(0, 0, canvas.width, canvas.height);
       gl.useProgram(program);
       gl.bindVertexArray(vao);
 
       gl.uniform2f(gl.getUniformLocation(program, 'u_screenResolution'), sw, sh);
+      // Since rect contains perfectly pre-stabilized mathematical coordinates, we pass them directly
       gl.uniform2f(gl.getUniformLocation(program, 'u_dockPos'), rect.left, rect.top);
       gl.uniform2f(gl.getUniformLocation(program, 'u_dockSize'), rect.width, rect.height);
       gl.uniform1f(gl.getUniformLocation(program, 'u_time'), time * 0.001);
@@ -10040,8 +10257,24 @@ customElements.define('glass-element', GlassElement);
       const glassColor = isDark ? [0.08, 0.08, 0.1] : [1.0, 1.0, 1.0];
       const frostedOpacity = isDark ? 0.38 : 0.12;
 
-      gl.uniform1f(gl.getUniformLocation(program, 'u_refractionStrength'), 1.8);
-      gl.uniform1f(gl.getUniformLocation(program, 'u_edgeThickness'), 7.0);
+      const dockGlassWrapper = document.getElementById('dock-glass-wrapper');
+      let depthVal = 4.0;
+      let blurVal = 2.0;
+      let strengthVal = 170.0;
+      if (dockGlassWrapper) {
+        const depthAttr = dockGlassWrapper.getAttribute('depth');
+        if (depthAttr !== null) depthVal = parseFloat(depthAttr);
+        const blurAttr = dockGlassWrapper.getAttribute('blur');
+        if (blurAttr !== null) blurVal = parseFloat(blurAttr);
+        const strAttr = dockGlassWrapper.getAttribute('strength');
+        if (strAttr !== null) strengthVal = parseFloat(strAttr);
+      }
+
+      const refractionStrength = strengthVal / 100.0;
+
+      gl.uniform1f(gl.getUniformLocation(program, 'u_refractionStrength'), refractionStrength);
+      gl.uniform1f(gl.getUniformLocation(program, 'u_edgeThickness'), depthVal);
+      gl.uniform1f(gl.getUniformLocation(program, 'u_blur'), blurVal);
       gl.uniform1f(gl.getUniformLocation(program, 'u_chromaticAberration'), 0.015);
       gl.uniform1f(gl.getUniformLocation(program, 'u_frostedOpacity'), frostedOpacity);
       gl.uniform1f(gl.getUniformLocation(program, 'u_grainOpacity'), 0.025);
@@ -13005,17 +13238,50 @@ if (val === 'help') {
 
   function animate() {
     if (!dock) return;
-    const dockRect = dock.getBoundingClientRect();
-
-    if (window.updateDockGlassSize) {
-      window.updateDockGlassSize(Math.round(dockRect.width), Math.round(dockRect.height));
-    }
-
-    const dockCenterX = dockRect.left + dockRect.width / 2;
     const visibleIconStates = iconStates.filter(state => state.element.style.display !== 'none');
     const totalIcons = visibleIconStates.length;
+
+    const dockCenterX = window.innerWidth / 2;
     const unscaledDockWidth = totalIcons * baseSize + (totalIcons - 1) * 10 + 20;
     const startX = dockCenterX - unscaledDockWidth / 2;
+
+    const isWindowDraggingActive = (typeof isTerminalDragging !== 'undefined' && isTerminalDragging) ||
+                                   (typeof isDraggingWindow !== 'undefined' && isDraggingWindow) ||
+                                   (typeof isDraggingSafari !== 'undefined' && isDraggingSafari) ||
+                                   (typeof isSettingsDragging !== 'undefined' && isSettingsDragging) ||
+                                   (typeof isWordDragging !== 'undefined' && isWordDragging) ||
+                                   (typeof isMusicDragging !== 'undefined' && isMusicDragging) ||
+                                   (typeof isCalendarDragging !== 'undefined' && isCalendarDragging) ||
+                                   (typeof isLaunchpadDragging !== 'undefined' && isLaunchpadDragging) ||
+                                   (typeof isDraggingIcon !== 'undefined' && isDraggingIcon);
+
+    // Two-pass zero-lag target calculation:
+    // Pass 1: Estimate target scales based on unscaled stable centers
+    const estimatedTargetScales = visibleIconStates.map((state, visibleIndex) => {
+      if (isHovering && mouseX !== null && !isWindowDraggingActive) {
+        const unscaledIconCenterX = startX + 10 + visibleIndex * (baseSize + 10) + baseSize / 2;
+        const distance = Math.abs(mouseX - unscaledIconCenterX);
+        return interpolate(distance, inputDistances, outputScales);
+      }
+      return 1;
+    });
+
+    // Pass 2: Calculate target dock width and target centers under fully expanded state
+    let targetDockWidth = 20;
+    estimatedTargetScales.forEach((tScale, idx) => {
+      targetDockWidth += baseSize * tScale;
+      if (idx > 0) targetDockWidth += 10;
+    });
+    const targetDockLeft = (window.innerWidth - targetDockWidth) * 0.5;
+
+    let accumTargetLeft = targetDockLeft + 10;
+    const targetCenters = [];
+    estimatedTargetScales.forEach((tScale) => {
+      const targetWidth = baseSize * tScale;
+      const center = accumTargetLeft + targetWidth / 2;
+      targetCenters.push(center);
+      accumTargetLeft += targetWidth + 10;
+    });
 
     const dockHeightLimit = -2000;
     const halfWinHeight = window.innerHeight / 2;
@@ -13026,6 +13292,7 @@ if (val === 'help') {
     wordState.targetDragY = Math.min(wordState.targetDragY, halfWinHeight - wordState.height / 2 - dockHeightLimit);
     launchpadState.targetDragY = Math.min(launchpadState.targetDragY, halfWinHeight - 250 - dockHeightLimit);
 
+    // Update target and current scales first so we know exactly how big the dock needs to be in this frame
     iconStates.forEach(state => {
       if (state.element.style.display === 'none') {
         state.targetScale = 0;
@@ -13037,28 +13304,22 @@ if (val === 'help') {
       }
 
       const visibleIndex = visibleIconStates.indexOf(state);
-      if (isHovering && mouseX !== null && visibleIndex !== -1) {
-        const unscaledIconCenterX = startX + 10 + visibleIndex * (baseSize + 10) + baseSize / 2;
-        const distance = Math.abs(mouseX - unscaledIconCenterX);
+      if (isHovering && mouseX !== null && visibleIndex !== -1 && !isWindowDraggingActive) {
+        const targetIconCenterX = targetCenters[visibleIndex];
+        const distance = Math.abs(mouseX - targetIconCenterX);
         
         state.targetScale = interpolate(distance, inputDistances, outputScales);
       } else {
         state.targetScale = 1;
       }
 
-      // Spring physics step or smooth interpolation
-      if (isDraggingIcon) {
-        // Smooth layout rearrangement animation while dragging
-        const force = (state.targetScale - state.currentScale) * 0.08;
-        state.velocity += force;
-        state.velocity *= 0.70;
-        state.currentScale += state.velocity;
-      } else {
-        // Fast, direct tracking of mouse position (no laggy smoothing)
-        const smoothness = typeof window.dockHoverSmoothness !== 'undefined' ? window.dockHoverSmoothness : 0.63;
-        state.currentScale += (state.targetScale - state.currentScale) * smoothness;
-        state.velocity = 0;
-      }
+      // Clean, pure linear-exponential smooth interpolation (LERP) - NO SPRING PHYSICS
+      const smoothness = isDraggingIcon 
+        ? 0.25 
+        : (typeof window.dockHoverSmoothness !== 'undefined' ? window.dockHoverSmoothness : 0.47);
+      
+      state.currentScale += (state.targetScale - state.currentScale) * smoothness;
+      state.velocity = 0;
 
       // Apply width and height
       const currentSize = baseSize * state.currentScale;
@@ -13069,6 +13330,45 @@ if (val === 'help') {
       const lift = (state.currentScale - 1) * -10; // negative translateY moves it up
       state.element.style.transform = `translateY(${lift}px)`;
     });
+
+    // Calculate stable, lag-free mathematical dock width dynamically based on freshly calculated icon scaling
+    let computedWidth = 28;
+    visibleIconStates.forEach((state, idx) => {
+      computedWidth += baseSize * state.currentScale;
+      if (idx > 0) computedWidth += 10;
+    });
+
+    const stableWidth = computedWidth;
+    const stableHeight = 68;
+    const stableLeft = (window.innerWidth - stableWidth) * 0.5;
+    const stableTop = window.innerHeight - stableHeight - 20;
+
+    window.lastComputedDockWidth = stableWidth;
+    window.lastComputedDockHeight = stableHeight;
+    window.lastComputedDockLeft = stableLeft;
+    window.lastComputedDockTop = stableTop;
+
+    const dockGlassWrapper = document.getElementById('dock-glass-wrapper');
+    if (dockGlassWrapper) {
+      dockGlassWrapper.style.left = `${Math.round(stableLeft)}px`;
+      dockGlassWrapper.style.width = `${Math.round(stableWidth)}px`;
+      dockGlassWrapper.style.height = `${Math.round(stableHeight)}px`;
+      dockGlassWrapper.style.transform = 'none';
+    }
+
+    dock.style.width = `${Math.round(stableWidth)}px`;
+    dock.style.height = `${Math.round(stableHeight)}px`;
+
+    const dockRect = {
+      left: stableLeft,
+      top: stableTop,
+      width: stableWidth,
+      height: stableHeight
+    };
+
+    if (window.updateDockGlassSize) {
+      window.updateDockGlassSize(Math.round(dockRect.width), Math.round(dockRect.height));
+    }
 
     if (hoveredIcon) {
       const iconRect = hoveredIcon.getBoundingClientRect();
@@ -13101,15 +13401,22 @@ if (val === 'help') {
     winState.velTranslateY *= winDamping;
     winState.translateY += winState.velTranslateY;
 
-    const winForceDragX = (winState.targetDragX - winState.dragX) * winStiffness;
-    winState.velDragX += winForceDragX;
-    winState.velDragX *= winDamping;
-    winState.dragX += winState.velDragX;
+    if (isDraggingWindow) {
+      winState.dragX = winState.targetDragX;
+      winState.dragY = winState.targetDragY;
+      winState.velDragX = 0;
+      winState.velDragY = 0;
+    } else {
+      const winForceDragX = (winState.targetDragX - winState.dragX) * winStiffness;
+      winState.velDragX += winForceDragX;
+      winState.velDragX *= winDamping;
+      winState.dragX += winState.velDragX;
 
-    const winForceDragY = (winState.targetDragY - winState.dragY) * winStiffness;
-    winState.velDragY += winForceDragY;
-    winState.velDragY *= winDamping;
-    winState.dragY += winState.velDragY;
+      const winForceDragY = (winState.targetDragY - winState.dragY) * winStiffness;
+      winState.velDragY += winForceDragY;
+      winState.velDragY *= winDamping;
+      winState.dragY += winState.velDragY;
+    }
 
     const winForceWidth = (winState.targetWidth - winState.width) * winStiffness;
     winState.velWidth += winForceWidth;
@@ -13164,11 +13471,18 @@ if (val === 'help') {
     const safForceTranslateY = (safariState.targetTranslateY - safariState.translateY) * winStiffness;
     safariState.velTranslateY += safForceTranslateY; safariState.velTranslateY *= winDamping; safariState.translateY += safariState.velTranslateY;
 
-    const safForceDragX = (safariState.targetDragX - safariState.dragX) * winStiffness;
-    safariState.velDragX += safForceDragX; safariState.velDragX *= winDamping; safariState.dragX += safariState.velDragX;
+    if (isDraggingSafari) {
+      safariState.dragX = safariState.targetDragX;
+      safariState.dragY = safariState.targetDragY;
+      safariState.velDragX = 0;
+      safariState.velDragY = 0;
+    } else {
+      const safForceDragX = (safariState.targetDragX - safariState.dragX) * winStiffness;
+      safariState.velDragX += safForceDragX; safariState.velDragX *= winDamping; safariState.dragX += safariState.velDragX;
 
-    const safForceDragY = (safariState.targetDragY - safariState.dragY) * winStiffness;
-    safariState.velDragY += safForceDragY; safariState.velDragY *= winDamping; safariState.dragY += safariState.velDragY;
+      const safForceDragY = (safariState.targetDragY - safariState.dragY) * winStiffness;
+      safariState.velDragY += safForceDragY; safariState.velDragY *= winDamping; safariState.dragY += safariState.velDragY;
+    }
 
     const safForceWidth = (safariState.targetWidth - safariState.width) * winStiffness;
     safariState.velWidth += safForceWidth; safariState.velWidth *= winDamping; safariState.width += safariState.velWidth;
@@ -13216,11 +13530,18 @@ if (val === 'help') {
     const lpForceOpacity = (launchpadState.targetOpacity - launchpadState.opacity) * winStiffness;
     launchpadState.velOpacity += lpForceOpacity; launchpadState.velOpacity *= winDamping; launchpadState.opacity += launchpadState.velOpacity;
 
-    const lpForceDragX = (launchpadState.targetDragX - launchpadState.dragX) * winStiffness;
-    launchpadState.velDragX += lpForceDragX; launchpadState.velDragX *= winDamping; launchpadState.dragX += launchpadState.velDragX;
+    if (isLaunchpadDragging) {
+      launchpadState.dragX = launchpadState.targetDragX;
+      launchpadState.dragY = launchpadState.targetDragY;
+      launchpadState.velDragX = 0;
+      launchpadState.velDragY = 0;
+    } else {
+      const lpForceDragX = (launchpadState.targetDragX - launchpadState.dragX) * winStiffness;
+      launchpadState.velDragX += lpForceDragX; launchpadState.velDragX *= winDamping; launchpadState.dragX += launchpadState.velDragX;
 
-    const lpForceDragY = (launchpadState.targetDragY - launchpadState.dragY) * winStiffness;
-    launchpadState.velDragY += lpForceDragY; launchpadState.velDragY *= winDamping; launchpadState.dragY += launchpadState.velDragY;
+      const lpForceDragY = (launchpadState.targetDragY - launchpadState.dragY) * winStiffness;
+      launchpadState.velDragY += lpForceDragY; launchpadState.velDragY *= winDamping; launchpadState.dragY += launchpadState.velDragY;
+    }
 
     launchpadWindow.style.transform = `translate(${launchpadState.dragX}px, ${launchpadState.dragY}px) scale(${launchpadState.scaleX}, ${launchpadState.scaleY})`;
     launchpadWindow.style.opacity = launchpadState.opacity;
@@ -13250,11 +13571,18 @@ if (val === 'help') {
     const termForceTranslateY = (terminalState.targetTranslateY - terminalState.translateY) * winStiffness;
     terminalState.velTranslateY += termForceTranslateY; terminalState.velTranslateY *= winDamping; terminalState.translateY += terminalState.velTranslateY;
 
-    const termForceDragX = (terminalState.targetDragX - terminalState.dragX) * winStiffness;
-    terminalState.velDragX += termForceDragX; terminalState.velDragX *= winDamping; terminalState.dragX += terminalState.velDragX;
+    if (isTerminalDragging) {
+      terminalState.dragX = terminalState.targetDragX;
+      terminalState.dragY = terminalState.targetDragY;
+      terminalState.velDragX = 0;
+      terminalState.velDragY = 0;
+    } else {
+      const termForceDragX = (terminalState.targetDragX - terminalState.dragX) * winStiffness;
+      terminalState.velDragX += termForceDragX; terminalState.velDragX *= winDamping; terminalState.dragX += terminalState.velDragX;
 
-    const termForceDragY = (terminalState.targetDragY - terminalState.dragY) * winStiffness;
-    terminalState.velDragY += termForceDragY; terminalState.velDragY *= winDamping; terminalState.dragY += terminalState.velDragY;
+      const termForceDragY = (terminalState.targetDragY - terminalState.dragY) * winStiffness;
+      terminalState.velDragY += termForceDragY; terminalState.velDragY *= winDamping; terminalState.dragY += terminalState.velDragY;
+    }
 
     const termForceWidth = (terminalState.targetWidth - terminalState.width) * winStiffness;
     terminalState.velWidth += termForceWidth; terminalState.velWidth *= winDamping; terminalState.width += terminalState.velWidth;
@@ -13305,11 +13633,18 @@ if (val === 'help') {
     const setForceTranslateY = (settingsState.targetTranslateY - settingsState.translateY) * winStiffness;
     settingsState.velTranslateY += setForceTranslateY; settingsState.velTranslateY *= winDamping; settingsState.translateY += settingsState.velTranslateY;
 
-    const setForceDragX = (settingsState.targetDragX - settingsState.dragX) * winStiffness;
-    settingsState.velDragX += setForceDragX; settingsState.velDragX *= winDamping; settingsState.dragX += settingsState.velDragX;
+    if (isSettingsDragging) {
+      settingsState.dragX = settingsState.targetDragX;
+      settingsState.dragY = settingsState.targetDragY;
+      settingsState.velDragX = 0;
+      settingsState.velDragY = 0;
+    } else {
+      const setForceDragX = (settingsState.targetDragX - settingsState.dragX) * winStiffness;
+      settingsState.velDragX += setForceDragX; settingsState.velDragX *= winDamping; settingsState.dragX += settingsState.velDragX;
 
-    const setForceDragY = (settingsState.targetDragY - settingsState.dragY) * winStiffness;
-    settingsState.velDragY += setForceDragY; settingsState.velDragY *= winDamping; settingsState.dragY += settingsState.velDragY;
+      const setForceDragY = (settingsState.targetDragY - settingsState.dragY) * winStiffness;
+      settingsState.velDragY += setForceDragY; settingsState.velDragY *= winDamping; settingsState.dragY += settingsState.velDragY;
+    }
 
     const setForceWidth = (settingsState.targetWidth - settingsState.width) * winStiffness;
     settingsState.velWidth += setForceWidth; settingsState.velWidth *= winDamping; settingsState.width += settingsState.velWidth;
@@ -13360,11 +13695,18 @@ if (val === 'help') {
     const wordForceTranslateY = (wordState.targetTranslateY - wordState.translateY) * winStiffness;
     wordState.velTranslateY += wordForceTranslateY; wordState.velTranslateY *= winDamping; wordState.translateY += wordState.velTranslateY;
 
-    const wordForceDragX = (wordState.targetDragX - wordState.dragX) * winStiffness;
-    wordState.velDragX += wordForceDragX; wordState.velDragX *= winDamping; wordState.dragX += wordState.velDragX;
+    if (isWordDragging) {
+      wordState.dragX = wordState.targetDragX;
+      wordState.dragY = wordState.targetDragY;
+      wordState.velDragX = 0;
+      wordState.velDragY = 0;
+    } else {
+      const wordForceDragX = (wordState.targetDragX - wordState.dragX) * winStiffness;
+      wordState.velDragX += wordForceDragX; wordState.velDragX *= winDamping; wordState.dragX += wordState.velDragX;
 
-    const wordForceDragY = (wordState.targetDragY - wordState.dragY) * winStiffness;
-    wordState.velDragY += wordForceDragY; wordState.velDragY *= winDamping; wordState.dragY += wordState.velDragY;
+      const wordForceDragY = (wordState.targetDragY - wordState.dragY) * winStiffness;
+      wordState.velDragY += wordForceDragY; wordState.velDragY *= winDamping; wordState.dragY += wordState.velDragY;
+    }
 
     const wordForceWidth = (wordState.targetWidth - wordState.width) * winStiffness;
     wordState.velWidth += wordForceWidth; wordState.velWidth *= winDamping; wordState.width += wordState.velWidth;
@@ -13418,11 +13760,18 @@ if (val === 'help') {
     const musicForceTranslateY = (musicState.targetTranslateY - musicState.translateY) * winStiffness;
     musicState.velTranslateY += musicForceTranslateY; musicState.velTranslateY *= winDamping; musicState.translateY += musicState.velTranslateY;
 
-    const musicForceDragX = (musicState.targetDragX - musicState.dragX) * winStiffness;
-    musicState.velDragX += musicForceDragX; musicState.velDragX *= winDamping; musicState.dragX += musicState.velDragX;
+    if (isMusicDragging) {
+      musicState.dragX = musicState.targetDragX;
+      musicState.dragY = musicState.targetDragY;
+      musicState.velDragX = 0;
+      musicState.velDragY = 0;
+    } else {
+      const musicForceDragX = (musicState.targetDragX - musicState.dragX) * winStiffness;
+      musicState.velDragX += musicForceDragX; musicState.velDragX *= winDamping; musicState.dragX += musicState.velDragX;
 
-    const musicForceDragY = (musicState.targetDragY - musicState.dragY) * winStiffness;
-    musicState.velDragY += musicForceDragY; musicState.velDragY *= winDamping; musicState.dragY += musicState.velDragY;
+      const musicForceDragY = (musicState.targetDragY - musicState.dragY) * winStiffness;
+      musicState.velDragY += musicForceDragY; musicState.velDragY *= winDamping; musicState.dragY += musicState.velDragY;
+    }
 
     const musicForceWidth = (musicState.targetWidth - musicState.width) * winStiffness;
     musicState.velWidth += musicForceWidth; musicState.velWidth *= winDamping; musicState.width += musicState.velWidth;
@@ -13476,11 +13825,18 @@ if (val === 'help') {
     const calendarForceTranslateY = (calendarState.targetTranslateY - calendarState.translateY) * winStiffness;
     calendarState.velTranslateY += calendarForceTranslateY; calendarState.velTranslateY *= winDamping; calendarState.translateY += calendarState.velTranslateY;
 
-    const calendarForceDragX = (calendarState.targetDragX - calendarState.dragX) * winStiffness;
-    calendarState.velDragX += calendarForceDragX; calendarState.velDragX *= winDamping; calendarState.dragX += calendarState.velDragX;
+    if (isCalendarDragging) {
+      calendarState.dragX = calendarState.targetDragX;
+      calendarState.dragY = calendarState.targetDragY;
+      calendarState.velDragX = 0;
+      calendarState.velDragY = 0;
+    } else {
+      const calendarForceDragX = (calendarState.targetDragX - calendarState.dragX) * winStiffness;
+      calendarState.velDragX += calendarForceDragX; calendarState.velDragX *= winDamping; calendarState.dragX += calendarState.velDragX;
 
-    const calendarForceDragY = (calendarState.targetDragY - calendarState.dragY) * winStiffness;
-    calendarState.velDragY += calendarForceDragY; calendarState.velDragY *= winDamping; calendarState.dragY += calendarState.velDragY;
+      const calendarForceDragY = (calendarState.targetDragY - calendarState.dragY) * winStiffness;
+      calendarState.velDragY += calendarForceDragY; calendarState.velDragY *= winDamping; calendarState.dragY += calendarState.velDragY;
+    }
 
     const calendarForceWidth = (calendarState.targetWidth - calendarState.width) * winStiffness;
     calendarState.velWidth += calendarForceWidth; calendarState.velWidth *= winDamping; calendarState.width += calendarState.velWidth;
