@@ -452,7 +452,7 @@
     inset: 0;
     border-radius: inherit;
     padding: 1px;
-    background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.75) 0%, rgba(255, 255, 255, 0.75) 75%, rgba(255, 255, 255, 0.35) 100%);
+    background: linear-gradient(-130deg, rgba(255, 255, 255, 0.65) 0%, rgba(255, 255, 255, 0.05) 30%, rgba(255, 255, 255, 0.05) 70%, rgba(255, 255, 255, 0.65) 100%);
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
@@ -1332,7 +1332,7 @@
 
   /* Terminal Styles */
   #terminal-window {
-    --term-radius: 17px;
+    --term-radius: 26px;
     --term-ribbon-height: 31px;
     --term-lower-tint: rgba(33, 39, 52, 0.80);
     --term-ribbon-tint: rgba(34, 39, 40, 0.70);
@@ -1360,7 +1360,7 @@
     inset: 0 !important;
     border-radius: inherit !important;
     padding: 1px !important;
-    background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.75) 0%, rgba(255, 255, 255, 0.75) 75%, rgba(255, 255, 255, 0.35) 100%) !important;
+    background: linear-gradient(-130deg, rgba(255, 255, 255, 0.65) 0%, rgba(255, 255, 255, 0.05) 30%, rgba(255, 255, 255, 0.05) 70%, rgba(255, 255, 255, 0.65) 100%) !important;
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0) !important;
     -webkit-mask-composite: xor !important;
     mask-composite: exclude !important;
@@ -2086,7 +2086,7 @@
     inset: 0 !important;
     border-radius: inherit !important;
     padding: 1px !important;
-    background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.75) 0%, rgba(255, 255, 255, 0.75) 75%, rgba(255, 255, 255, 0.35) 100%) !important;
+    background: linear-gradient(-130deg, rgba(255, 255, 255, 0.65) 0%, rgba(255, 255, 255, 0.05) 30%, rgba(255, 255, 255, 0.05) 70%, rgba(255, 255, 255, 0.65) 100%) !important;
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0) !important;
     -webkit-mask-composite: xor !important;
     mask-composite: exclude !important;
@@ -5050,9 +5050,9 @@
           <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
             <div style="display: flex; justify-content: space-between; align-items: center;">
               <span style="font-weight: 500; font-size: 14px;">Dock Hover Smoothness</span>
-              <span id="dock-smoothness-value" style="font-size: 13px; opacity: 0.7;">0.47</span>
+              <span id="dock-smoothness-value" style="font-size: 13px; opacity: 0.7;">0.28</span>
             </div>
-            <input type="range" id="dock-smoothness-slider" min="0.05" max="1.0" step="0.01" value="0.47" style="width: 100%;">
+            <input type="range" id="dock-smoothness-slider" min="0.05" max="1.0" step="0.01" value="0.28" style="width: 100%;">
           </div>
           <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
             <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -5068,12 +5068,19 @@
             </div>
             <input type="range" id="dock-blur-slider" min="0" max="20" step="1" value="2" style="width: 100%;">
           </div>
-          <div style="display: flex; flex-direction: column; gap: 8px;">
+          <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
             <div style="display: flex; justify-content: space-between; align-items: center;">
               <span style="font-weight: 500; font-size: 14px;">Dock Strength</span>
-              <span id="dock-strength-value" style="font-size: 13px; opacity: 0.7;">170</span>
+              <span id="dock-strength-value" style="font-size: 13px; opacity: 0.7;">120</span>
             </div>
-            <input type="range" id="dock-strength-slider" min="0" max="400" step="5" value="170" style="width: 100%;">
+            <input type="range" id="dock-strength-slider" min="0" max="400" step="5" value="120" style="width: 100%;">
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-weight: 500; font-size: 14px;">Rim Light Angle</span>
+              <span id="dock-rim-angle-value" style="font-size: 13px; opacity: 0.7;">-130°</span>
+            </div>
+            <input type="range" id="dock-rim-angle-slider" min="-360" max="360" step="1" value="-130" style="width: 100%;">
           </div>
         </div>
 
@@ -5133,17 +5140,17 @@
           <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
             <div style="display: flex; justify-content: space-between; align-items: center;">
               <span style="font-weight: 500; font-size: 14px;">Finder Window</span>
-              <span id="sq-finder-val" style="font-size: 13px; opacity: 0.7;">40px</span>
+              <span id="sq-finder-val" style="font-size: 13px; opacity: 0.7;">37px</span>
             </div>
-            <input type="range" class="sq-slider" data-prop="finder" min="0" max="80" step="1" value="40" style="width: 100%;">
+            <input type="range" class="sq-slider" data-prop="finder" min="0" max="80" step="1" value="37" style="width: 100%;">
           </div>
           <!-- 2. Safari -->
           <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
             <div style="display: flex; justify-content: space-between; align-items: center;">
               <span style="font-weight: 500; font-size: 14px;">Safari Window</span>
-              <span id="sq-safari-val" style="font-size: 13px; opacity: 0.7;">40px</span>
+              <span id="sq-safari-val" style="font-size: 13px; opacity: 0.7;">37px</span>
             </div>
-            <input type="range" class="sq-slider" data-prop="safari" min="0" max="80" step="1" value="40" style="width: 100%;">
+            <input type="range" class="sq-slider" data-prop="safari" min="0" max="80" step="1" value="37" style="width: 100%;">
           </div>
           <!-- 3. Word -->
           <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
@@ -5157,17 +5164,17 @@
           <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
             <div style="display: flex; justify-content: space-between; align-items: center;">
               <span style="font-weight: 500; font-size: 14px;">Terminal Window</span>
-              <span id="sq-terminal-val" style="font-size: 13px; opacity: 0.7;">33px</span>
+              <span id="sq-terminal-val" style="font-size: 13px; opacity: 0.7;">26px</span>
             </div>
-            <input type="range" class="sq-slider" data-prop="terminal" min="0" max="80" step="1" value="33" style="width: 100%;">
+            <input type="range" class="sq-slider" data-prop="terminal" min="0" max="80" step="1" value="26" style="width: 100%;">
           </div>
           <!-- 5. System Settings -->
           <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
             <div style="display: flex; justify-content: space-between; align-items: center;">
               <span style="font-weight: 500; font-size: 14px;">System Settings Window</span>
-              <span id="sq-settings-val" style="font-size: 13px; opacity: 0.7;">40px</span>
+              <span id="sq-settings-val" style="font-size: 13px; opacity: 0.7;">36px</span>
             </div>
-            <input type="range" class="sq-slider" data-prop="settings" min="0" max="80" step="1" value="40" style="width: 100%;">
+            <input type="range" class="sq-slider" data-prop="settings" min="0" max="80" step="1" value="36" style="width: 100%;">
           </div>
           <!-- 6. Launchpad -->
           <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
@@ -5181,17 +5188,17 @@
           <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
             <div style="display: flex; justify-content: space-between; align-items: center;">
               <span style="font-weight: 500; font-size: 14px;">About Window</span>
-              <span id="sq-about-val" style="font-size: 13px; opacity: 0.7;">40px</span>
+              <span id="sq-about-val" style="font-size: 13px; opacity: 0.7;">33px</span>
             </div>
-            <input type="range" class="sq-slider" data-prop="about" min="0" max="80" step="1" value="40" style="width: 100%;">
+            <input type="range" class="sq-slider" data-prop="about" min="0" max="80" step="1" value="33" style="width: 100%;">
           </div>
           <!-- 8. Popups/Dialogs/Menus -->
           <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
             <div style="display: flex; justify-content: space-between; align-items: center;">
               <span style="font-weight: 500; font-size: 14px;">Popups &amp; Menus</span>
-              <span id="sq-popups-val" style="font-size: 13px; opacity: 0.7;">23px</span>
+              <span id="sq-popups-val" style="font-size: 13px; opacity: 0.7;">18px</span>
             </div>
-            <input type="range" class="sq-slider" data-prop="popups" min="0" max="80" step="1" value="23" style="width: 100%;">
+            <input type="range" class="sq-slider" data-prop="popups" min="0" max="80" step="1" value="18" style="width: 100%;">
           </div>
           <!-- 9. Dock container -->
           <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
@@ -5225,9 +5232,9 @@
           <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
             <div style="display: flex; justify-content: space-between; align-items: center;">
               <span style="font-weight: 500; font-size: 14px;">Corner Radius</span>
-              <span id="term-radius-value" style="font-size: 13px; opacity: 0.7;">17px</span>
+              <span id="term-radius-value" style="font-size: 13px; opacity: 0.7;">26px</span>
             </div>
-            <input type="range" id="term-radius-slider" min="0" max="48" step="1" value="17" style="width: 100%;">
+            <input type="range" id="term-radius-slider" min="0" max="48" step="1" value="26" style="width: 100%;">
           </div>
 
           <!-- Top Ribbon Height -->
@@ -5824,7 +5831,7 @@
   <span class="dock-tooltip-text" id="remove-tooltip-text">Remove</span>
 </div>
 
-<glass-element id="dock-glass-wrapper" style="position:fixed; bottom:7px; left:50%; transform:translateX(-50%); z-index:2147483647;" radius="21" depth="4" blur="2" strength="170" background-color="transparent" chromatic-aberration="1" auto-size>
+<glass-element id="dock-glass-wrapper" style="position:fixed; bottom:7px; left:50%; transform:translateX(-50%); z-index:2147483647;" radius="21" depth="4" blur="2" strength="120" background-color="transparent" chromatic-aberration="1" auto-size>
 <div class="dock-container" id="dock" style="margin-bottom:0; background:transparent; backdrop-filter:none; -webkit-backdrop-filter:none; box-shadow:none; border-radius:21px; position:relative;">
   
   <div class="dock-tooltip" id="tooltip" style="position: fixed !important; pointer-events: none; z-index: 2147483647;">
@@ -6654,14 +6661,14 @@
 
   const savedSettings = localStorage.getItem('squircle-settings');
   const defaultSettings = {
-    finder: 40,
-    safari: 40,
+    finder: 37,
+    safari: 37,
     word: 4,
-    terminal: 33,
-    settings: 40,
+    terminal: 26,
+    settings: 36,
     launchpad: 49,
-    about: 40,
-    popups: 23,
+    about: 33,
+    popups: 18,
     dock: 21,
     dockIcons: 60,
     launchpadIcons: 60
@@ -6670,8 +6677,18 @@
   try {
     if (savedSettings) {
       parsed = JSON.parse(savedSettings);
-      if (parsed && (parsed.finder === 12 || parsed.finder === 0.08 || parsed.dock === 32 || parsed.dock === 40 || parsed.dockIcons === 10 || parsed.popups === 10 || parsed.popups === 14)) {
-        parsed = defaultSettings;
+      if (parsed) {
+        // Force the newly requested squircle defaults to apply immediately
+        parsed.finder = 37;
+        parsed.safari = 37;
+        parsed.terminal = 26;
+        parsed.settings = 36;
+        parsed.about = 33;
+        parsed.popups = 18;
+        parsed.dock = 21;
+        parsed.dockIcons = 60;
+        parsed.launchpadIcons = 60;
+        localStorage.setItem('squircle-settings', JSON.stringify(parsed));
       }
     }
   } catch (e) {}
@@ -6740,7 +6757,44 @@
             if (!svgStroke) {
               svgStroke = document.createElementNS("http://www.w3.org/2000/svg", "svg");
               svgStroke.classList.add('glass-squircle-stroke');
-              svgStroke.setAttribute('style', 'position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; overflow: visible;');
+              svgStroke.setAttribute('style', 'position: absolute; inset: 0.5px; width: calc(100% - 1px); height: calc(100% - 1px); pointer-events: none; z-index: 1; overflow: visible;');
+              
+              const defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
+              const grad = document.createElementNS("http://www.w3.org/2000/svg", "linearGradient");
+              const gradId = "dual-rim-light-grad-" + Math.random().toString(36).substr(2, 9);
+              grad.setAttribute("id", gradId);
+              grad.setAttribute("x1", "0%");
+              grad.setAttribute("y1", "100%");
+              grad.setAttribute("x2", "0%");
+              grad.setAttribute("y2", "0%");
+              grad.setAttribute("gradientTransform", "rotate(-127 0.5 0.5)");
+              
+              const stop1 = document.createElementNS("http://www.w3.org/2000/svg", "stop");
+              stop1.setAttribute("offset", "0%");
+              stop1.setAttribute("stop-color", "#ffffff");
+              stop1.setAttribute("stop-opacity", "0.65");
+              
+              const stop2 = document.createElementNS("http://www.w3.org/2000/svg", "stop");
+              stop2.setAttribute("offset", "30%");
+              stop2.setAttribute("stop-color", "#ffffff");
+              stop2.setAttribute("stop-opacity", "0.05");
+
+              const stop3 = document.createElementNS("http://www.w3.org/2000/svg", "stop");
+              stop3.setAttribute("offset", "70%");
+              stop3.setAttribute("stop-color", "#ffffff");
+              stop3.setAttribute("stop-opacity", "0.05");
+              
+              const stop4 = document.createElementNS("http://www.w3.org/2000/svg", "stop");
+              stop4.setAttribute("offset", "100%");
+              stop4.setAttribute("stop-color", "#ffffff");
+              stop4.setAttribute("stop-opacity", "0.65");
+              
+              grad.appendChild(stop1);
+              grad.appendChild(stop2);
+              grad.appendChild(stop3);
+              grad.appendChild(stop4);
+              defs.appendChild(grad);
+              svgStroke.appendChild(defs);
               
               const pathEl = document.createElementNS("http://www.w3.org/2000/svg", "path");
               pathEl.classList.add('stroke-path');
@@ -6750,6 +6804,8 @@
               el.parentNode.insertBefore(svgStroke, el.nextSibling);
             }
             
+            svgStroke.setAttribute('viewBox', `0 0 ${w} ${h}`);
+            
             const pathEl = svgStroke.querySelector('.stroke-path');
             if (pathEl) {
               pathEl.setAttribute('d', pathData);
@@ -6758,13 +6814,19 @@
               const isDock = glassHost && glassHost.id === 'dock-glass-wrapper';
               
               if (isDock) {
-                // Dock stroke on top of the shape itself, crisp high-priority blending
-                pathEl.setAttribute('stroke', isDark ? 'rgba(255, 255, 255, 0.22)' : 'rgba(255, 255, 255, 0.45)');
-                pathEl.setAttribute('stroke-width', '1.25');
+                // Remove the top/all-around dock stroke and replace with WebGL specular highlight at -130 degrees
+                pathEl.setAttribute('stroke', 'transparent');
+                pathEl.setAttribute('stroke-width', '0');
                 svgStroke.style.mixBlendMode = 'overlay';
               } else {
                 // Popups and menus standard transparent white stroke following squircle contour perfectly
-                pathEl.setAttribute('stroke', isDark ? 'rgba(255, 255, 255, 0.16)' : 'rgba(255, 255, 255, 0.35)');
+                const grad = svgStroke.querySelector('linearGradient');
+                if (grad) {
+                  const gradId = grad.getAttribute('id');
+                  pathEl.setAttribute('stroke', `url(#${gradId})`);
+                } else {
+                  pathEl.setAttribute('stroke', isDark ? 'rgba(255, 255, 255, 0.16)' : 'rgba(255, 255, 255, 0.35)');
+                }
                 pathEl.setAttribute('stroke-width', '1.0');
                 svgStroke.style.mixBlendMode = 'normal';
               }
@@ -7157,7 +7219,7 @@ class GlassElement extends HTMLElement {
         return this.id === 'launchpad-glass' || this.hasAttribute('liquid') || (this.id && this.id.includes('tooltip'));
     }
     static get observedAttributes() {
-        return ['width','height','radius','depth','blur','strength','chromatic-aberration','debug','background-color','responsive','base-width','base-height','auto-size','min-width','min-height'];
+        return ['width','height','radius','depth','blur','strength','chromatic-aberration','debug','background-color','responsive','base-width','base-height','auto-size','min-width','min-height','rim-angle'];
     }
     connectedCallback() {
         this.render();
@@ -7245,6 +7307,13 @@ class GlassElement extends HTMLElement {
     get autoSize() { return this.hasAttribute('auto-size') && this.getAttribute('auto-size') !== 'false'; }
     get minWidth() { return parseInt(this.getAttribute('min-width')) || 0; }
     get minHeight() { return parseInt(this.getAttribute('min-height')) || 0; }
+    get rimAngle() {
+        const val = this.getAttribute('rim-angle');
+        if (val !== null && !isNaN(parseFloat(val))) {
+            return parseFloat(val);
+        }
+        return this.id === 'dock-glass-wrapper' ? -130.0 : -127.0;
+    }
     get depth() { return this.baseDepth; }
     setupEventListeners() {
         this._forceGlassListener = () => this.updateStyles();
@@ -7289,6 +7358,7 @@ class GlassElement extends HTMLElement {
           uniform vec3 u_glassColor;
           uniform float u_blur;
           uniform float u_noClip;
+          uniform float u_rimAngle;
 
           float sdRoundRect(vec2 p, vec2 b, float r) {
             vec2 d = abs(p) - b + vec2(r);
@@ -7361,7 +7431,18 @@ class GlassElement extends HTMLElement {
             glassColor *= 1.0056;
 
             float hairlineEdge = u_noClip > 0.5 ? 0.0 : smoothstep(1.5, 0.0, abs(sd));
-            glassColor += vec3(0.25) * hairlineEdge;
+            // Dual Specular Highlights / Rim Lights based on u_rimAngle (and opposite 180 degrees)
+            float lightAngle1 = u_rimAngle * 3.141592653589793 / 180.0;
+            vec2 L1 = vec2(cos(lightAngle1), sin(lightAngle1));
+            float rim1 = max(0.0, dot(n_dir, -L1));
+            float specular1 = pow(rim1, 3.0) * 0.5 + pow(rim1, 1.0) * 0.15;
+
+            float lightAngle2 = lightAngle1 + 3.141592653589793;
+            vec2 L2 = vec2(cos(lightAngle2), sin(lightAngle2));
+            float rim2 = max(0.0, dot(n_dir, -L2));
+            float specular2 = pow(rim2, 3.0) * 0.5 + pow(rim2, 1.0) * 0.15;
+
+            glassColor += vec3(specular1 + specular2) * hairlineEdge;
 
             float edgeAlpha = u_noClip > 0.5 ? 1.0 : smoothstep(1.5, 0.0, sd);
             fragColor = vec4(glassColor, edgeAlpha);
@@ -7485,6 +7566,7 @@ class GlassElement extends HTMLElement {
 
         const isNoClip = this.hasAttribute('no-clip') || (this.id && this.id.includes('tooltip')) ? 1.0 : 0.0;
         gl.uniform1f(gl.getUniformLocation(this._program, 'u_noClip'), isNoClip);
+        gl.uniform1f(gl.getUniformLocation(this._program, 'u_rimAngle'), this.rimAngle);
 
         gl.drawArrays(gl.TRIANGLES, 0, 6);
     }
@@ -7675,7 +7757,7 @@ class GlassElement extends HTMLElement {
                     inset: 0;
                     border-radius: inherit;
                     padding: 1px;
-                    background: var(--glass-stroke, radial-gradient(ellipse at center, rgba(255, 255, 255, 0.75) 0%, rgba(255, 255, 255, 0.75) 75%, rgba(255, 255, 255, 0.35) 100%));
+                    background: var(--glass-stroke, linear-gradient(-127deg, rgba(255, 255, 255, 0.65) 0%, rgba(255, 255, 255, 0.05) 30%, rgba(255, 255, 255, 0.05) 70%, rgba(255, 255, 255, 0.65) 100%));
                     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
                     -webkit-mask-composite: xor;
                     mask-composite: exclude;
@@ -7729,7 +7811,7 @@ customElements.define('glass-element', GlassElement);
   
   window.liquidGlassStrength = 1.0;
   window.dockLiquidGlassBlur = 2;
-  window.dockHoverSmoothness = 0.47;
+  window.dockHoverSmoothness = 0.28;
   const dock = document.getElementById('dock');
   
   function updateDockGlassTheme() {
@@ -7857,13 +7939,15 @@ customElements.define('glass-element', GlassElement);
 
     removeTooltipSvg.innerHTML = `
       <defs>
-        <radialGradient id="remove-tooltip-stroke-grad" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stop-color="#fff" stop-opacity="0.35" />
-          <stop offset="100%" stop-color="#fff" stop-opacity="0.15" />
-        </radialGradient>
+        <linearGradient id="remove-tooltip-stroke-grad" x1="0%" y1="100%" x2="0%" y2="0%" gradientTransform="rotate(-127 0.5 0.5)">
+          <stop offset="0%" stop-color="#ffffff" stop-opacity="0.65" />
+          <stop offset="30%" stop-color="#ffffff" stop-opacity="0.05" />
+          <stop offset="70%" stop-color="#ffffff" stop-opacity="0.05" />
+          <stop offset="100%" stop-color="#ffffff" stop-opacity="0.65" />
+        </linearGradient>
       </defs>
       <clipPath id="remove-tooltip-clip"><path d="${pathD}"/></clipPath>
-      <path d="${pathD}" fill="rgba(255, 59, 48, 0.2)" stroke="transparent" stroke-width="1.25" />
+      <path d="${pathD}" fill="rgba(255, 59, 48, 0.2)" stroke="url(#remove-tooltip-stroke-grad)" stroke-width="1.25" />
     `;
     const glass = document.getElementById('remove-tooltip-glass');
     if (glass) {
@@ -8135,6 +8219,7 @@ customElements.define('glass-element', GlassElement);
 
   let mouseX = null;
   let isHovering = false;
+  let currentDockP = 0.5;
 
   dock.addEventListener('mousemove', (e) => {
     const isWindowDraggingActive = (typeof isTerminalDragging !== 'undefined' && isTerminalDragging) ||
@@ -8202,11 +8287,12 @@ customElements.define('glass-element', GlassElement);
       
       tooltipSvg.innerHTML = `
         <defs>
-          <radialGradient id="tooltip-stroke-grad" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stop-color="#fff" stop-opacity="0.75" />
-            <stop offset="70%" stop-color="#fff" stop-opacity="0.75" />
-            <stop offset="100%" stop-color="#fff" stop-opacity="0.35" />
-          </radialGradient>
+          <linearGradient id="tooltip-stroke-grad" x1="0%" y1="100%" x2="0%" y2="0%" gradientTransform="rotate(-127 0.5 0.5)">
+            <stop offset="0%" stop-color="#ffffff" stop-opacity="0.65" />
+            <stop offset="30%" stop-color="#ffffff" stop-opacity="0.05" />
+            <stop offset="70%" stop-color="#ffffff" stop-opacity="0.05" />
+            <stop offset="100%" stop-color="#ffffff" stop-opacity="0.65" />
+          </linearGradient>
         </defs>
         <clipPath id="tooltip-clip"><path d="${pathD}"/></clipPath>
         <path d="${pathD}" fill="${fill}" stroke="url(#tooltip-stroke-grad)" stroke-width="1.25" />
@@ -9518,6 +9604,18 @@ customElements.define('glass-element', GlassElement);
     });
   }
 
+  const dockRimAngleSlider = document.getElementById('dock-rim-angle-slider');
+  const dockRimAngleValue = document.getElementById('dock-rim-angle-value');
+  if (dockRimAngleSlider) {
+    dockRimAngleSlider.addEventListener('input', (e) => {
+      const angle = parseInt(e.target.value);
+      dockRimAngleValue.textContent = angle + '°';
+      if (dockGlassWrapper) {
+        dockGlassWrapper.setAttribute('rim-angle', angle);
+      }
+    });
+  }
+
   const musicDepthSlider = document.getElementById('music-depth-slider');
   const musicDepthValue = document.getElementById('music-depth-value');
   if (musicDepthSlider) {
@@ -9713,6 +9811,7 @@ customElements.define('glass-element', GlassElement);
       uniform float u_cornerRadius;
       uniform vec3 u_glassColor;
       uniform float u_blur;
+      uniform float u_rimAngle;
 
       float sdRoundRect(vec2 p, vec2 b, float r) {
         vec2 d = abs(p) - b + vec2(r);
@@ -9793,15 +9892,947 @@ customElements.define('glass-element', GlassElement);
         // Make it 0.56% brighter
         glassColor *= 1.0056;
 
-        // Highlights
+        // Dual Specular Highlights / Rim Lights based on u_rimAngle (and opposite 180 degrees)
         float hairlineEdge = smoothstep(1.5, 0.0, abs(sd));
-        glassColor += vec3(0.25) * hairlineEdge;
+        float lightAngle1 = u_rimAngle * 3.141592653589793 / 180.0;
+        vec2 L1 = vec2(cos(lightAngle1), sin(lightAngle1));
+        float rim1 = max(0.0, dot(n_dir, -L1));
+        float specular1 = pow(rim1, 3.0) * 0.5 + pow(rim1, 1.0) * 0.15;
+
+        float lightAngle2 = lightAngle1 + 3.141592653589793;
+        vec2 L2 = vec2(cos(lightAngle2), sin(lightAngle2));
+        float rim2 = max(0.0, dot(n_dir, -L2));
+        float specular2 = pow(rim2, 3.0) * 0.5 + pow(rim2, 1.0) * 0.15;
+
+        glassColor += vec3(specular1 + specular2) * hairlineEdge;
 
         float edgeAlpha = smoothstep(1.5, 0.0, sd);
 
         fragColor = vec4(glassColor, edgeAlpha);
       }
     `;
+
+    // ============ Vector Drawing Helpers for Glass Refraction ============
+    function drawSVGElement(ctx, svg, rect) {
+      if (!svg) return;
+      try {
+        const vbAttr = svg.getAttribute('viewBox');
+        let vw = 24, vh = 24, vx = 0, vy = 0;
+        if (vbAttr) {
+          const parts = vbAttr.trim().split(/[\s,]+/);
+          if (parts.length === 4) {
+            vx = parseFloat(parts[0]) || 0;
+            vy = parseFloat(parts[1]) || 0;
+            vw = parseFloat(parts[2]) || 24;
+            vh = parseFloat(parts[3]) || 24;
+          }
+        } else {
+          vw = parseFloat(svg.getAttribute('width')) || svg.clientWidth || rect.width || 24;
+          vh = parseFloat(svg.getAttribute('height')) || svg.clientHeight || rect.height || 24;
+        }
+
+        const scaleX = rect.width / vw;
+        const scaleY = rect.height / vh;
+
+        ctx.save();
+        ctx.translate(rect.left - vx * scaleX, rect.top - vy * scaleY);
+        ctx.scale(scaleX, scaleY);
+
+        const svgStyle = window.getComputedStyle(svg);
+        const strokeColorDefault = svg.getAttribute('stroke') || svgStyle.stroke || svgStyle.color || '#333333';
+        const fillColorDefault = svg.getAttribute('fill') || svgStyle.fill || 'none';
+        const strokeWidthDefault = parseFloat(svg.getAttribute('stroke-width') || svgStyle.strokeWidth || '2');
+
+        const shapes = svg.querySelectorAll('path, circle, rect, line, polyline, polygon, ellipse');
+        shapes.forEach(shape => {
+          const shapeStyle = window.getComputedStyle(shape);
+          let stroke = shape.getAttribute('stroke') || shapeStyle.stroke;
+          if (stroke === 'currentColor' || !stroke) stroke = strokeColorDefault;
+          if (stroke === 'none') stroke = null;
+
+          let fill = shape.getAttribute('fill') || shapeStyle.fill;
+          if (fill === 'currentColor') fill = strokeColorDefault;
+          if (fill === 'none') fill = null;
+
+          let strokeWidth = parseFloat(shape.getAttribute('stroke-width') || shapeStyle.strokeWidth || strokeWidthDefault);
+          let opacity = parseFloat(shape.getAttribute('opacity') || shapeStyle.opacity || '1');
+
+          ctx.save();
+          ctx.globalAlpha *= opacity;
+          if (stroke) {
+            ctx.strokeStyle = stroke;
+            ctx.lineWidth = strokeWidth;
+            ctx.lineCap = shape.getAttribute('stroke-linecap') || shapeStyle.strokeLinecap || 'round';
+            ctx.lineJoin = shape.getAttribute('stroke-linejoin') || shapeStyle.strokeLinejoin || 'round';
+          }
+          if (fill) {
+            ctx.fillStyle = fill;
+          }
+
+          const tag = shape.tagName.toLowerCase();
+          if (tag === 'path') {
+            const d = shape.getAttribute('d');
+            if (d) {
+              const p2d = new Path2D(d);
+              if (fill && fill !== 'none') ctx.fill(p2d);
+              if (stroke && stroke !== 'none') ctx.stroke(p2d);
+            }
+          } else if (tag === 'circle') {
+            const cx = parseFloat(shape.getAttribute('cx')) || 0;
+            const cy = parseFloat(shape.getAttribute('cy')) || 0;
+            const r = parseFloat(shape.getAttribute('r')) || 0;
+            ctx.beginPath();
+            ctx.arc(cx, cy, r, 0, Math.PI * 2);
+            if (fill && fill !== 'none') ctx.fill();
+            if (stroke && stroke !== 'none') ctx.stroke();
+          } else if (tag === 'rect') {
+            const x = parseFloat(shape.getAttribute('x')) || 0;
+            const y = parseFloat(shape.getAttribute('y')) || 0;
+            const w = parseFloat(shape.getAttribute('width')) || 0;
+            const h = parseFloat(shape.getAttribute('height')) || 0;
+            const rx = parseFloat(shape.getAttribute('rx')) || 0;
+            const ry = parseFloat(shape.getAttribute('ry')) || rx || 0;
+            ctx.beginPath();
+            if (rx > 0 || ry > 0) {
+              if (typeof ctx.roundRect === 'function') {
+                ctx.roundRect(x, y, w, h, [rx, ry]);
+              } else {
+                ctx.rect(x, y, w, h);
+              }
+            } else {
+              ctx.rect(x, y, w, h);
+            }
+            if (fill && fill !== 'none') ctx.fill();
+            if (stroke && stroke !== 'none') ctx.stroke();
+          } else if (tag === 'line') {
+            const x1 = parseFloat(shape.getAttribute('x1')) || 0;
+            const y1 = parseFloat(shape.getAttribute('y1')) || 0;
+            const x2 = parseFloat(shape.getAttribute('x2')) || 0;
+            const y2 = parseFloat(shape.getAttribute('y2')) || 0;
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            if (stroke && stroke !== 'none') ctx.stroke();
+          } else if (tag === 'polyline' || tag === 'polygon') {
+            const ptsAttr = shape.getAttribute('points');
+            if (ptsAttr) {
+              const pts = ptsAttr.trim().split(/[\s,]+/).map(parseFloat);
+              if (pts.length >= 4) {
+                ctx.beginPath();
+                ctx.moveTo(pts[0], pts[1]);
+                for (let i = 2; i < pts.length; i += 2) {
+                  ctx.lineTo(pts[i], pts[i+1]);
+                }
+                if (tag === 'polygon') ctx.closePath();
+                if (fill && fill !== 'none') ctx.fill();
+                if (stroke && stroke !== 'none') ctx.stroke();
+              }
+            }
+          } else if (tag === 'ellipse') {
+            const cx = parseFloat(shape.getAttribute('cx')) || 0;
+            const cy = parseFloat(shape.getAttribute('cy')) || 0;
+            const rx = parseFloat(shape.getAttribute('rx')) || 0;
+            const ry = parseFloat(shape.getAttribute('ry')) || rx || 0;
+            ctx.beginPath();
+            ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
+            if (fill && fill !== 'none') ctx.fill();
+            if (stroke && stroke !== 'none') ctx.stroke();
+          }
+          ctx.restore();
+        });
+
+        ctx.restore();
+      } catch (e) {
+        console.error("Error drawing SVG to bgCanvas:", e);
+      }
+    }
+
+    function drawSystemVectorIcon(ctx, identifier, r) {
+      ctx.save();
+      try {
+        const id = String(identifier).toLowerCase();
+        if (id.includes('wifi')) {
+          const grad = ctx.createLinearGradient(r.left, r.top, r.left, r.top + r.height);
+          grad.addColorStop(0, '#0a84ff');
+          grad.addColorStop(1, '#0056b3');
+          ctx.fillStyle = grad;
+          ctx.beginPath();
+          ctx.roundRect(r.left, r.top, r.width, r.height, r.width * 0.22);
+          ctx.fill();
+          
+          ctx.strokeStyle = '#ffffff';
+          ctx.lineWidth = r.width * 0.08;
+          ctx.lineCap = 'round';
+          const cx = r.left + r.width / 2;
+          const cy = r.top + r.height * 0.72;
+          
+          ctx.fillStyle = '#ffffff';
+          ctx.beginPath();
+          ctx.arc(cx, cy, r.width * 0.06, 0, Math.PI * 2);
+          ctx.fill();
+          
+          for (let i = 1; i <= 3; i++) {
+            const radius = r.width * (0.16 * i + 0.06);
+            ctx.beginPath();
+            ctx.arc(cx, cy, radius, -0.75 * Math.PI, -0.25 * Math.PI);
+            ctx.stroke();
+          }
+        } else if (id.includes('bluetooth')) {
+          const grad = ctx.createLinearGradient(r.left, r.top, r.left, r.top + r.height);
+          grad.addColorStop(0, '#0a84ff');
+          grad.addColorStop(1, '#0056b3');
+          ctx.fillStyle = grad;
+          ctx.beginPath();
+          ctx.roundRect(r.left, r.top, r.width, r.height, r.width * 0.22);
+          ctx.fill();
+          
+          ctx.strokeStyle = '#ffffff';
+          ctx.lineWidth = r.width * 0.08;
+          ctx.lineCap = 'round';
+          ctx.lineJoin = 'round';
+          const cx = r.left + r.width / 2;
+          const cy = r.top + r.height / 2;
+          const h = r.height * 0.28;
+          const w = r.width * 0.16;
+          
+          ctx.beginPath();
+          ctx.moveTo(cx, cy - h);
+          ctx.lineTo(cx, cy + h);
+          ctx.lineTo(cx + w, cy + h / 2);
+          ctx.lineTo(cx - w, cy - h / 2);
+          ctx.lineTo(cx + w, cy - h / 2);
+          ctx.lineTo(cx, cy + h);
+          ctx.stroke();
+        } else if (id.includes('settings_2025') || id.includes('settings')) {
+          const grad = ctx.createLinearGradient(r.left, r.top, r.left, r.top + r.height);
+          grad.addColorStop(0, '#afafb6');
+          grad.addColorStop(1, '#82828a');
+          ctx.fillStyle = grad;
+          ctx.beginPath();
+          ctx.roundRect(r.left, r.top, r.width, r.height, r.width * 0.22);
+          ctx.fill();
+          
+          const cx = r.left + r.width / 2;
+          const cy = r.top + r.height / 2;
+          const outerR = r.width * 0.25;
+          const innerR = r.width * 0.12;
+          ctx.fillStyle = '#ffffff';
+          ctx.translate(cx, cy);
+          for (let i = 0; i < 8; i++) {
+            ctx.rotate(Math.PI / 4);
+            ctx.fillRect(-r.width * 0.045, -outerR - 2, r.width * 0.09, r.width * 0.1);
+          }
+          ctx.beginPath();
+          ctx.arc(0, 0, outerR, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = '#82828a';
+          ctx.beginPath();
+          ctx.arc(0, 0, innerR, 0, Math.PI * 2);
+          ctx.fill();
+        } else if (id.includes('accessibility')) {
+          ctx.fillStyle = '#0a84ff';
+          ctx.beginPath();
+          ctx.roundRect(r.left, r.top, r.width, r.height, r.width * 0.22);
+          ctx.fill();
+          
+          ctx.fillStyle = '#ffffff';
+          const cx = r.left + r.width / 2;
+          const cy = r.top + r.height / 2;
+          
+          ctx.beginPath();
+          ctx.arc(cx, cy - r.height * 0.2, r.width * 0.06, 0, Math.PI * 2);
+          ctx.fill();
+          
+          ctx.strokeStyle = '#ffffff';
+          ctx.lineWidth = r.width * 0.06;
+          ctx.lineCap = 'round';
+          ctx.beginPath();
+          ctx.moveTo(cx - r.width * 0.22, cy - r.height * 0.05);
+          ctx.lineTo(cx + r.width * 0.22, cy - r.height * 0.05);
+          ctx.stroke();
+          
+          ctx.beginPath();
+          ctx.moveTo(cx, cy - r.height * 0.05);
+          ctx.lineTo(cx, cy + r.height * 0.12);
+          ctx.stroke();
+          
+          ctx.beginPath();
+          ctx.moveTo(cx, cy + r.height * 0.12);
+          ctx.lineTo(cx - r.width * 0.12, cy + r.height * 0.3);
+          ctx.moveTo(cx, cy + r.height * 0.12);
+          ctx.lineTo(cx + r.width * 0.12, cy + r.height * 0.3);
+          ctx.stroke();
+        } else if (id.includes('appearance') || id.includes('switch-appearance')) {
+          const grad = ctx.createLinearGradient(r.left, r.top, r.left, r.top + r.height);
+          grad.addColorStop(0, '#bf5af2');
+          grad.addColorStop(1, '#8f39aa');
+          ctx.fillStyle = grad;
+          ctx.beginPath();
+          ctx.roundRect(r.left, r.top, r.width, r.height, r.width * 0.22);
+          ctx.fill();
+          
+          const cx = r.left + r.width / 2;
+          const cy = r.top + r.height / 2;
+          const rad = r.width * 0.26;
+          
+          ctx.fillStyle = '#ffffff';
+          ctx.beginPath();
+          ctx.arc(cx, cy, rad, 0, Math.PI * 2);
+          ctx.fill();
+          
+          ctx.fillStyle = '#2c2c2e';
+          ctx.beginPath();
+          ctx.arc(cx, cy, rad, -Math.PI / 2, Math.PI / 2);
+          ctx.fill();
+        } else if (id.includes('siri')) {
+          ctx.fillStyle = '#000000';
+          ctx.beginPath();
+          ctx.roundRect(r.left, r.top, r.width, r.height, r.width * 0.22);
+          ctx.fill();
+          
+          const cx = r.left + r.width / 2;
+          const cy = r.top + r.height / 2;
+          const rx = r.width * 0.28;
+          const ry = r.height * 0.12;
+          
+          ctx.save();
+          ctx.translate(cx, cy);
+          ctx.globalCompositeOperation = 'screen';
+          
+          ctx.fillStyle = 'rgba(0, 122, 255, 0.7)';
+          ctx.beginPath();
+          ctx.ellipse(-2, 0, rx, ry, -20 * Math.PI / 180, 0, Math.PI * 2);
+          ctx.fill();
+          
+          ctx.fillStyle = 'rgba(255, 45, 85, 0.7)';
+          ctx.beginPath();
+          ctx.ellipse(2, 0, rx, ry, 20 * Math.PI / 180, 0, Math.PI * 2);
+          ctx.fill();
+          
+          ctx.fillStyle = 'rgba(219, 13, 255, 0.7)';
+          ctx.beginPath();
+          ctx.ellipse(0, -2, rx * 0.8, ry, 90 * Math.PI / 180, 0, Math.PI * 2);
+          ctx.fill();
+          
+          ctx.restore();
+        } else if (id.includes('spotlight') || id.includes('21sa')) {
+          const grad = ctx.createLinearGradient(r.left, r.top, r.left, r.top + r.height);
+          grad.addColorStop(0, '#0a84ff');
+          grad.addColorStop(1, '#0056b3');
+          ctx.fillStyle = grad;
+          ctx.beginPath();
+          ctx.roundRect(r.left, r.top, r.width, r.height, r.width * 0.22);
+          ctx.fill();
+          
+          const cx = r.left + r.width * 0.44;
+          const cy = r.top + r.height * 0.44;
+          const radius = r.width * 0.16;
+          
+          ctx.strokeStyle = '#ffffff';
+          ctx.lineWidth = r.width * 0.07;
+          ctx.beginPath();
+          ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+          ctx.moveTo(cx + radius * Math.cos(Math.PI/4), cy + radius * Math.sin(Math.PI/4));
+          ctx.lineTo(r.left + r.width * 0.76, r.top + r.height * 0.76);
+          ctx.stroke();
+        } else if (id.includes('wallpaper')) {
+          const grad = ctx.createLinearGradient(r.left, r.top, r.left + r.width, r.top + r.height);
+          grad.addColorStop(0, '#ff9f0a');
+          grad.addColorStop(0.5, '#bf5af2');
+          grad.addColorStop(1, '#0a84ff');
+          ctx.fillStyle = grad;
+          ctx.beginPath();
+          ctx.roundRect(r.left, r.top, r.width, r.height, r.width * 0.22);
+          ctx.fill();
+          
+          ctx.fillStyle = '#ffffff';
+          ctx.beginPath();
+          ctx.arc(r.left + r.width * 0.32, r.top + r.height * 0.32, r.width * 0.12, 0, Math.PI * 2);
+          ctx.fill();
+          
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.25)';
+          ctx.beginPath();
+          ctx.moveTo(r.left, r.top + r.height);
+          ctx.lineTo(r.left + r.width * 0.4, r.top + r.height * 0.5);
+          ctx.lineTo(r.left + r.width * 0.7, r.top + r.height * 0.8);
+          ctx.lineTo(r.left + r.width, r.top + r.height * 0.6);
+          ctx.lineTo(r.left + r.width, r.top + r.height);
+          ctx.closePath();
+          ctx.fill();
+        } else if (id.includes('image (12)') || id.includes('logo') || id.includes('about') || id.includes('macostahoe')) {
+          ctx.fillStyle = '#bcbcc0';
+          ctx.beginPath();
+          ctx.roundRect(r.left + r.width * 0.18, r.top + r.height * 0.08, r.width * 0.64, r.height * 0.84, r.width * 0.06);
+          ctx.fill();
+          
+          ctx.strokeStyle = '#4a4a4d';
+          ctx.lineWidth = r.width * 0.04;
+          ctx.beginPath();
+          ctx.moveTo(r.left + r.width * 0.25, r.top + r.height * 0.08);
+          ctx.lineTo(r.left + r.width * 0.25, r.top + r.height * 0.03);
+          ctx.lineTo(r.left + r.width * 0.4, r.top + r.height * 0.03);
+          ctx.moveTo(r.left + r.width * 0.75, r.top + r.height * 0.08);
+          ctx.lineTo(r.left + r.width * 0.75, r.top + r.height * 0.03);
+          ctx.lineTo(r.left + r.width * 0.6, r.top + r.height * 0.03);
+          
+          ctx.moveTo(r.left + r.width * 0.25, r.top + r.height * 0.92);
+          ctx.lineTo(r.left + r.width * 0.25, r.top + r.height * 0.97);
+          ctx.lineTo(r.left + r.width * 0.4, r.top + r.height * 0.97);
+          ctx.moveTo(r.left + r.width * 0.75, r.top + r.height * 0.92);
+          ctx.lineTo(r.left + r.width * 0.75, r.top + r.height * 0.97);
+          ctx.lineTo(r.left + r.width * 0.6, r.top + r.height * 0.97);
+          ctx.stroke();
+          
+          ctx.fillStyle = '#1c1c1e';
+          const cols = 3, rows = 5;
+          const gapX = r.width * 0.14, gapY = r.height * 0.12;
+          const startX = r.left + r.width * 0.36;
+          const startY = r.top + r.height * 0.22;
+          for (let row = 0; row < rows; row++) {
+            for (let col = 0; col < cols; col++) {
+              ctx.beginPath();
+              ctx.arc(startX + col * gapX, startY + row * gapY, r.width * 0.035, 0, Math.PI * 2);
+              ctx.fill();
+            }
+          }
+        } else {
+          const grad = ctx.createLinearGradient(r.left, r.top, r.left + r.width, r.top + r.height);
+          grad.addColorStop(0, '#5856d6');
+          grad.addColorStop(1, '#007aff');
+          ctx.fillStyle = grad;
+          ctx.beginPath();
+          ctx.roundRect(r.left, r.top, r.width, r.height, r.width * 0.16);
+          ctx.fill();
+          
+          ctx.fillStyle = '#ffffff';
+          ctx.beginPath();
+          ctx.arc(r.left + r.width * 0.32, r.top + r.height * 0.35, r.width * 0.1, 0, Math.PI * 2);
+          ctx.fill();
+          
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+          ctx.beginPath();
+          ctx.moveTo(r.left, r.top + r.height);
+          ctx.lineTo(r.left + r.width * 0.42, r.top + r.height * 0.52);
+          ctx.lineTo(r.left + r.width * 0.7, r.top + r.height * 0.76);
+          ctx.lineTo(r.left + r.width, r.top + r.height * 0.58);
+          ctx.lineTo(r.left + r.width, r.top + r.height);
+          ctx.closePath();
+          ctx.fill();
+        }
+      } catch (e) {
+        console.error("Error drawing system vector icon:", e);
+      }
+      ctx.restore();
+    }
+
+    function drawVectorDockIcon(ctx, name, r) {
+      ctx.save();
+      try {
+        const appName = String(name).trim();
+        if (appName.includes('Finder')) {
+          const grad = ctx.createLinearGradient(r.left, r.top, r.left + r.width, r.top + r.height);
+          grad.addColorStop(0, '#54c1ff');
+          grad.addColorStop(1, '#0062e3');
+          ctx.fillStyle = grad;
+          ctx.beginPath();
+          ctx.roundRect(r.left, r.top, r.width, r.height, r.width * 0.22);
+          ctx.fill();
+
+          ctx.strokeStyle = 'rgba(0, 50, 150, 0.4)';
+          ctx.lineWidth = r.width * 0.04;
+          ctx.lineCap = 'round';
+          ctx.beginPath();
+          ctx.moveTo(r.left + r.width / 2, r.top + r.height * 0.15);
+          ctx.lineTo(r.left + r.width / 2, r.top + r.height * 0.65);
+          ctx.stroke();
+
+          ctx.save();
+          ctx.beginPath();
+          ctx.roundRect(r.left, r.top, r.width, r.height, r.width * 0.22);
+          ctx.clip();
+          ctx.fillStyle = 'rgba(255,255,255,0.15)';
+          ctx.fillRect(r.left, r.top, r.width / 2, r.height);
+          ctx.restore();
+
+          ctx.fillStyle = '#002c66';
+          ctx.beginPath();
+          ctx.arc(r.left + r.width * 0.32, r.top + r.height * 0.42, r.width * 0.06, 0, Math.PI * 2);
+          ctx.arc(r.left + r.width * 0.68, r.top + r.height * 0.42, r.width * 0.06, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.strokeStyle = '#002c66';
+          ctx.lineWidth = r.width * 0.055;
+          ctx.lineCap = 'round';
+          ctx.beginPath();
+          ctx.arc(r.left + r.width / 2, r.top + r.height * 0.48, r.width * 0.28, 0.1 * Math.PI, 0.9 * Math.PI);
+          ctx.stroke();
+
+          ctx.beginPath();
+          ctx.moveTo(r.left + r.width / 2, r.top + r.height * 0.45);
+          ctx.quadraticCurveTo(r.left + r.width * 0.45, r.top + r.height * 0.52, r.left + r.width * 0.4, r.top + r.height * 0.58);
+          ctx.stroke();
+        } else if (appName.includes('Apps') || appName.includes('Launchpad')) {
+          const grad = ctx.createLinearGradient(r.left, r.top, r.left, r.top + r.height);
+          grad.addColorStop(0, 'rgba(255,255,255,0.95)');
+          grad.addColorStop(1, 'rgba(240,240,240,0.95)');
+          ctx.fillStyle = grad;
+          ctx.beginPath();
+          ctx.roundRect(r.left, r.top, r.width, r.height, r.width * 0.22);
+          ctx.fill();
+          ctx.strokeStyle = 'rgba(0,0,0,0.06)';
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+
+          const colors = [
+            '#ff3b30', '#ff9500', '#ffcc00',
+            '#4cd964', '#5ac8fa', '#007aff',
+            '#5856d6', '#ff2d55', '#8e8e93'
+          ];
+          const size = r.width * 0.16;
+          const gap = r.width * 0.08;
+          const startX = r.left + r.width / 2 - size * 1.5 - gap;
+          const startY = r.top + r.height / 2 - size * 1.5 - gap;
+
+          for (let row = 0; row < 3; row++) {
+            for (let col = 0; col < 3; col++) {
+              ctx.fillStyle = colors[row * 3 + col];
+              ctx.beginPath();
+              ctx.roundRect(startX + col * (size + gap), startY + row * (size + gap), size, size, size * 0.3);
+              ctx.fill();
+            }
+          }
+        } else if (appName.includes('Safari')) {
+          const grad = ctx.createLinearGradient(r.left, r.top, r.left, r.top + r.height);
+          grad.addColorStop(0, '#ffffff');
+          grad.addColorStop(1, '#f5f5f7');
+          ctx.fillStyle = grad;
+          ctx.beginPath();
+          ctx.roundRect(r.left, r.top, r.width, r.height, r.width * 0.22);
+          ctx.fill();
+          ctx.strokeStyle = 'rgba(0,0,0,0.08)';
+          ctx.lineWidth = 1;
+          ctx.stroke();
+
+          const cx = r.left + r.width / 2;
+          const cy = r.top + r.height / 2;
+          const radius = r.width * 0.38;
+
+          const compassGrad = ctx.createRadialGradient(cx, cy, 1, cx, cy, radius);
+          compassGrad.addColorStop(0, '#10c0ff');
+          compassGrad.addColorStop(1, '#007aff');
+          ctx.fillStyle = compassGrad;
+          ctx.beginPath();
+          ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+          ctx.lineWidth = 1.5;
+          for (let a = 0; a < 360; a += 30) {
+            const rad = a * Math.PI / 180;
+            const x1 = cx + Math.cos(rad) * (radius - 4);
+            const y1 = cy + Math.sin(rad) * (radius - 4);
+            const x2 = cx + Math.cos(rad) * (radius - 1);
+            const y2 = cy + Math.sin(rad) * (radius - 1);
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.stroke();
+          }
+
+          ctx.save();
+          ctx.translate(cx, cy);
+          ctx.rotate(-45 * Math.PI / 180);
+
+          ctx.fillStyle = '#ff3b30';
+          ctx.beginPath();
+          ctx.moveTo(0, -radius + 4);
+          ctx.lineTo(r.width * 0.08, 0);
+          ctx.lineTo(0, 0);
+          ctx.closePath();
+          ctx.fill();
+
+          ctx.fillStyle = '#e03020';
+          ctx.beginPath();
+          ctx.moveTo(0, -radius + 4);
+          ctx.lineTo(-r.width * 0.08, 0);
+          ctx.lineTo(0, 0);
+          ctx.closePath();
+          ctx.fill();
+
+          ctx.fillStyle = '#ffffff';
+          ctx.beginPath();
+          ctx.moveTo(0, radius - 4);
+          ctx.lineTo(r.width * 0.08, 0);
+          ctx.lineTo(0, 0);
+          ctx.closePath();
+          ctx.fill();
+
+          ctx.fillStyle = '#dcdcdc';
+          ctx.beginPath();
+          ctx.moveTo(0, radius - 4);
+          ctx.lineTo(-r.width * 0.08, 0);
+          ctx.lineTo(0, 0);
+          ctx.closePath();
+          ctx.fill();
+
+          ctx.fillStyle = '#ffffff';
+          ctx.shadowColor = 'rgba(0,0,0,0.15)';
+          ctx.shadowBlur = 2;
+          ctx.beginPath();
+          ctx.arc(0, 0, r.width * 0.035, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+        } else if (appName.includes('Calendar')) {
+          ctx.fillStyle = '#ffffff';
+          ctx.beginPath();
+          ctx.roundRect(r.left, r.top, r.width, r.height, r.width * 0.22);
+          ctx.fill();
+          ctx.strokeStyle = 'rgba(0,0,0,0.08)';
+          ctx.lineWidth = 1;
+          ctx.stroke();
+
+          ctx.save();
+          ctx.beginPath();
+          ctx.roundRect(r.left, r.top, r.width, r.height, r.width * 0.22);
+          ctx.clip();
+          ctx.fillStyle = '#ff3b30';
+          ctx.fillRect(r.left, r.top, r.width, r.height * 0.28);
+          ctx.restore();
+
+          const date = new Date();
+          const days = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+          const dayStr = days[date.getDay()];
+          const dateStr = String(date.getDate());
+
+          ctx.save();
+          ctx.fillStyle = '#ffffff';
+          ctx.font = `bold ${r.width * 0.11}px system-ui`;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(dayStr, r.left + r.width / 2, r.top + r.height * 0.15);
+
+          ctx.fillStyle = '#1c1c1e';
+          ctx.font = `500 ${r.width * 0.42}px system-ui`;
+          ctx.fillText(dateStr, r.left + r.width / 2, r.top + r.height * 0.63);
+          ctx.restore();
+        } else if (appName.includes('Terminal')) {
+          const grad = ctx.createLinearGradient(r.left, r.top, r.left, r.top + r.height);
+          grad.addColorStop(0, '#2b2a2a');
+          grad.addColorStop(1, '#1c1b1b');
+          ctx.fillStyle = grad;
+          ctx.beginPath();
+          ctx.roundRect(r.left, r.top, r.width, r.height, r.width * 0.22);
+          ctx.fill();
+          ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+
+          ctx.save();
+          ctx.strokeStyle = '#ffffff';
+          ctx.lineWidth = r.width * 0.055;
+          ctx.lineCap = 'round';
+          ctx.lineJoin = 'round';
+
+          ctx.beginPath();
+          ctx.moveTo(r.left + r.width * 0.22, r.top + r.height * 0.32);
+          ctx.lineTo(r.left + r.width * 0.42, r.top + r.height * 0.48);
+          ctx.lineTo(r.left + r.width * 0.22, r.top + r.height * 0.64);
+          ctx.stroke();
+
+          ctx.fillStyle = '#30d158';
+          ctx.fillRect(r.left + r.width * 0.48, r.top + r.height * 0.58, r.width * 0.22, r.width * 0.055);
+          ctx.restore();
+        } else if (appName.includes('Apple Music') || appName.includes('Music')) {
+          const grad = ctx.createLinearGradient(r.left, r.top, r.left + r.width, r.top + r.height);
+          grad.addColorStop(0, '#ff4b72');
+          grad.addColorStop(1, '#ff2d55');
+          ctx.fillStyle = grad;
+          ctx.beginPath();
+          ctx.roundRect(r.left, r.top, r.width, r.height, r.width * 0.22);
+          ctx.fill();
+
+          ctx.save();
+          ctx.fillStyle = '#ffffff';
+          ctx.strokeStyle = '#ffffff';
+          ctx.lineWidth = r.width * 0.06;
+          ctx.lineCap = 'round';
+          ctx.lineJoin = 'round';
+
+          const baseLineX = r.left + r.width * 0.4;
+          const note1Y = r.top + r.height * 0.65;
+          const note2Y = r.top + r.height * 0.55;
+
+          ctx.beginPath();
+          ctx.ellipse(baseLineX - r.width * 0.12, note1Y, r.width * 0.09, r.width * 0.07, -25 * Math.PI / 180, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.beginPath();
+          ctx.ellipse(baseLineX + r.width * 0.15, note2Y, r.width * 0.09, r.width * 0.07, -25 * Math.PI / 180, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.beginPath();
+          ctx.moveTo(baseLineX, note1Y - 2);
+          ctx.lineTo(baseLineX, r.top + r.height * 0.25);
+          ctx.moveTo(baseLineX + r.width * 0.27, note2Y - 2);
+          ctx.lineTo(baseLineX + r.width * 0.27, r.top + r.height * 0.15);
+          ctx.stroke();
+
+          ctx.fillStyle = '#ffffff';
+          ctx.beginPath();
+          ctx.moveTo(baseLineX - 1, r.top + r.height * 0.28);
+          ctx.lineTo(baseLineX + r.width * 0.28, r.top + r.height * 0.18);
+          ctx.lineTo(baseLineX + r.width * 0.28, r.top + r.height * 0.29);
+          ctx.lineTo(baseLineX - 1, r.top + r.height * 0.39);
+          ctx.closePath();
+          ctx.fill();
+          ctx.restore();
+        } else if (appName.includes('Word')) {
+          const grad = ctx.createLinearGradient(r.left, r.top, r.left + r.width, r.top + r.height);
+          grad.addColorStop(0, '#1f5ca9');
+          grad.addColorStop(1, '#0c3b7a');
+          ctx.fillStyle = grad;
+          ctx.beginPath();
+          ctx.roundRect(r.left, r.top, r.width, r.height, r.width * 0.22);
+          ctx.fill();
+
+          ctx.save();
+          ctx.fillStyle = '#ffffff';
+          ctx.font = `bold ${r.width * 0.55}px Georgia, serif`;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.shadowColor = 'rgba(0,0,0,0.15)';
+          ctx.shadowBlur = 4;
+          ctx.fillText('W', r.left + r.width / 2, r.top + r.height / 2 + 2);
+          ctx.restore();
+        } else if (appName.includes('Instagram')) {
+          const grad = ctx.createLinearGradient(r.left + r.width, r.top, r.left, r.top + r.height);
+          grad.addColorStop(0, '#833ab4');
+          grad.addColorStop(0.5, '#fd1d1d');
+          grad.addColorStop(1, '#fcb045');
+          ctx.fillStyle = grad;
+          ctx.beginPath();
+          ctx.roundRect(r.left, r.top, r.width, r.height, r.width * 0.22);
+          ctx.fill();
+
+          ctx.save();
+          ctx.strokeStyle = '#ffffff';
+          ctx.lineWidth = r.width * 0.055;
+          ctx.beginPath();
+          ctx.roundRect(r.left + r.width * 0.24, r.top + r.height * 0.24, r.width * 0.52, r.height * 0.52, r.width * 0.14);
+          ctx.stroke();
+
+          ctx.beginPath();
+          ctx.arc(r.left + r.width / 2, r.top + r.height / 2, r.width * 0.14, 0, Math.PI * 2);
+          ctx.stroke();
+
+          ctx.fillStyle = '#ffffff';
+          ctx.beginPath();
+          ctx.arc(r.left + r.width * 0.64, r.top + r.height * 0.36, r.width * 0.035, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+        } else if (appName.includes('Settings')) {
+          const grad = ctx.createLinearGradient(r.left, r.top, r.left, r.top + r.height);
+          grad.addColorStop(0, '#e5e5ea');
+          grad.addColorStop(1, '#bcbcc0');
+          ctx.fillStyle = grad;
+          ctx.beginPath();
+          ctx.roundRect(r.left, r.top, r.width, r.height, r.width * 0.22);
+          ctx.fill();
+          ctx.strokeStyle = 'rgba(0,0,0,0.06)';
+          ctx.lineWidth = 1;
+          ctx.stroke();
+
+          const cx = r.left + r.width / 2;
+          const cy = r.top + r.height / 2;
+          const outerR = r.width * 0.26;
+          const innerR = r.width * 0.14;
+
+          ctx.save();
+          ctx.fillStyle = '#4a4a4d';
+          ctx.strokeStyle = '#4a4a4d';
+          ctx.lineWidth = r.width * 0.04;
+
+          ctx.translate(cx, cy);
+          for (let i = 0; i < 8; i++) {
+            ctx.rotate(Math.PI / 4);
+            ctx.fillRect(-r.width * 0.05, -outerR - 2, r.width * 0.1, r.width * 0.12);
+          }
+
+          ctx.beginPath();
+          ctx.arc(0, 0, outerR, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.fillStyle = '#e5e5ea';
+          ctx.beginPath();
+          ctx.arc(0, 0, innerR, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.fillStyle = '#4a4a4d';
+          ctx.beginPath();
+          ctx.arc(0, 0, innerR * 0.4, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+        } else if (appName.includes('Trash')) {
+          ctx.save();
+          ctx.strokeStyle = 'rgba(255,255,255,0.7)';
+          ctx.lineWidth = r.width * 0.035;
+          ctx.fillStyle = 'rgba(255,255,255,0.15)';
+
+          ctx.beginPath();
+          ctx.moveTo(r.left + r.width * 0.3, r.top + r.height * 0.3);
+          ctx.lineTo(r.left + r.width * 0.35, r.top + r.height * 0.85);
+          ctx.quadraticCurveTo(r.left + r.width * 0.35, r.top + r.height * 0.88, r.left + r.width * 0.45, r.top + r.height * 0.88);
+          ctx.lineTo(r.left + r.width * 0.55, r.top + r.height * 0.88);
+          ctx.quadraticCurveTo(r.left + r.width * 0.65, r.top + r.height * 0.88, r.left + r.width * 0.65, r.top + r.height * 0.85);
+          ctx.lineTo(r.left + r.width * 0.7, r.top + r.height * 0.3);
+          ctx.closePath();
+          ctx.fill();
+          ctx.stroke();
+
+          ctx.beginPath();
+          ctx.moveTo(r.left + r.width * 0.43, r.top + r.height * 0.35);
+          ctx.lineTo(r.left + r.width * 0.45, r.top + r.height * 0.82);
+          ctx.moveTo(r.left + r.width * 0.5, r.top + r.height * 0.35);
+          ctx.lineTo(r.left + r.width * 0.5, r.top + r.height * 0.82);
+          ctx.moveTo(r.left + r.width * 0.57, r.top + r.height * 0.35);
+          ctx.lineTo(r.left + r.width * 0.55, r.top + r.height * 0.82);
+          ctx.stroke();
+
+          ctx.beginPath();
+          ctx.roundRect(r.left + r.width * 0.25, r.top + r.height * 0.22, r.width * 0.5, r.height * 0.07, r.width * 0.02);
+          ctx.stroke();
+
+          ctx.beginPath();
+          ctx.arc(r.left + r.width * 0.5, r.top + r.height * 0.22, r.width * 0.06, Math.PI, 2 * Math.PI);
+          ctx.stroke();
+          ctx.restore();
+        } else {
+          let hash = 0;
+          for (let i = 0; i < appName.length; i++) hash = appName.charCodeAt(i) + ((hash << 5) - hash);
+          const hue = Math.abs(hash % 360);
+          ctx.fillStyle = `hsl(${hue}, 85%, 45%)`;
+          ctx.beginPath();
+          ctx.roundRect(r.left, r.top, r.width, r.height, r.width * 0.22);
+          ctx.fill();
+
+          ctx.save();
+          ctx.fillStyle = '#ffffff';
+          ctx.font = `bold ${r.width * 0.42}px system-ui`;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.shadowColor = 'rgba(0,0,0,0.15)';
+          ctx.shadowBlur = 4;
+          ctx.fillText(appName.charAt(0).toUpperCase(), r.left + r.width / 2, r.top + r.height / 2);
+          ctx.restore();
+        }
+      } catch (e) {
+        console.error("Error drawing vector dock icon:", e);
+      }
+      ctx.restore();
+    }
+
+    function drawVectorFolder(ctx, r, isSelected) {
+      ctx.save();
+      try {
+        if (isSelected) {
+          ctx.fillStyle = 'rgba(10, 132, 255, 0.25)';
+          ctx.beginPath();
+          ctx.roundRect(r.left - 4, r.top - 4, r.width + 8, r.height + 8, r.width * 0.16);
+          ctx.fill();
+          ctx.strokeStyle = 'rgba(10, 132, 255, 0.45)';
+          ctx.lineWidth = 1;
+          ctx.stroke();
+        }
+
+        const gradBack = ctx.createLinearGradient(r.left, r.top, r.left, r.top + r.height);
+        gradBack.addColorStop(0, '#f9be37');
+        gradBack.addColorStop(1, '#e39814');
+        ctx.fillStyle = gradBack;
+        ctx.beginPath();
+        ctx.roundRect(r.left, r.top, r.width, r.height, r.width * 0.12);
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.roundRect(r.left, r.top - r.height * 0.1, r.width * 0.42, r.height * 0.25, r.width * 0.05);
+        ctx.fill();
+
+        const gradFront = ctx.createLinearGradient(r.left, r.top + r.height * 0.18, r.left, r.top + r.height);
+        gradFront.addColorStop(0, '#ffd864');
+        gradFront.addColorStop(1, '#f3ae21');
+        ctx.fillStyle = gradFront;
+        ctx.beginPath();
+        ctx.roundRect(r.left, r.top + r.height * 0.18, r.width, r.height * 0.82, r.width * 0.12);
+        ctx.fill();
+
+        ctx.strokeStyle = 'rgba(0,0,0,0.06)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      } catch (e) {
+        console.error("Error drawing vector folder:", e);
+      }
+      ctx.restore();
+    }
+
+    function drawVectorFile(ctx, r, isSelected, ext) {
+      ctx.save();
+      try {
+        if (isSelected) {
+          ctx.fillStyle = 'rgba(10, 132, 255, 0.25)';
+          ctx.beginPath();
+          ctx.roundRect(r.left - 4, r.top - 4, r.width + 8, r.height + 8, r.width * 0.16);
+          ctx.fill();
+          ctx.strokeStyle = 'rgba(10, 132, 255, 0.45)';
+          ctx.lineWidth = 1;
+          ctx.stroke();
+        }
+
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.roundRect(r.left, r.top, r.width, r.height, r.width * 0.08);
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(0,0,0,0.08)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        const foldSize = r.width * 0.28;
+        ctx.fillStyle = '#e5e5ea';
+        ctx.beginPath();
+        ctx.moveTo(r.left + r.width - foldSize, r.top);
+        ctx.lineTo(r.left + r.width, r.top + foldSize);
+        ctx.lineTo(r.left + r.width - foldSize, r.top + foldSize);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.strokeStyle = 'rgba(0,0,0,0.1)';
+        ctx.beginPath();
+        ctx.moveTo(r.left + r.width - foldSize, r.top);
+        ctx.lineTo(r.left + r.width - foldSize, r.top + foldSize);
+        ctx.lineTo(r.left + r.width, r.top + foldSize);
+        ctx.stroke();
+
+        ctx.strokeStyle = 'rgba(0,0,0,0.12)';
+        ctx.lineWidth = r.height * 0.035;
+        ctx.lineCap = 'round';
+        const lineYStart = r.top + r.height * 0.42;
+        const lineStep = r.height * 0.12;
+        for (let i = 0; i < 3; i++) {
+          const lw = i === 2 ? r.width * 0.45 : r.width * 0.65;
+          ctx.beginPath();
+          ctx.moveTo(r.left + r.width * 0.16, lineYStart + i * lineStep);
+          ctx.lineTo(r.left + r.width * 0.16 + lw, lineYStart + i * lineStep);
+          ctx.stroke();
+        }
+
+        const isZip = ext && (ext.includes('zip') || ext.includes('rar') || ext.includes('tar'));
+        ctx.fillStyle = isZip ? '#ff9500' : '#8e8e93';
+        ctx.beginPath();
+        ctx.roundRect(r.left + r.width * 0.16, r.top + r.height * 0.78, r.width * 0.68, r.height * 0.14, r.width * 0.04);
+        ctx.fill();
+      } catch (e) {
+        console.error("Error drawing vector file:", e);
+      }
+      ctx.restore();
+    }
 
     function compileShader(gl, source, type) {
       const shader = gl.createShader(type);
@@ -9895,19 +10926,21 @@ customElements.define('glass-element', GlassElement);
         return;
       }
 
+      const roundedLeft = Math.round(stableLeft);
+      const roundedTop = Math.round(stableTop);
+      const roundedWidth = Math.round(stableWidth);
+      const roundedHeight = Math.round(stableHeight);
+
       const rect = {
-        left: stableLeft,
-        top: stableTop,
-        width: stableWidth,
-        height: stableHeight
+        left: roundedLeft,
+        top: roundedTop,
+        width: roundedWidth,
+        height: roundedHeight
       };
 
-      const ceilWidth = Math.ceil(stableWidth);
-      const ceilHeight = Math.ceil(stableHeight);
-
-      if (canvas.width !== ceilWidth || canvas.height !== ceilHeight) {
-        canvas.width = ceilWidth;
-        canvas.height = ceilHeight;
+      if (canvas.width !== roundedWidth || canvas.height !== roundedHeight) {
+        canvas.width = roundedWidth;
+        canvas.height = roundedHeight;
       }
 
       const sw = document.documentElement.clientWidth;
@@ -9940,39 +10973,81 @@ customElements.define('glass-element', GlassElement);
         bgCtx.drawImage(wallpaperImg, sx, sy, swCrop, shCrop, 0, 0, sw, sh);
       }
 
-      // Draw Desktop Icons' Text onto the background canvas
+      // Draw Desktop Icons (Icons, Tags, and Text) onto the background canvas
       try {
         const desktop = document.getElementById('desktop-icons');
         if (desktop && window.getComputedStyle(desktop).display !== 'none') {
-          const desktopNames = desktop.querySelectorAll('.desktop-item .name');
-          desktopNames.forEach(el => {
-            const elRect = el.getBoundingClientRect();
-            if (elRect.width === 0 || elRect.height === 0) return;
-            const text = el.textContent.trim();
-            if (!text) return;
+          const desktopItems = desktop.querySelectorAll('.desktop-item');
+          desktopItems.forEach(item => {
+            const isFolder = item.classList.contains('folder-item');
+            const isSelected = item.classList.contains('selected');
+            const iconEl = item.querySelector('.icon');
+            const nameEl = item.querySelector('.name');
+            const tagDotEl = item.querySelector('.tag-dot');
 
-            const style = window.getComputedStyle(el);
-            bgCtx.save();
-            bgCtx.font = style.font || `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
-            bgCtx.fillStyle = style.color || '#ffffff';
-            bgCtx.textAlign = 'center';
-            bgCtx.textBaseline = 'middle';
-            bgCtx.shadowColor = 'rgba(0, 0, 0, 0.75)';
-            bgCtx.shadowBlur = 4;
-            bgCtx.shadowOffsetX = 0;
-            bgCtx.shadowOffsetY = 1;
+            // 1. Draw Icon
+            if (iconEl) {
+              const iconRect = iconEl.getBoundingClientRect();
+              if (iconRect.width > 0 && iconRect.height > 0) {
+                if (isFolder) {
+                  drawVectorFolder(bgCtx, iconRect, isSelected);
+                } else {
+                  const nameText = nameEl ? nameEl.textContent.trim().toLowerCase() : '';
+                  let ext = '';
+                  const dotIdx = nameText.lastIndexOf('.');
+                  if (dotIdx !== -1) ext = nameText.substring(dotIdx);
+                  drawVectorFile(bgCtx, iconRect, isSelected, ext);
+                }
+              }
+            }
 
-            const lines = text.split('\n');
-            const lineHeight = parseFloat(style.lineHeight) || parseFloat(style.fontSize) * 1.2 || 14;
-            const startY = elRect.top + elRect.height / 2 - ((lines.length - 1) * lineHeight) / 2;
-            lines.forEach((line, index) => {
-              bgCtx.fillText(line.trim(), elRect.left + elRect.width / 2, startY + index * lineHeight);
-            });
-            bgCtx.restore();
+            // 2. Draw Text and Tag dot
+            if (nameEl) {
+              const elRect = nameEl.getBoundingClientRect();
+              if (elRect.width > 0 && elRect.height > 0) {
+                const text = nameEl.textContent.trim();
+                if (text) {
+                  const style = window.getComputedStyle(nameEl);
+                  bgCtx.save();
+                  bgCtx.font = style.font || `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+                  bgCtx.fillStyle = style.color || '#ffffff';
+                  bgCtx.textAlign = 'center';
+                  bgCtx.textBaseline = 'middle';
+                  bgCtx.shadowColor = 'rgba(0, 0, 0, 0.75)';
+                  bgCtx.shadowBlur = 4;
+                  bgCtx.shadowOffsetX = 0;
+                  bgCtx.shadowOffsetY = 1;
+
+                  const lines = text.split('\n');
+                  const lineHeight = parseFloat(style.lineHeight) || parseFloat(style.fontSize) * 1.2 || 14;
+                  const startY = elRect.top + elRect.height / 2 - ((lines.length - 1) * lineHeight) / 2;
+                  lines.forEach((line, index) => {
+                    bgCtx.fillText(line.trim(), elRect.left + elRect.width / 2, startY + index * lineHeight);
+                  });
+                  bgCtx.restore();
+
+                  // Draw tag dot if present
+                  if (tagDotEl) {
+                    const tagRect = tagDotEl.getBoundingClientRect();
+                    if (tagRect.width > 0 && tagRect.height > 0) {
+                      const tagStyle = window.getComputedStyle(tagDotEl);
+                      bgCtx.save();
+                      bgCtx.fillStyle = tagStyle.backgroundColor || '#ff453a';
+                      bgCtx.shadowColor = 'rgba(0, 0, 0, 0.3)';
+                      bgCtx.shadowBlur = 2;
+                      bgCtx.beginPath();
+                      bgCtx.arc(tagRect.left + tagRect.width / 2, tagRect.top + tagRect.height / 2, tagRect.width / 2, 0, Math.PI * 2);
+                      bgCtx.fill();
+                      bgCtx.restore();
+                    }
+                  }
+                }
+              }
+            }
           });
         }
       } catch (e) {
-        console.error("Error drawing desktop text to bgCanvas:", e);
+        console.error("Error drawing desktop icons/text to bgCanvas:", e);
       }
 
       // Draw Menubar's Text onto the background canvas
@@ -10136,6 +11211,34 @@ customElements.define('glass-element', GlassElement);
           bgCtx.fill();
         }
 
+        // 7b. Draw SVG vector graphics inside the window
+        try {
+          const winSVGs = win.querySelectorAll('svg');
+          winSVGs.forEach(svg => {
+            const sRect = svg.getBoundingClientRect();
+            if (sRect.width > 0 && sRect.height > 0) {
+              drawSVGElement(bgCtx, svg, sRect);
+            }
+          });
+        } catch (e) {
+          console.error("Error drawing window SVGs to bgCanvas:", e);
+        }
+
+        // 7c. Draw vectorized representations of images inside the window
+        try {
+          const winImgs = win.querySelectorAll('img');
+          winImgs.forEach(img => {
+            const iRect = img.getBoundingClientRect();
+            if (iRect.width > 0 && iRect.height > 0) {
+              const parentItem = img.closest('.settings-sidebar-item');
+              const identifier = parentItem ? parentItem.getAttribute('data-view') : (img.className || img.src || '');
+              drawSystemVectorIcon(bgCtx, identifier, iRect);
+            }
+          });
+        } catch (e) {
+          console.error("Error drawing window images to bgCanvas:", e);
+        }
+
         // Draw all leaf text elements inside the window
         try {
           const winTextElements = win.querySelectorAll('p, h1, h2, h3, h4, h5, h6, li, td, th, button, label, span, .window-title, .terminal-line, .terminal-prompt, .terminal-input, .grid-item .name, .empty-state, .music-sidebar-item, .cc-tile-title, .cc-tile-subtitle, #word-rich-editor, #word-rich-editor *, [class*="-text"], [class*="-title"], [class*="-name"], [class*="-label"], [class*="-item"]');
@@ -10260,7 +11363,8 @@ customElements.define('glass-element', GlassElement);
       const dockGlassWrapper = document.getElementById('dock-glass-wrapper');
       let depthVal = 4.0;
       let blurVal = 2.0;
-      let strengthVal = 170.0;
+      let strengthVal = 120.0;
+      let rimAngleVal = -130.0;
       if (dockGlassWrapper) {
         const depthAttr = dockGlassWrapper.getAttribute('depth');
         if (depthAttr !== null) depthVal = parseFloat(depthAttr);
@@ -10268,6 +11372,8 @@ customElements.define('glass-element', GlassElement);
         if (blurAttr !== null) blurVal = parseFloat(blurAttr);
         const strAttr = dockGlassWrapper.getAttribute('strength');
         if (strAttr !== null) strengthVal = parseFloat(strAttr);
+        const rimAttr = dockGlassWrapper.getAttribute('rim-angle');
+        if (rimAttr !== null) rimAngleVal = parseFloat(rimAttr);
       }
 
       const refractionStrength = strengthVal / 100.0;
@@ -10280,6 +11386,7 @@ customElements.define('glass-element', GlassElement);
       gl.uniform1f(gl.getUniformLocation(program, 'u_grainOpacity'), 0.025);
       gl.uniform1f(gl.getUniformLocation(program, 'u_cornerRadius'), 21.0);
       gl.uniform3f(gl.getUniformLocation(program, 'u_glassColor'), glassColor[0], glassColor[1], glassColor[2]);
+      gl.uniform1f(gl.getUniformLocation(program, 'u_rimAngle'), rimAngleVal);
 
       gl.drawArrays(gl.TRIANGLES, 0, 6);
 
@@ -13255,33 +14362,44 @@ if (val === 'help') {
                                    (typeof isLaunchpadDragging !== 'undefined' && isLaunchpadDragging) ||
                                    (typeof isDraggingIcon !== 'undefined' && isDraggingIcon);
 
-    // Two-pass zero-lag target calculation:
-    // Pass 1: Estimate target scales based on unscaled stable centers
-    const estimatedTargetScales = visibleIconStates.map((state, visibleIndex) => {
+    const smoothness = isDraggingIcon 
+      ? 0.25 
+      : (typeof window.dockHoverSmoothness !== 'undefined' ? window.dockHoverSmoothness : 0.28);
+
+    // Visual unscaled sizes including CSS padding (14px on each side = 28px total)
+    const W_base_visual = unscaledDockWidth + 8;
+    const X_baseLeft_visual = startX - 4;
+
+    let pTarget = 0.5;
+    if (isHovering && mouseX !== null && !isWindowDraggingActive) {
+      const currentLeft = (typeof window.lastComputedDockLeft !== 'undefined') ? window.lastComputedDockLeft : X_baseLeft_visual;
+
+      // Additive correction: shift mouseX back into unscaled space using the
+      // known offset applied last frame, instead of rescaling by a ratio of widths.
+      const unscaledMouseXRaw = mouseX - currentLeft + X_baseLeft_visual;
+
+      pTarget = (unscaledMouseXRaw - startX) / unscaledDockWidth;
+      pTarget = Math.max(0, Math.min(1, pTarget));
+    }
+
+    // Map normalized mouse position back to unscaled dock coordinates for stable magnification calculations
+    const unscaledMouseX = startX + pTarget * unscaledDockWidth;
+
+    // Calculate raw target scales based on unscaled mapped coordinates
+    const rawTargetScales = visibleIconStates.map((state, visibleIndex) => {
       if (isHovering && mouseX !== null && !isWindowDraggingActive) {
         const unscaledIconCenterX = startX + 10 + visibleIndex * (baseSize + 10) + baseSize / 2;
-        const distance = Math.abs(mouseX - unscaledIconCenterX);
+        const distance = Math.abs(unscaledMouseX - unscaledIconCenterX);
         return interpolate(distance, inputDistances, outputScales);
       }
       return 1;
     });
 
-    // Pass 2: Calculate target dock width and target centers under fully expanded state
-    let targetDockWidth = 20;
-    estimatedTargetScales.forEach((tScale, idx) => {
-      targetDockWidth += baseSize * tScale;
-      if (idx > 0) targetDockWidth += 10;
-    });
-    const targetDockLeft = (window.innerWidth - targetDockWidth) * 0.5;
-
-    let accumTargetLeft = targetDockLeft + 10;
-    const targetCenters = [];
-    estimatedTargetScales.forEach((tScale) => {
-      const targetWidth = baseSize * tScale;
-      const center = accumTargetLeft + targetWidth / 2;
-      targetCenters.push(center);
-      accumTargetLeft += targetWidth + 10;
-    });
+    // Use natural unscaled target scales directly. As the cursor moves across the dock,
+    // the magnification bulge naturally slides along, meaning icons far from the cursor
+    // automatically contract back to 1.0, while icons near the cursor expand up to 2.0.
+    // This creates a perfectly stable, native macOS "sliding window" effect.
+    const targetScales = rawTargetScales;
 
     const dockHeightLimit = -2000;
     const halfWinHeight = window.innerHeight / 2;
@@ -13292,7 +14410,7 @@ if (val === 'help') {
     wordState.targetDragY = Math.min(wordState.targetDragY, halfWinHeight - wordState.height / 2 - dockHeightLimit);
     launchpadState.targetDragY = Math.min(launchpadState.targetDragY, halfWinHeight - 250 - dockHeightLimit);
 
-    // Update target and current scales first so we know exactly how big the dock needs to be in this frame
+    // Update target and current scales smoothly based on stable target scales
     iconStates.forEach(state => {
       if (state.element.style.display === 'none') {
         state.targetScale = 0;
@@ -13304,20 +14422,13 @@ if (val === 'help') {
       }
 
       const visibleIndex = visibleIconStates.indexOf(state);
-      if (isHovering && mouseX !== null && visibleIndex !== -1 && !isWindowDraggingActive) {
-        const targetIconCenterX = targetCenters[visibleIndex];
-        const distance = Math.abs(mouseX - targetIconCenterX);
-        
-        state.targetScale = interpolate(distance, inputDistances, outputScales);
+      if (visibleIndex !== -1) {
+        state.targetScale = targetScales[visibleIndex];
       } else {
         state.targetScale = 1;
       }
 
       // Clean, pure linear-exponential smooth interpolation (LERP) - NO SPRING PHYSICS
-      const smoothness = isDraggingIcon 
-        ? 0.25 
-        : (typeof window.dockHoverSmoothness !== 'undefined' ? window.dockHoverSmoothness : 0.47);
-      
       state.currentScale += (state.targetScale - state.currentScale) * smoothness;
       state.velocity = 0;
 
@@ -13340,7 +14451,40 @@ if (val === 'help') {
 
     const stableWidth = computedWidth;
     const stableHeight = 68;
-    const stableLeft = (window.innerWidth - stableWidth) * 0.5;
+    // Asymmetric visual positioning based on our smooth pivot factor
+    const Delta_W = stableWidth - W_base_visual;
+
+    let Delta_W_center = 0;
+    if (isHovering && mouseX !== null && !isWindowDraggingActive) {
+      const unscaledMouseX_center = startX + 0.5 * unscaledDockWidth;
+      const centerScales = visibleIconStates.map((state, visibleIndex) => {
+        const unscaledIconCenterX = startX + 10 + visibleIndex * (baseSize + 10) + baseSize / 2;
+        const distance = Math.abs(unscaledMouseX_center - unscaledIconCenterX);
+        return interpolate(distance, inputDistances, outputScales);
+      });
+      let W_center = 28;
+      centerScales.forEach((tScale, idx) => {
+        W_center += baseSize * tScale;
+        if (idx > 0) W_center += 10;
+      });
+      Delta_W_center = W_center - W_base_visual;
+    }
+
+    let dockPTarget = 0.5;
+    if (isHovering && mouseX !== null && !isWindowDraggingActive) {
+      if (Delta_W <= 0.1) {
+        dockPTarget = 0.5;
+      } else if (pTarget <= 0.5) {
+        dockPTarget = 1.0 - 0.5 * (Delta_W_center / Delta_W);
+      } else {
+        dockPTarget = 0.5 * (Delta_W_center / Delta_W);
+      }
+      dockPTarget = Math.max(0, Math.min(1, dockPTarget));
+    }
+
+    currentDockP += (dockPTarget - currentDockP) * smoothness;
+
+    const stableLeft = X_baseLeft_visual - currentDockP * Delta_W;
     const stableTop = window.innerHeight - stableHeight - 20;
 
     window.lastComputedDockWidth = stableWidth;
