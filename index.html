@@ -245,6 +245,33 @@
     background: rgba(0, 0, 0, 0.45);
   }
 
+  .dock-resizer {
+    width: 7px;
+    height: 100%;
+    align-self: stretch;
+    margin-top: 4px;
+    margin-bottom: 4px;
+    margin: 0 1px;
+    cursor: ns-resize;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 2147483647;
+    background: transparent;
+  }
+  .dock-resizer::before {
+    content: '';
+    position: absolute;
+    left: 3px;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: rgba(255, 255, 255, 0.45);
+    transition: background 0.2s;
+  }
+  .dock-resizer:hover::before {
+    background: rgba(255, 255, 255, 0.85) !important;
+  }
+
   .dock-tooltip.show {
     opacity: 1;
   }
@@ -452,7 +479,9 @@
     inset: 0;
     border-radius: inherit;
     padding: 1px;
-    background: linear-gradient(-130deg, rgba(255, 255, 255, 0.65) 0%, rgba(255, 255, 255, 0.05) 30%, rgba(255, 255, 255, 0.05) 70%, rgba(255, 255, 255, 0.65) 100%);
+    background: 
+      linear-gradient(-130deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.05) 30%, rgba(255, 255, 255, 0.05) 70%, rgba(255, 255, 255, 0.5) 100%),
+      linear-gradient(130deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.05) 30%, rgba(255, 255, 255, 0.05) 70%, rgba(255, 255, 255, 0.5) 100%);
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
@@ -1360,7 +1389,9 @@
     inset: 0 !important;
     border-radius: inherit !important;
     padding: 1px !important;
-    background: linear-gradient(-130deg, rgba(255, 255, 255, 0.65) 0%, rgba(255, 255, 255, 0.05) 30%, rgba(255, 255, 255, 0.05) 70%, rgba(255, 255, 255, 0.65) 100%) !important;
+    background: 
+      linear-gradient(-130deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.05) 30%, rgba(255, 255, 255, 0.05) 70%, rgba(255, 255, 255, 0.5) 100%),
+      linear-gradient(130deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.05) 30%, rgba(255, 255, 255, 0.05) 70%, rgba(255, 255, 255, 0.5) 100%) !important;
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0) !important;
     -webkit-mask-composite: xor !important;
     mask-composite: exclude !important;
@@ -2086,7 +2117,9 @@
     inset: 0 !important;
     border-radius: inherit !important;
     padding: 1px !important;
-    background: linear-gradient(-130deg, rgba(255, 255, 255, 0.65) 0%, rgba(255, 255, 255, 0.05) 30%, rgba(255, 255, 255, 0.05) 70%, rgba(255, 255, 255, 0.65) 100%) !important;
+    background: 
+      linear-gradient(-130deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.05) 30%, rgba(255, 255, 255, 0.05) 70%, rgba(255, 255, 255, 0.5) 100%),
+      linear-gradient(130deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.05) 30%, rgba(255, 255, 255, 0.05) 70%, rgba(255, 255, 255, 0.5) 100%) !important;
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0) !important;
     -webkit-mask-composite: xor !important;
     mask-composite: exclude !important;
@@ -5026,16 +5059,16 @@
           <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
             <div style="display: flex; justify-content: space-between; align-items: center;">
               <span style="font-weight: 500; font-size: 14px;">Dock Corner Radius</span>
-              <span id="dock-radius-value" style="font-size: 13px; opacity: 0.7;">32px</span>
+              <span id="dock-radius-value" style="font-size: 13px; opacity: 0.7;">25px</span>
             </div>
-            <input type="range" id="dock-radius-slider" min="0" max="60" step="1" value="32" style="width: 100%;">
+            <input type="range" id="dock-radius-slider" min="0" max="60" step="1" value="25" style="width: 100%;">
           </div>
           <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
             <div style="display: flex; justify-content: space-between; align-items: center;">
               <span style="font-weight: 500; font-size: 14px;">Dock Icons Universal Scaler</span>
               <div style="display: flex; gap: 4px;">
                 <button id="dock-icon-scale-down" style="width: 24px; height: 24px; border-radius: 4px; border: 1px solid rgba(0,0,0,0.1); background: rgba(255,255,255,0.1); cursor: pointer; color: inherit;">-</button>
-                <span id="dock-icon-scale-value" style="font-size: 13px; opacity: 0.7; width: 40px; text-align: center; line-height: 24px;">90%</span>
+                <span id="dock-icon-scale-value" style="font-size: 13px; opacity: 0.7; width: 40px; text-align: center; line-height: 24px;">89%</span>
                 <button id="dock-icon-scale-up" style="width: 24px; height: 24px; border-radius: 4px; border: 1px solid rgba(0,0,0,0.1); background: rgba(255,255,255,0.1); cursor: pointer; color: inherit;">+</button>
               </div>
             </div>
@@ -5075,12 +5108,19 @@
             </div>
             <input type="range" id="dock-strength-slider" min="0" max="400" step="5" value="120" style="width: 100%;">
           </div>
-          <div style="display: flex; flex-direction: column; gap: 8px;">
+          <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
             <div style="display: flex; justify-content: space-between; align-items: center;">
               <span style="font-weight: 500; font-size: 14px;">Rim Light Angle</span>
-              <span id="dock-rim-angle-value" style="font-size: 13px; opacity: 0.7;">-130°</span>
+              <span id="dock-rim-angle-value" style="font-size: 13px; opacity: 0.7;">-59°</span>
             </div>
-            <input type="range" id="dock-rim-angle-slider" min="-360" max="360" step="1" value="-130" style="width: 100%;">
+            <input type="range" id="dock-rim-angle-slider" min="-360" max="360" step="1" value="-59" style="width: 100%;">
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-weight: 500; font-size: 14px;">Rim Light Opacity</span>
+              <span id="dock-rim-opacity-value" style="font-size: 13px; opacity: 0.7;">50%</span>
+            </div>
+            <input type="range" id="dock-rim-opacity-slider" min="0" max="100" step="1" value="50" style="width: 100%;">
           </div>
         </div>
 
@@ -5204,9 +5244,9 @@
           <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
             <div style="display: flex; justify-content: space-between; align-items: center;">
               <span style="font-weight: 500; font-size: 14px;">Dock Container</span>
-              <span id="sq-dock-val" style="font-size: 13px; opacity: 0.7;">21px</span>
+              <span id="sq-dock-val" style="font-size: 13px; opacity: 0.7;">25px</span>
             </div>
-            <input type="range" class="sq-slider" data-prop="dock" min="0" max="80" step="1" value="21" style="width: 100%;">
+            <input type="range" class="sq-slider" data-prop="dock" min="0" max="80" step="1" value="25" style="width: 100%;">
           </div>
           <!-- 10. Dock Icons -->
           <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
@@ -5831,8 +5871,8 @@
   <span class="dock-tooltip-text" id="remove-tooltip-text">Remove</span>
 </div>
 
-<glass-element id="dock-glass-wrapper" style="position:fixed; bottom:7px; left:50%; transform:translateX(-50%); z-index:2147483647;" radius="21" depth="4" blur="2" strength="120" background-color="transparent" chromatic-aberration="1" auto-size>
-<div class="dock-container" id="dock" style="margin-bottom:0; background:transparent; backdrop-filter:none; -webkit-backdrop-filter:none; box-shadow:none; border-radius:21px; position:relative;">
+<glass-element id="dock-glass-wrapper" style="position:fixed; bottom:7px; left:50%; transform:translateX(-50%); z-index:2147483647;" radius="25" rim-angle="-59" rim-opacity="0.5" depth="4" blur="2" strength="120" background-color="transparent" chromatic-aberration="1" auto-size>
+<div class="dock-container" id="dock" style="margin-bottom:0; background:transparent; backdrop-filter:none; -webkit-backdrop-filter:none; box-shadow:none; border-radius:25px; position:relative;">
   
   <div class="dock-tooltip" id="tooltip" style="position: fixed !important; pointer-events: none; z-index: 2147483647;">
     <glass-element id="tooltip-glass" style="position:absolute; top:0; left:0; width:100%; height:100%; z-index:0; pointer-events:none;" radius="14" depth="3" blur="2" strength="100" background-color="var(--tooltip-bg)" chromatic-aberration="1" auto-size="false"></glass-element>
@@ -5850,6 +5890,7 @@
   <div class="dock-icon" data-name="System Settings" style="background-image: url('https://github.com/Hellomyfriend19/Macostahoe/blob/main/macosicons/settingsicons/settingslight.png?raw=true');"></div>
   <div class="dock-separator" style="width: 1px; height: 32px; background: rgba(255, 255, 255, 0.25); margin: 0 4px; display: none;" id="dock-minimized-separator"></div>
   <div id="dock-minimized-container" style="display: none; align-items: center; gap: 8px;"></div>
+  <div class="dock-resizer" id="dock-resizer-line" title="Drag vertically to resize dock"></div>
   <div class="dock-icon" data-name="Trash" style="background-image: url('https://github.com/Hellomyfriend19/Macostahoe/blob/main/macosicons/trashicons/tashlight.png?raw=true');"></div>
 </div>
 </glass-element>
@@ -6669,7 +6710,7 @@
     launchpad: 49,
     about: 33,
     popups: 18,
-    dock: 21,
+    dock: 25,
     dockIcons: 60,
     launchpadIcons: 60
   };
@@ -6685,7 +6726,7 @@
         parsed.settings = 36;
         parsed.about = 33;
         parsed.popups = 18;
-        parsed.dock = 21;
+        parsed.dock = 25;
         parsed.dockIcons = 60;
         parsed.launchpadIcons = 60;
         localStorage.setItem('squircle-settings', JSON.stringify(parsed));
@@ -6760,54 +6801,80 @@
               svgStroke.setAttribute('style', 'position: absolute; inset: 0.5px; width: calc(100% - 1px); height: calc(100% - 1px); pointer-events: none; z-index: 1; overflow: visible;');
               
               const defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
-              const grad = document.createElementNS("http://www.w3.org/2000/svg", "linearGradient");
-              const gradId = "dual-rim-light-grad-" + Math.random().toString(36).substr(2, 9);
-              grad.setAttribute("id", gradId);
-              grad.setAttribute("x1", "0%");
-              grad.setAttribute("y1", "100%");
-              grad.setAttribute("x2", "0%");
-              grad.setAttribute("y2", "0%");
-              grad.setAttribute("gradientTransform", "rotate(-127 0.5 0.5)");
               
-              const stop1 = document.createElementNS("http://www.w3.org/2000/svg", "stop");
-              stop1.setAttribute("offset", "0%");
-              stop1.setAttribute("stop-color", "#ffffff");
-              stop1.setAttribute("stop-opacity", "0.65");
+              // Gradient 1 (rotate -127)
+              const grad1 = document.createElementNS("http://www.w3.org/2000/svg", "linearGradient");
+              const gradId1 = "dual-rim-light-grad-1-" + Math.random().toString(36).substr(2, 9);
+              grad1.setAttribute("id", gradId1);
+              grad1.setAttribute("x1", "0%");
+              grad1.setAttribute("y1", "100%");
+              grad1.setAttribute("x2", "0%");
+              grad1.setAttribute("y2", "0%");
+              grad1.setAttribute("gradientTransform", "rotate(-127 0.5 0.5)");
               
-              const stop2 = document.createElementNS("http://www.w3.org/2000/svg", "stop");
-              stop2.setAttribute("offset", "30%");
-              stop2.setAttribute("stop-color", "#ffffff");
-              stop2.setAttribute("stop-opacity", "0.05");
+              // Gradient 2 (rotate 127)
+              const grad2 = document.createElementNS("http://www.w3.org/2000/svg", "linearGradient");
+              const gradId2 = "dual-rim-light-grad-2-" + Math.random().toString(36).substr(2, 9);
+              grad2.setAttribute("id", gradId2);
+              grad2.setAttribute("x1", "0%");
+              grad2.setAttribute("y1", "100%");
+              grad2.setAttribute("x2", "0%");
+              grad2.setAttribute("y2", "0%");
+              grad2.setAttribute("gradientTransform", "rotate(127 0.5 0.5)");
 
-              const stop3 = document.createElementNS("http://www.w3.org/2000/svg", "stop");
-              stop3.setAttribute("offset", "70%");
-              stop3.setAttribute("stop-color", "#ffffff");
-              stop3.setAttribute("stop-opacity", "0.05");
+              const addStops = (grad) => {
+                const stop1 = document.createElementNS("http://www.w3.org/2000/svg", "stop");
+                stop1.setAttribute("offset", "0%");
+                stop1.setAttribute("stop-color", "#ffffff");
+                stop1.setAttribute("stop-opacity", "0.5");
+                
+                const stop2 = document.createElementNS("http://www.w3.org/2000/svg", "stop");
+                stop2.setAttribute("offset", "30%");
+                stop2.setAttribute("stop-color", "#ffffff");
+                stop2.setAttribute("stop-opacity", "0.05");
+
+                const stop3 = document.createElementNS("http://www.w3.org/2000/svg", "stop");
+                stop3.setAttribute("offset", "70%");
+                stop3.setAttribute("stop-color", "#ffffff");
+                stop3.setAttribute("stop-opacity", "0.05");
+                
+                const stop4 = document.createElementNS("http://www.w3.org/2000/svg", "stop");
+                stop4.setAttribute("offset", "100%");
+                stop4.setAttribute("stop-color", "#ffffff");
+                stop4.setAttribute("stop-opacity", "0.5");
+                
+                grad.appendChild(stop1);
+                grad.appendChild(stop2);
+                grad.appendChild(stop3);
+                grad.appendChild(stop4);
+              };
+
+              addStops(grad1);
+              addStops(grad2);
               
-              const stop4 = document.createElementNS("http://www.w3.org/2000/svg", "stop");
-              stop4.setAttribute("offset", "100%");
-              stop4.setAttribute("stop-color", "#ffffff");
-              stop4.setAttribute("stop-opacity", "0.65");
-              
-              grad.appendChild(stop1);
-              grad.appendChild(stop2);
-              grad.appendChild(stop3);
-              grad.appendChild(stop4);
-              defs.appendChild(grad);
+              defs.appendChild(grad1);
+              defs.appendChild(grad2);
               svgStroke.appendChild(defs);
               
-              const pathEl = document.createElementNS("http://www.w3.org/2000/svg", "path");
-              pathEl.classList.add('stroke-path');
-              pathEl.setAttribute('fill', 'none');
-              svgStroke.appendChild(pathEl);
+              const pathEl1 = document.createElementNS("http://www.w3.org/2000/svg", "path");
+              pathEl1.classList.add('stroke-path');
+              pathEl1.classList.add('stroke-path-1');
+              pathEl1.setAttribute('fill', 'none');
+              svgStroke.appendChild(pathEl1);
+
+              const pathEl2 = document.createElementNS("http://www.w3.org/2000/svg", "path");
+              pathEl2.classList.add('stroke-path');
+              pathEl2.classList.add('stroke-path-2');
+              pathEl2.setAttribute('fill', 'none');
+              svgStroke.appendChild(pathEl2);
               
               el.parentNode.insertBefore(svgStroke, el.nextSibling);
             }
             
             svgStroke.setAttribute('viewBox', `0 0 ${w} ${h}`);
             
-            const pathEl = svgStroke.querySelector('.stroke-path');
-            if (pathEl) {
+            const paths = svgStroke.querySelectorAll('.stroke-path');
+            paths.forEach(pathEl => {
               pathEl.setAttribute('d', pathData);
               const isDark = document.body.classList.contains('dark-mode');
               const glassHost = el.getRootNode().host;
@@ -6820,17 +6887,22 @@
                 svgStroke.style.mixBlendMode = 'overlay';
               } else {
                 // Popups and menus standard transparent white stroke following squircle contour perfectly
-                const grad = svgStroke.querySelector('linearGradient');
-                if (grad) {
-                  const gradId = grad.getAttribute('id');
-                  pathEl.setAttribute('stroke', `url(#${gradId})`);
+                const grads = svgStroke.querySelectorAll('linearGradient');
+                if (grads.length >= 2) {
+                  if (pathEl.classList.contains('stroke-path-1')) {
+                    pathEl.setAttribute('stroke', `url(#${grads[0].getAttribute('id')})`);
+                  } else {
+                    pathEl.setAttribute('stroke', `url(#${grads[1].getAttribute('id')})`);
+                  }
+                } else if (grads.length === 1) {
+                  pathEl.setAttribute('stroke', `url(#${grads[0].getAttribute('id')})`);
                 } else {
                   pathEl.setAttribute('stroke', isDark ? 'rgba(255, 255, 255, 0.16)' : 'rgba(255, 255, 255, 0.35)');
                 }
                 pathEl.setAttribute('stroke-width', '1.0');
                 svgStroke.style.mixBlendMode = 'normal';
               }
-            }
+            });
           }
         }
       } catch (e) {
@@ -6981,7 +7053,7 @@
     // This allows the element to render perfectly with standard border-radius, without clipping the icons, and supports dynamic roundness adjustment!
     const dockWrapper = document.getElementById('dock-glass-wrapper');
     if (dockWrapper) {
-      const dockRoundness = window.squircleSettings ? window.squircleSettings.dock : 21;
+      const dockRoundness = window.squircleSettings ? window.squircleSettings.dock : 25;
       dockWrapper.setAttribute('radius', dockRoundness.toString());
       const dockInner = document.getElementById('dock');
       if (dockInner) {
@@ -7219,7 +7291,7 @@ class GlassElement extends HTMLElement {
         return this.id === 'launchpad-glass' || this.hasAttribute('liquid') || (this.id && this.id.includes('tooltip'));
     }
     static get observedAttributes() {
-        return ['width','height','radius','depth','blur','strength','chromatic-aberration','debug','background-color','responsive','base-width','base-height','auto-size','min-width','min-height','rim-angle'];
+        return ['width','height','radius','depth','blur','strength','chromatic-aberration','debug','background-color','responsive','base-width','base-height','auto-size','min-width','min-height','rim-angle','rim-opacity'];
     }
     connectedCallback() {
         this.render();
@@ -7314,6 +7386,13 @@ class GlassElement extends HTMLElement {
         }
         return this.id === 'dock-glass-wrapper' ? -130.0 : -127.0;
     }
+    get rimOpacity() {
+        const val = this.getAttribute('rim-opacity');
+        if (val !== null && !isNaN(parseFloat(val))) {
+            return parseFloat(val);
+        }
+        return 1.0;
+    }
     get depth() { return this.baseDepth; }
     setupEventListeners() {
         this._forceGlassListener = () => this.updateStyles();
@@ -7359,6 +7438,7 @@ class GlassElement extends HTMLElement {
           uniform float u_blur;
           uniform float u_noClip;
           uniform float u_rimAngle;
+          uniform float u_rimOpacity;
 
           float sdRoundRect(vec2 p, vec2 b, float r) {
             vec2 d = abs(p) - b + vec2(r);
@@ -7431,7 +7511,7 @@ class GlassElement extends HTMLElement {
             glassColor *= 1.0056;
 
             float hairlineEdge = u_noClip > 0.5 ? 0.0 : smoothstep(1.5, 0.0, abs(sd));
-            // Dual Specular Highlights / Rim Lights based on u_rimAngle (and opposite 180 degrees)
+            // Two Parallel Dual Specular Highlights / Rim Lights based on u_rimAngle and -u_rimAngle
             float lightAngle1 = u_rimAngle * 3.141592653589793 / 180.0;
             vec2 L1 = vec2(cos(lightAngle1), sin(lightAngle1));
             float rim1 = max(0.0, dot(n_dir, -L1));
@@ -7442,7 +7522,17 @@ class GlassElement extends HTMLElement {
             float rim2 = max(0.0, dot(n_dir, -L2));
             float specular2 = pow(rim2, 3.0) * 0.5 + pow(rim2, 1.0) * 0.15;
 
-            glassColor += vec3(specular1 + specular2) * hairlineEdge;
+            float lightAngle3 = -u_rimAngle * 3.141592653589793 / 180.0;
+            vec2 L3 = vec2(cos(lightAngle3), sin(lightAngle3));
+            float rim3 = max(0.0, dot(n_dir, -L3));
+            float specular3 = pow(rim3, 3.0) * 0.5 + pow(rim3, 1.0) * 0.15;
+
+            float lightAngle4 = lightAngle3 + 3.141592653589793;
+            vec2 L4 = vec2(cos(lightAngle4), sin(lightAngle4));
+            float rim4 = max(0.0, dot(n_dir, -L4));
+            float specular4 = pow(rim4, 3.0) * 0.5 + pow(rim4, 1.0) * 0.15;
+
+            glassColor += vec3(specular1 + specular2 + specular3 + specular4) * hairlineEdge * u_rimOpacity;
 
             float edgeAlpha = u_noClip > 0.5 ? 1.0 : smoothstep(1.5, 0.0, sd);
             fragColor = vec4(glassColor, edgeAlpha);
@@ -7567,6 +7657,7 @@ class GlassElement extends HTMLElement {
         const isNoClip = this.hasAttribute('no-clip') || (this.id && this.id.includes('tooltip')) ? 1.0 : 0.0;
         gl.uniform1f(gl.getUniformLocation(this._program, 'u_noClip'), isNoClip);
         gl.uniform1f(gl.getUniformLocation(this._program, 'u_rimAngle'), this.rimAngle);
+        gl.uniform1f(gl.getUniformLocation(this._program, 'u_rimOpacity'), this.rimOpacity);
 
         gl.drawArrays(gl.TRIANGLES, 0, 6);
     }
@@ -7757,7 +7848,10 @@ class GlassElement extends HTMLElement {
                     inset: 0;
                     border-radius: inherit;
                     padding: 1px;
-                    background: var(--glass-stroke, linear-gradient(-127deg, rgba(255, 255, 255, 0.65) 0%, rgba(255, 255, 255, 0.05) 30%, rgba(255, 255, 255, 0.05) 70%, rgba(255, 255, 255, 0.65) 100%));
+                    background: var(--glass-stroke, 
+                      linear-gradient(-127deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.05) 30%, rgba(255, 255, 255, 0.05) 70%, rgba(255, 255, 255, 0.5) 100%),
+                      linear-gradient(127deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.05) 30%, rgba(255, 255, 255, 0.05) 70%, rgba(255, 255, 255, 0.5) 100%)
+                    );
                     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
                     -webkit-mask-composite: xor;
                     mask-composite: exclude;
@@ -7937,18 +8031,26 @@ customElements.define('glass-element', GlassElement);
     const tailTipR = 2;
     const pathD = `M ${rad} 0 L ${w-rad} 0 Q ${w} 0 ${w} ${rad} L ${w} ${h-ah-rad} Q ${w} ${h-ah} ${w-rad} ${h-ah} L ${w/2 + aw/2 + tailBaseR} ${h-ah} Q ${w/2 + aw/2} ${h-ah} ${w/2 + aw/2 - tailBaseR/2} ${h-ah + tailBaseR/2} L ${w/2 + tailTipR} ${h - tailTipR} Q ${w/2} ${h} ${w/2 - tailTipR} ${h - tailTipR} L ${w/2 - aw/2 + tailBaseR/2} ${h-ah + tailBaseR/2} Q ${w/2 - aw/2} ${h-ah} ${w/2 - aw/2 - tailBaseR} ${h-ah} L ${rad} ${h-ah} Q 0 ${h-ah} 0 ${h-ah-rad} L 0 ${rad} Q 0 0 ${rad} 0 Z`;
 
-    removeTooltipSvg.innerHTML = `
-      <defs>
-        <linearGradient id="remove-tooltip-stroke-grad" x1="0%" y1="100%" x2="0%" y2="0%" gradientTransform="rotate(-127 0.5 0.5)">
-          <stop offset="0%" stop-color="#ffffff" stop-opacity="0.65" />
-          <stop offset="30%" stop-color="#ffffff" stop-opacity="0.05" />
-          <stop offset="70%" stop-color="#ffffff" stop-opacity="0.05" />
-          <stop offset="100%" stop-color="#ffffff" stop-opacity="0.65" />
-        </linearGradient>
-      </defs>
-      <clipPath id="remove-tooltip-clip"><path d="${pathD}"/></clipPath>
-      <path d="${pathD}" fill="rgba(255, 59, 48, 0.2)" stroke="url(#remove-tooltip-stroke-grad)" stroke-width="1.25" />
-    `;
+     removeTooltipSvg.innerHTML = `
+       <defs>
+         <linearGradient id="remove-tooltip-stroke-grad-1" x1="0%" y1="100%" x2="0%" y2="0%" gradientTransform="rotate(-127 0.5 0.5)">
+           <stop offset="0%" stop-color="#ffffff" stop-opacity="0.5" />
+           <stop offset="30%" stop-color="#ffffff" stop-opacity="0.05" />
+           <stop offset="70%" stop-color="#ffffff" stop-opacity="0.05" />
+           <stop offset="100%" stop-color="#ffffff" stop-opacity="0.5" />
+         </linearGradient>
+         <linearGradient id="remove-tooltip-stroke-grad-2" x1="0%" y1="100%" x2="0%" y2="0%" gradientTransform="rotate(127 0.5 0.5)">
+           <stop offset="0%" stop-color="#ffffff" stop-opacity="0.5" />
+           <stop offset="30%" stop-color="#ffffff" stop-opacity="0.05" />
+           <stop offset="70%" stop-color="#ffffff" stop-opacity="0.05" />
+           <stop offset="100%" stop-color="#ffffff" stop-opacity="0.5" />
+         </linearGradient>
+       </defs>
+       <clipPath id="remove-tooltip-clip"><path d="${pathD}"/></clipPath>
+       <path d="${pathD}" fill="rgba(255, 59, 48, 0.2)" />
+       <path d="${pathD}" fill="none" stroke="url(#remove-tooltip-stroke-grad-1)" stroke-width="1.25" />
+       <path d="${pathD}" fill="none" stroke="url(#remove-tooltip-stroke-grad-2)" stroke-width="1.25" />
+     `;
     const glass = document.getElementById('remove-tooltip-glass');
     if (glass) {
       glass.style.clipPath = 'url(#remove-tooltip-clip)';
@@ -8285,18 +8387,26 @@ customElements.define('glass-element', GlassElement);
       const isDarkMode = document.body.classList.contains('dark-mode');
       const fill = isDarkMode ? "rgba(0,0,0,0.25)" : "rgba(255,255,255,0.25)";
       
-      tooltipSvg.innerHTML = `
-        <defs>
-          <linearGradient id="tooltip-stroke-grad" x1="0%" y1="100%" x2="0%" y2="0%" gradientTransform="rotate(-127 0.5 0.5)">
-            <stop offset="0%" stop-color="#ffffff" stop-opacity="0.65" />
-            <stop offset="30%" stop-color="#ffffff" stop-opacity="0.05" />
-            <stop offset="70%" stop-color="#ffffff" stop-opacity="0.05" />
-            <stop offset="100%" stop-color="#ffffff" stop-opacity="0.65" />
-          </linearGradient>
-        </defs>
-        <clipPath id="tooltip-clip"><path d="${pathD}"/></clipPath>
-        <path d="${pathD}" fill="${fill}" stroke="url(#tooltip-stroke-grad)" stroke-width="1.25" />
-      `;
+       tooltipSvg.innerHTML = `
+         <defs>
+           <linearGradient id="tooltip-stroke-grad-1" x1="0%" y1="100%" x2="0%" y2="0%" gradientTransform="rotate(-127 0.5 0.5)">
+             <stop offset="0%" stop-color="#ffffff" stop-opacity="0.5" />
+             <stop offset="30%" stop-color="#ffffff" stop-opacity="0.05" />
+             <stop offset="70%" stop-color="#ffffff" stop-opacity="0.05" />
+             <stop offset="100%" stop-color="#ffffff" stop-opacity="0.5" />
+           </linearGradient>
+           <linearGradient id="tooltip-stroke-grad-2" x1="0%" y1="100%" x2="0%" y2="0%" gradientTransform="rotate(127 0.5 0.5)">
+             <stop offset="0%" stop-color="#ffffff" stop-opacity="0.5" />
+             <stop offset="30%" stop-color="#ffffff" stop-opacity="0.05" />
+             <stop offset="70%" stop-color="#ffffff" stop-opacity="0.05" />
+             <stop offset="100%" stop-color="#ffffff" stop-opacity="0.5" />
+           </linearGradient>
+         </defs>
+         <clipPath id="tooltip-clip"><path d="${pathD}"/></clipPath>
+         <path d="${pathD}" fill="${fill}" />
+         <path d="${pathD}" fill="none" stroke="url(#tooltip-stroke-grad-1)" stroke-width="1.25" />
+         <path d="${pathD}" fill="none" stroke="url(#tooltip-stroke-grad-2)" stroke-width="1.25" />
+       `;
       const glass = document.getElementById('tooltip-glass');
       if (glass) {
         glass.style.clipPath = 'url(#tooltip-clip)';
@@ -8334,8 +8444,8 @@ customElements.define('glass-element', GlassElement);
     isOpen: false, isMinimized: false, isMaximized: false,
     preMaxDragX: 0, preMaxDragY: 0
   };
-  const winStiffness = 0.12;
-  const winDamping = 0.75;
+  const winStiffness = 1.0;
+  const winDamping = 0.22;
 
   const activeAppNameBar = document.getElementById('active-app-name');
   let activeAppName = 'Finder';
@@ -9619,11 +9729,38 @@ customElements.define('glass-element', GlassElement);
   const dockRimAngleSlider = document.getElementById('dock-rim-angle-slider');
   const dockRimAngleValue = document.getElementById('dock-rim-angle-value');
   if (dockRimAngleSlider) {
+    if (dockGlassWrapper) {
+      const attr = dockGlassWrapper.getAttribute('rim-angle');
+      if (attr) {
+        dockRimAngleSlider.value = attr;
+        dockRimAngleValue.textContent = attr + '°';
+      }
+    }
     dockRimAngleSlider.addEventListener('input', (e) => {
       const angle = parseInt(e.target.value);
       dockRimAngleValue.textContent = angle + '°';
       if (dockGlassWrapper) {
         dockGlassWrapper.setAttribute('rim-angle', angle);
+      }
+    });
+  }
+
+  const dockRimOpacitySlider = document.getElementById('dock-rim-opacity-slider');
+  const dockRimOpacityValue = document.getElementById('dock-rim-opacity-value');
+  if (dockRimOpacitySlider) {
+    if (dockGlassWrapper) {
+      const attr = dockGlassWrapper.getAttribute('rim-opacity');
+      if (attr) {
+        const opPct = Math.round(parseFloat(attr) * 100);
+        dockRimOpacitySlider.value = opPct;
+        dockRimOpacityValue.textContent = opPct + '%';
+      }
+    }
+    dockRimOpacitySlider.addEventListener('input', (e) => {
+      const opacity = parseInt(e.target.value);
+      dockRimOpacityValue.textContent = opacity + '%';
+      if (dockGlassWrapper) {
+        dockGlassWrapper.setAttribute('rim-opacity', (opacity / 100).toFixed(2));
       }
     });
   }
@@ -9824,6 +9961,7 @@ customElements.define('glass-element', GlassElement);
       uniform vec3 u_glassColor;
       uniform float u_blur;
       uniform float u_rimAngle;
+      uniform float u_rimOpacity;
 
       float sdRoundRect(vec2 p, vec2 b, float r) {
         vec2 d = abs(p) - b + vec2(r);
@@ -9916,7 +10054,7 @@ customElements.define('glass-element', GlassElement);
         float rim2 = max(0.0, dot(n_dir, -L2));
         float specular2 = pow(rim2, 3.0) * 0.5 + pow(rim2, 1.0) * 0.15;
 
-        glassColor += vec3(specular1 + specular2) * hairlineEdge;
+        glassColor += vec3(specular1 + specular2) * hairlineEdge * u_rimOpacity;
 
         float edgeAlpha = smoothstep(1.5, 0.0, sd);
 
@@ -11376,7 +11514,9 @@ customElements.define('glass-element', GlassElement);
       let depthVal = 4.0;
       let blurVal = 2.0;
       let strengthVal = 120.0;
-      let rimAngleVal = -130.0;
+      let rimAngleVal = -59.0;
+      let radiusVal = 25.0;
+      let rimOpacityVal = 1.0;
       if (dockGlassWrapper) {
         const depthAttr = dockGlassWrapper.getAttribute('depth');
         if (depthAttr !== null) depthVal = parseFloat(depthAttr);
@@ -11386,6 +11526,10 @@ customElements.define('glass-element', GlassElement);
         if (strAttr !== null) strengthVal = parseFloat(strAttr);
         const rimAttr = dockGlassWrapper.getAttribute('rim-angle');
         if (rimAttr !== null) rimAngleVal = parseFloat(rimAttr);
+        const radiusAttr = dockGlassWrapper.getAttribute('radius');
+        if (radiusAttr !== null) radiusVal = parseFloat(radiusAttr);
+        const rimOpacityAttr = dockGlassWrapper.getAttribute('rim-opacity');
+        if (rimOpacityAttr !== null) rimOpacityVal = parseFloat(rimOpacityAttr);
       }
 
       const refractionStrength = strengthVal / 100.0;
@@ -11396,9 +11540,10 @@ customElements.define('glass-element', GlassElement);
       gl.uniform1f(gl.getUniformLocation(program, 'u_chromaticAberration'), 0.015);
       gl.uniform1f(gl.getUniformLocation(program, 'u_frostedOpacity'), frostedOpacity);
       gl.uniform1f(gl.getUniformLocation(program, 'u_grainOpacity'), 0.025);
-      gl.uniform1f(gl.getUniformLocation(program, 'u_cornerRadius'), 21.0);
+      gl.uniform1f(gl.getUniformLocation(program, 'u_cornerRadius'), radiusVal);
       gl.uniform3f(gl.getUniformLocation(program, 'u_glassColor'), glassColor[0], glassColor[1], glassColor[2]);
       gl.uniform1f(gl.getUniformLocation(program, 'u_rimAngle'), rimAngleVal);
+      gl.uniform1f(gl.getUniformLocation(program, 'u_rimOpacity'), rimOpacityVal);
 
       gl.drawArrays(gl.TRIANGLES, 0, 6);
 
@@ -11729,7 +11874,7 @@ customElements.define('glass-element', GlassElement);
     if (trashIcon) {
       const url = getTrashIconUrl();
       const imgLayer = trashIcon.querySelector('.icon-image-layer');
-      const trashScalePct = (110 * window.dockIconScale) + '%';
+      const trashScalePct = (121 * window.dockIconScale) + '%';
       if (imgLayer) {
         imgLayer.style.backgroundImage = url;
         imgLayer.style.backgroundSize = trashScalePct;
@@ -11807,31 +11952,120 @@ customElements.define('glass-element', GlassElement);
     });
   }
 
+  function updateDockAndIconSize(newBaseSize) {
+    baseSize = newBaseSize;
+    document.querySelectorAll('.dock-icon').forEach(icon => {
+      icon.style.width = `${baseSize}px`;
+      icon.style.height = `${baseSize}px`;
+    });
+    const dockEl = document.getElementById('dock');
+    if (dockEl) dockEl.style.height = `${baseSize + 20}px`;
+    
+    // Update System Settings representation
+    const closestIdx = snapSizes.reduce((prev, curr, idx) => {
+      return Math.abs(curr - baseSize) < Math.abs(snapSizes[prev] - baseSize) ? idx : prev;
+    }, 0);
+    if (dockSizeSlider) {
+      dockSizeSlider.value = closestIdx;
+    }
+    if (dockSizeValue) {
+      dockSizeValue.textContent = snapLabels[closestIdx];
+    }
+  }
+
+  const resizerLine = document.getElementById('dock-resizer-line');
+  if (resizerLine) {
+    const startDrag = (startY) => {
+      const initialBaseSize = baseSize;
+      document.body.style.cursor = 'ns-resize';
+      document.body.style.userSelect = 'none';
+      
+      const onMove = (currentY) => {
+        const deltaY = startY - currentY;
+        const newBaseSize = Math.max(20, Math.min(120, initialBaseSize + deltaY));
+        updateDockAndIconSize(newBaseSize);
+      };
+      
+      const onMouseMove = (moveEvent) => {
+        onMove(moveEvent.clientY);
+      };
+      
+      const onTouchMove = (moveEvent) => {
+        if (moveEvent.touches && moveEvent.touches.length > 0) {
+          onMove(moveEvent.touches[0].clientY);
+        }
+      };
+      
+      const onEnd = () => {
+        window.removeEventListener('mousemove', onMouseMove);
+        window.removeEventListener('mouseup', onEnd);
+        window.removeEventListener('touchmove', onTouchMove);
+        window.removeEventListener('touchend', onEnd);
+        document.body.style.cursor = '';
+        document.body.style.userSelect = '';
+      };
+      
+      window.addEventListener('mousemove', onMouseMove);
+      window.addEventListener('mouseup', onEnd);
+      window.addEventListener('touchmove', onTouchMove, { passive: true });
+      window.addEventListener('touchend', onEnd);
+    };
+
+    resizerLine.addEventListener('mousedown', (e) => {
+      e.preventDefault();
+      startDrag(e.clientY);
+    });
+    
+    resizerLine.addEventListener('touchstart', (e) => {
+      if (e.touches && e.touches.length > 0) {
+        startDrag(e.touches[0].clientY);
+      }
+    }, { passive: true });
+  }
+
   const dockRadiusSlider = document.getElementById('dock-radius-slider');
   const dockRadiusValue = document.getElementById('dock-radius-value');
   const dockContainerObj = document.getElementById('dock');
   const dockGlassWrapperElement = document.getElementById('dock-glass-wrapper');
   if (dockRadiusSlider) {
-    // init
-    if (dockRadiusValue) dockRadiusValue.textContent = dockRadiusSlider.value + 'px';
-    if (dockContainerObj) dockContainerObj.style.borderRadius = dockRadiusSlider.value + 'px';
-    if (dockGlassWrapperElement) dockGlassWrapperElement.setAttribute('radius', dockRadiusSlider.value);
+    // init from squircleSettings if exists
+    if (window.squircleSettings && window.squircleSettings.dock !== undefined) {
+      dockRadiusSlider.value = window.squircleSettings.dock;
+    }
+    const initRad = dockRadiusSlider.value;
+    if (dockRadiusValue) dockRadiusValue.textContent = initRad + 'px';
+    if (dockContainerObj) dockContainerObj.style.borderRadius = initRad + 'px';
+    if (dockGlassWrapperElement) dockGlassWrapperElement.setAttribute('radius', initRad);
     
     dockRadiusSlider.addEventListener('input', (e) => {
-      const rad = e.target.value;
+      const rad = parseInt(e.target.value, 10);
+      if (window.squircleSettings) {
+        window.squircleSettings.dock = rad;
+        window.saveSquircleSettings();
+      }
       if (dockRadiusValue) dockRadiusValue.textContent = rad + 'px';
       if (dockContainerObj) dockContainerObj.style.borderRadius = rad + 'px';
       if (dockGlassWrapperElement) dockGlassWrapperElement.setAttribute('radius', rad);
+
+      // Keep the squircle settings slider in sync
+      const sqDockSlider = document.querySelector('.sq-slider[data-prop="dock"]');
+      if (sqDockSlider) {
+        sqDockSlider.value = rad;
+      }
+      const sqDockLabel = document.getElementById('sq-dock-val');
+      if (sqDockLabel) {
+        sqDockLabel.textContent = rad + 'px';
+      }
     });
   }
 
-  window.dockIconScale = 0.90;
+  window.dockIconScale = 0.89;
   function updateDockIconScale() {
     const scaleValueEl = document.getElementById('dock-icon-scale-value');
     if (scaleValueEl) scaleValueEl.textContent = Math.round(window.dockIconScale * 100) + '%';
     
     document.querySelectorAll('.dock-icon').forEach(icon => {
-      let base = (icon.dataset.name === 'Trash') ? 110 : 100;
+      let base = (icon.dataset.name === 'Trash') ? 121 : 100;
       icon.dataset.baseBgSize = base;
       
       const newSize = (parseFloat(base) * window.dockIconScale) + '%';
@@ -11861,13 +12095,13 @@ customElements.define('glass-element', GlassElement);
   
   if (dockScaleDownBtn) {
     dockScaleDownBtn.addEventListener('click', () => {
-      window.dockIconScale = Math.max(0.1, window.dockIconScale - 0.05);
+      window.dockIconScale = Math.max(0.1, window.dockIconScale - 0.01);
       updateDockIconScale();
     });
   }
   if (dockScaleUpBtn) {
     dockScaleUpBtn.addEventListener('click', () => {
-      window.dockIconScale = Math.min(2.0, window.dockIconScale + 0.05);
+      window.dockIconScale = Math.min(2.0, window.dockIconScale + 0.01);
       updateDockIconScale();
     });
   }
@@ -11922,6 +12156,13 @@ customElements.define('glass-element', GlassElement);
       const valLabel = document.getElementById(`sq-${prop}-val`);
       if (valLabel) {
         valLabel.textContent = `${val}px`;
+      }
+
+      if (prop === 'dock') {
+        const drs = document.getElementById('dock-radius-slider');
+        if (drs) drs.value = val;
+        const drv = document.getElementById('dock-radius-value');
+        if (drv) drv.textContent = val + 'px';
       }
 
       // Trigger instant shape updates for all squirclified DOM elements
@@ -14391,7 +14632,12 @@ if (val === 'help') {
     const totalIcons = visibleIconStates.length;
 
     const dockCenterX = window.innerWidth / 2;
-    const unscaledDockWidth = totalIcons * baseSize + (totalIcons - 1) * 9 + 26;
+    let extraWidth = 9; // 1px width + 8px margins for dock resizer line
+    const minSeparator = document.getElementById('dock-minimized-separator');
+    if (minSeparator && minSeparator.style.display !== 'none') {
+      extraWidth += 9; // 1px width + 8px margins
+    }
+    const unscaledDockWidth = totalIcons * baseSize + (totalIcons - 1) * 9 + 26 + extraWidth;
     const startX = dockCenterX - unscaledDockWidth / 2;
 
     const isWindowDraggingActive = (typeof isTerminalDragging !== 'undefined' && isTerminalDragging) ||
@@ -14490,6 +14736,7 @@ if (val === 'help') {
       computedWidth += baseSize * state.currentScale;
       if (idx > 0) computedWidth += 9;
     });
+    computedWidth += extraWidth;
 
     const stableWidth = computedWidth;
     const stableHeight = baseSize + 26;
@@ -14509,6 +14756,7 @@ if (val === 'help') {
         W_center += baseSize * tScale;
         if (idx > 0) W_center += 9;
       });
+      W_center += extraWidth;
       Delta_W_center = W_center - W_base_visual;
     }
 
@@ -16083,7 +16331,7 @@ if (val === 'help') {
     dmBtn.subtitle = initialDark ? "Enabled" : "Disabled";
   }
 
-  // Initial runs
+  // Initial runss
   renderCCGrid();
 
   animate();
