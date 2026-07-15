@@ -7444,6 +7444,7 @@ class GlassElement extends HTMLElement {
           uniform vec2 u_screenResolution;
           uniform vec2 u_dockPos;
           uniform vec2 u_dockSize;
+          uniform float u_isDock;
 
           uniform float u_time;
           uniform float u_refractionStrength;
@@ -7495,7 +7496,8 @@ class GlassElement extends HTMLElement {
             }
 
             float screenX = u_dockPos.x + localPixel.x;
-            float screenY = u_dockPos.y + u_dockSize.y - localPixel.y;
+            float yOffset = 0.0;
+            float screenY = u_dockPos.y + u_dockSize.y - localPixel.y - yOffset;
             vec2 baseScreenUV = vec2(screenX, screenY) / u_screenResolution;
 
             float d_edge = u_noClip > 0.5 ? max(4.0, -sd) : -sd;
@@ -7523,7 +7525,7 @@ class GlassElement extends HTMLElement {
             vec3 refractedColor = vec3(r_val, g_val, b_val);
 
             vec3 glassColor = mix(refractedColor, u_glassColor, u_frostedOpacity);
-            float grain = (noise(localPixel + vec2(u_time * 12.0)) - 0.5) * u_grainOpacity;
+            float grain = 0.0;
             glassColor += vec3(grain);
 
             glassColor *= 1.0056;
@@ -7659,12 +7661,13 @@ class GlassElement extends HTMLElement {
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 
-        const sw = document.documentElement.clientWidth;
-        const sh = document.documentElement.clientHeight;
+        const sw = window.innerWidth;
+        const sh = window.innerHeight;
 
         gl.uniform2f(gl.getUniformLocation(this._program, 'u_screenResolution'), sw, sh);
         gl.uniform2f(gl.getUniformLocation(this._program, 'u_dockPos'), rect.left, rect.top);
         gl.uniform2f(gl.getUniformLocation(this._program, 'u_dockSize'), rect.width, rect.height);
+        gl.uniform1f(gl.getUniformLocation(this._program, 'u_isDock'), this.id === 'dock-glass-wrapper' ? 1.0 : 0.0);
         gl.uniform1f(gl.getUniformLocation(this._program, 'u_time'), time * 0.001);
 
         const isDark = document.body.classList.contains('dark-mode');
@@ -9989,6 +9992,7 @@ customElements.define('glass-element', GlassElement);
       uniform vec2 u_screenResolution;
       uniform vec2 u_dockPos;
       uniform vec2 u_dockSize;
+          uniform float u_isDock;
 
       uniform float u_time;
       uniform float u_refractionStrength;
@@ -10042,7 +10046,8 @@ customElements.define('glass-element', GlassElement);
         // Since backgroundTexture is captured as a 2D Canvas with top-left origin (Y down),
         // we map WebGL's local bottom-up Y coordinate to the corresponding top-down screen coordinate.
         float screenX = u_dockPos.x + localPixel.x;
-        float screenY = u_dockPos.y + u_dockSize.y - localPixel.y;
+        float yOffset = 0.0;
+            float screenY = u_dockPos.y + u_dockSize.y - localPixel.y - yOffset;
         vec2 baseScreenUV = vec2(screenX, screenY) / u_screenResolution;
 
         float d_edge = -sd;
@@ -10075,7 +10080,7 @@ customElements.define('glass-element', GlassElement);
 
         // Blending & noise grain
         vec3 glassColor = mix(refractedColor, u_glassColor, u_frostedOpacity);
-        float grain = (noise(localPixel + vec2(u_time * 12.0)) - 0.5) * u_grainOpacity;
+        float grain = 0.0;
         glassColor += vec3(grain);
 
         // Make it 0.56% brighter
@@ -11149,8 +11154,8 @@ customElements.define('glass-element', GlassElement);
         }
       }
 
-      const sw = document.documentElement.clientWidth;
-      const sh = document.documentElement.clientHeight;
+      const sw = window.innerWidth;
+      const sh = window.innerHeight;
       if (bgCanvas.width !== sw || bgCanvas.height !== sh) {
         bgCanvas.width = sw;
         bgCanvas.height = sh;
@@ -11347,7 +11352,7 @@ customElements.define('glass-element', GlassElement);
         if (snapshotImg && snapshotImg.complete && snapshotImg.naturalWidth > 0 && snapshotImg.naturalHeight > 0 && r.width > 0 && r.height > 0) {
            bgCtx.shadowColor = 'transparent';
            try {
-             bgCtx.drawImage(snapshotImg, r.left, r.top, r.width, r.height);
+             bgCtx.drawImage(snapshotImg, r.left - 0, r.top - 0, r.width + 0, r.height - 9);
            } catch(e) {
              console.error("InvalidStateError drawing snapshot: ", e);
            }
@@ -11620,6 +11625,7 @@ customElements.define('glass-element', GlassElement);
       // Since rect contains perfectly pre-stabilized mathematical coordinates, we pass them directly
       gl.uniform2f(gl.getUniformLocation(program, 'u_dockPos'), rect.left, rect.top);
       gl.uniform2f(gl.getUniformLocation(program, 'u_dockSize'), rect.width, rect.height);
+      gl.uniform1f(gl.getUniformLocation(program, 'u_isDock'), 1.0);
       gl.uniform1f(gl.getUniformLocation(program, 'u_time'), time * 0.001);
 
       const isDark = document.body.classList.contains('dark-mode');
