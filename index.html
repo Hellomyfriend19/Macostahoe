@@ -5322,7 +5322,7 @@
 </div>
 
 <div id="launchpad-window" class="window" style="position:absolute; top:50%; left:50%; width:800px; height:500px; margin-left:-400px; margin-top:-250px; display:none; flex-direction:column; z-index:100; overflow:hidden;">
-  <glass-element id="launchpad-glass" style="position:absolute; top:0; left:0; width:100%; height:100%; z-index:-1; pointer-events:none;" radius="24" depth="5" blur="2" strength="40" background-color="rgba(255, 255, 255, 0.45)" chromatic-aberration="1" auto-size="false"></glass-element>
+  <glass-element id="launchpad-glass" style="position:absolute; top:0; left:0; width:100%; height:100%; z-index:-1; pointer-events:none;" radius="24" depth="5" blur="2" strength="107" downscale="512" background-color="rgba(255, 255, 255, 0.45)" chromatic-aberration="1" auto-size="false"></glass-element>
   <div class="window-inner" style="position:relative; width:100%; height:100%; display:flex; flex-direction:column; background:transparent; backdrop-filter:none; -webkit-backdrop-filter:none; box-shadow:none; border-radius:0; border:none; padding:0; overflow:hidden;">
     <div class="launchpad-titlebar">
       <!-- Hidden traffic lights to maintain script functionality -->
@@ -5985,6 +5985,23 @@
   window.minimizedWindows = [];
   window.windowCaptureCache = {};
   window.windowCapturePromises = {}; // Tracks active background captures to prevent dual-processing lock!
+
+  window.refractionImages = {
+    'settings-window': new Image(),
+    'safari-window': new Image(),
+    'calendar-window': new Image(),
+    'music-window': new Image(),
+    'word-window-default': new Image(),
+    'word-window-document': new Image(),
+    'terminal-window': new Image()
+  };
+  window.refractionImages['settings-window'].src = 'settings.png';
+  window.refractionImages['safari-window'].src = 'safaridefaultstate.png';
+  window.refractionImages['calendar-window'].src = 'calendar.png';
+  window.refractionImages['music-window'].src = 'applemusic.png';
+  window.refractionImages['word-window-default'].src = 'worddefaultstate.png';
+  window.refractionImages['word-window-document'].src = 'wordopeneddocumentstate.png';
+  window.refractionImages['terminal-window'].src = 'terminal.png';
 
   /**
    * Pre-captures a window to cache. Runs on hover or mouse down.
@@ -7291,7 +7308,7 @@ class GlassElement extends HTMLElement {
         return this.id === 'launchpad-glass' || this.hasAttribute('liquid') || (this.id && this.id.includes('tooltip'));
     }
     static get observedAttributes() {
-        return ['width','height','radius','depth','blur','strength','chromatic-aberration','debug','background-color','responsive','base-width','base-height','auto-size','min-width','min-height','rim-angle','rim-opacity'];
+        return ['width','height','radius','depth','blur','strength','chromatic-aberration','debug','background-color','responsive','base-width','base-height','auto-size','min-width','min-height','rim-angle','rim-opacity','downscale'];
     }
     connectedCallback() {
         this.render();
@@ -7372,6 +7389,7 @@ class GlassElement extends HTMLElement {
         const val = this.getAttribute('blur');
         return val !== null && !isNaN(parseFloat(val)) ? parseFloat(val) : 2;
     }
+    get downscale() { return parseInt(this.getAttribute('downscale')) || 0; }
     get strength() { return parseInt(this.getAttribute('strength')) || 100; }
     get chromaticAberration() { return parseInt(this.getAttribute('chromatic-aberration')) || 0; }
     get debug() { return this.getAttribute('debug') === 'true'; }
@@ -7592,9 +7610,21 @@ class GlassElement extends HTMLElement {
         const rect = this.getBoundingClientRect();
         if (rect.width <= 0 || rect.height <= 0) return;
 
-        if (canvas.width !== Math.ceil(rect.width) || canvas.height !== Math.ceil(rect.height)) {
-            canvas.width = Math.ceil(rect.width);
-            canvas.height = Math.ceil(rect.height);
+                let targetWidth = Math.ceil(rect.width);
+        let targetHeight = Math.ceil(rect.height);
+        if (this.downscale && this.downscale > 0) {
+            const scale = this.downscale / Math.max(targetWidth, targetHeight);
+            targetWidth = Math.max(1, Math.ceil(targetWidth * scale));
+            targetHeight = Math.max(1, Math.ceil(targetHeight * scale));
+        }
+                if (canvas.width !== targetWidth || canvas.height !== targetHeight) {
+            canvas.width = targetWidth;
+            canvas.height = targetHeight;
+            if (this.downscale && this.downscale > 0) {
+                canvas.style.imageRendering = 'pixelated';
+            } else {
+                canvas.style.imageRendering = 'auto';
+            }
         }
 
         gl.viewport(0, 0, canvas.width, canvas.height);
@@ -7606,15 +7636,24 @@ class GlassElement extends HTMLElement {
         }
         gl.bindTexture(gl.TEXTURE_2D, this._bgTexture);
 
+                const downscaleRes = this.downscale && this.downscale > 0 ? this.downscale : 512;
         if (!window._downscaleCanvas) {
             window._downscaleCanvas = document.createElement('canvas');
-            window._downscaleCtx = window._downscaleCanvas.getContext('2d');
-            window._downscaleCanvas.width = 512;
-            window._downscaleCanvas.height = 512;
+            window._downscaleCtx = window._downscaleCanvas.getContext('2d', { alpha: false });
+            window._downscaleCanvas.width = downscaleRes;
+            window._downscaleCanvas.height = downscaleRes;
+        } else if (window._downscaleCanvas.width !== downscaleRes) {
+            window._downscaleCanvas.width = downscaleRes;
+            window._downscaleCanvas.height = downscaleRes;
         }
-        window._downscaleCtx.drawImage(bgCanvas, 0, 0, 512, 512);
 
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, window._downscaleCanvas);
+        if (bgCanvas.width > 0 && bgCanvas.height > 0) {
+            window._downscaleCtx.drawImage(bgCanvas, 0, 0, downscaleRes, downscaleRes);
+            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, window._downscaleCanvas);
+        } else {
+            const emptyData = new Uint8Array(downscaleRes * downscaleRes * 4);
+            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, downscaleRes, downscaleRes, 0, gl.RGBA, gl.UNSIGNED_BYTE, emptyData);
+        }
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
@@ -11088,9 +11127,26 @@ customElements.define('glass-element', GlassElement);
         height: roundedHeight
       };
 
-      if (canvas.width !== roundedWidth || canvas.height !== roundedHeight) {
-        canvas.width = roundedWidth;
-        canvas.height = roundedHeight;
+            let targetWidth = roundedWidth;
+      let targetHeight = roundedHeight;
+      const localDockGlassWrapper = document.getElementById('dock-glass-wrapper');
+      if (localDockGlassWrapper) {
+          const dsAttr = localDockGlassWrapper.getAttribute('downscale');
+          const downscale = parseInt(dsAttr) || 0;
+          if (downscale > 0) {
+              const scale = downscale / Math.max(targetWidth, targetHeight);
+              targetWidth = Math.max(1, Math.round(targetWidth * scale));
+              targetHeight = Math.max(1, Math.round(targetHeight * scale));
+          }
+      }
+            if (canvas.width !== targetWidth || canvas.height !== targetHeight) {
+        canvas.width = targetWidth;
+        canvas.height = targetHeight;
+        if (localDockGlassWrapper && parseInt(localDockGlassWrapper.getAttribute('downscale')||'0') > 0) {
+            canvas.style.imageRendering = 'pixelated';
+        } else {
+            canvas.style.imageRendering = 'auto';
+        }
       }
 
       const sw = document.documentElement.clientWidth;
@@ -11103,7 +11159,7 @@ customElements.define('glass-element', GlassElement);
       bgCtx.fillStyle = '#1c1c1e';
       bgCtx.fillRect(0, 0, sw, sh);
 
-      if (wallpaperLoaded && wallpaperImg.complete && wallpaperImg.naturalWidth > 0) {
+      if (wallpaperLoaded && wallpaperImg.complete && wallpaperImg.naturalWidth > 0 && sw > 0 && sh > 0) {
         const iw = wallpaperImg.naturalWidth;
         const ih = wallpaperImg.naturalHeight;
         const rCanvas = sw / sh;
@@ -11120,7 +11176,11 @@ customElements.define('glass-element', GlassElement);
           sx = (iw - swCrop) / 2;
           sy = 0;
         }
-        bgCtx.drawImage(wallpaperImg, sx, sy, swCrop, shCrop, 0, 0, sw, sh);
+        try {
+          bgCtx.drawImage(wallpaperImg, sx, sy, swCrop, shCrop, 0, 0, sw, sh);
+        } catch(e) {
+          console.error("InvalidStateError drawing wallpaper:", e);
+        }
       }
 
       // Draw Desktop Icons (Icons, Tags, and Text) onto the background canvas
@@ -11271,6 +11331,50 @@ customElements.define('glass-element', GlassElement);
         bgCtx.shadowBlur = 30;
         bgCtx.shadowOffsetX = 0;
         bgCtx.shadowOffsetY = 15;
+
+        // Try to draw from a snapshot image if available
+        let snapshotImg = null;
+        if (window.refractionImages) {
+          if (win.id === 'word-window') {
+             const wordDocView = document.getElementById('word-document-view');
+             const isDocumentOpen = wordDocView && wordDocView.style.display !== 'none';
+             snapshotImg = isDocumentOpen ? window.refractionImages['word-window-document'] : window.refractionImages['word-window-default'];
+          } else if (window.refractionImages[win.id]) {
+             snapshotImg = window.refractionImages[win.id];
+          }
+        }
+
+        if (snapshotImg && snapshotImg.complete && snapshotImg.naturalWidth > 0 && snapshotImg.naturalHeight > 0 && r.width > 0 && r.height > 0) {
+           bgCtx.shadowColor = 'transparent';
+           try {
+             bgCtx.drawImage(snapshotImg, r.left, r.top, r.width, r.height);
+           } catch(e) {
+             console.error("InvalidStateError drawing snapshot: ", e);
+           }
+           bgCtx.restore();
+           
+           bgCtx.save();
+           const borderWidth = parseFloat(style.borderWidth) || 0;
+           const borderColor = style.borderColor;
+           if (borderWidth > 0 && borderColor) {
+             bgCtx.strokeStyle = borderColor;
+             bgCtx.lineWidth = borderWidth;
+           } else {
+             const isDark = document.body.classList.contains('dark-mode');
+             bgCtx.strokeStyle = isDark ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.12)';
+             bgCtx.lineWidth = 1;
+           }
+           bgCtx.beginPath();
+           if (typeof bgCtx.roundRect === 'function') {
+             bgCtx.roundRect(r.left, r.top, r.width, r.height, borderRadius);
+           } else {
+             bgCtx.rect(r.left, r.top, r.width, r.height);
+           }
+           bgCtx.stroke();
+           bgCtx.restore();
+           
+           return; // skip the complex vectorization
+        }
 
         // 2. Draw the main window body rounded rectangle
         bgCtx.fillStyle = bgColor;
@@ -11485,16 +11589,28 @@ customElements.define('glass-element', GlassElement);
         });
       }
 
+            gl.bindTexture(gl.TEXTURE_2D, bgTexture);
+      
+      const dsAttr2 = localDockGlassWrapper ? localDockGlassWrapper.getAttribute('downscale') : null;
+      const downscaleRes = dsAttr2 ? parseInt(dsAttr2) : 512;
+      
       if (!window._downscaleCanvas) {
-        window._downscaleCanvas = document.createElement('canvas');
-        window._downscaleCtx = window._downscaleCanvas.getContext('2d');
-        window._downscaleCanvas.width = 512;
-        window._downscaleCanvas.height = 512;
+            window._downscaleCanvas = document.createElement('canvas');
+            window._downscaleCtx = window._downscaleCanvas.getContext('2d', { alpha: false });
+            window._downscaleCanvas.width = downscaleRes;
+            window._downscaleCanvas.height = downscaleRes;
+      } else if (window._downscaleCanvas.width !== downscaleRes) {
+            window._downscaleCanvas.width = downscaleRes;
+            window._downscaleCanvas.height = downscaleRes;
       }
-      window._downscaleCtx.drawImage(bgCanvas, 0, 0, 512, 512);
 
-      gl.bindTexture(gl.TEXTURE_2D, bgTexture);
-      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, window._downscaleCanvas);
+      if (bgCanvas.width > 0 && bgCanvas.height > 0) {
+            window._downscaleCtx.drawImage(bgCanvas, 0, 0, downscaleRes, downscaleRes);
+            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, window._downscaleCanvas);
+      } else {
+            const emptyData = new Uint8Array(downscaleRes * downscaleRes * 4);
+            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, downscaleRes, downscaleRes, 0, gl.RGBA, gl.UNSIGNED_BYTE, emptyData);
+      }
 
       gl.viewport(0, 0, canvas.width, canvas.height);
       gl.useProgram(program);
@@ -14632,12 +14748,39 @@ if (val === 'help') {
     const totalIcons = visibleIconStates.length;
 
     const dockCenterX = window.innerWidth / 2;
-    let extraWidth = 9; // 1px width + 8px margins for dock resizer line
-    const minSeparator = document.getElementById('dock-minimized-separator');
-    if (minSeparator && minSeparator.style.display !== 'none') {
-      extraWidth += 9; // 1px width + 8px margins
-    }
-    const unscaledDockWidth = totalIcons * baseSize + (totalIcons - 1) * 9 + 26 + extraWidth;
+
+    // Get only the direct children that are part of the dock's flexbox layout (excluding WebGL background canvas, tooltips, and non-layout elements)
+    const visibleDirectChildren = Array.from(dock.children).filter(child => {
+      if (child.style.display === 'none') return false;
+      return child.classList.contains('dock-icon') ||
+             child.id === 'dock-minimized-separator' ||
+             child.id === 'dock-resizer-line' ||
+             child.id === 'dock-minimized-container';
+    });
+
+    // Calculate unscaledDockWidth exactly based on visible layout structure
+    let unscaledDockWidth = 26; // 13px padding left + 13px padding right
+    visibleDirectChildren.forEach((child, idx) => {
+      if (child.classList.contains('dock-icon')) {
+        unscaledDockWidth += baseSize;
+      } else if (child.id === 'dock-minimized-separator') {
+        unscaledDockWidth += 9; // 1px width + 8px margins
+      } else if (child.id === 'dock-resizer-line') {
+        unscaledDockWidth += 9; // 7px width + 2px margins
+      } else if (child.id === 'dock-minimized-container') {
+        let containerWidth = 0;
+        const minimizedChildren = Array.from(child.children).filter(c => c.style.display !== 'none');
+        minimizedChildren.forEach((minChild, mIdx) => {
+          containerWidth += baseSize;
+          if (mIdx > 0) containerWidth += 8; // 8px gap in minimized container
+        });
+        unscaledDockWidth += containerWidth;
+      }
+      if (idx > 0) {
+        unscaledDockWidth += 9; // 9px flex gap between direct children
+      }
+    });
+
     const startX = dockCenterX - unscaledDockWidth / 2;
 
     const isWindowDraggingActive = (typeof isTerminalDragging !== 'undefined' && isTerminalDragging) ||
@@ -14654,39 +14797,100 @@ if (val === 'help') {
       ? 0.25 
       : (typeof window.dockHoverSmoothness !== 'undefined' ? window.dockHoverSmoothness : 0.28);
 
-    // Visual unscaled sizes including CSS padding (13px on each side = 26px total)
+    // Visual unscaled sizes including CSS padding
     const W_base_visual = unscaledDockWidth;
     const X_baseLeft_visual = startX;
 
-    let pTarget = 0.5;
+    // Stable, static scale mapping to avoid any dynamic feedback loop and completely eliminate lag and oscillation
+    let unscaledMouseX = dockCenterX;
+
+    // Calculate exact unscaled centers for all visible icons based on the layout structure
+    const unscaledIconCenters = [];
+    let currentUnscaledX = startX + 13; // start after 13px padding
+    let currentVisualX = (typeof window.lastComputedDockLeft !== 'undefined' ? window.lastComputedDockLeft : startX) + 13;
+
+    const unscaledPoints = [{ visual: (typeof window.lastComputedDockLeft !== 'undefined' ? window.lastComputedDockLeft : startX), unscaled: startX }];
+
+    visibleDirectChildren.forEach((child, idx) => {
+      if (idx > 0) {
+        currentUnscaledX += 9; // gap between direct children
+        currentVisualX += 9;
+      }
+      
+      if (child.classList.contains('dock-icon')) {
+        const state = iconStates.find(s => s.element === child);
+        const scale = state ? state.currentScale : 1;
+        const visualWidth = baseSize * scale;
+
+        unscaledIconCenters.push({ element: child, center: currentUnscaledX + baseSize / 2 });
+        unscaledPoints.push({ visual: currentVisualX + visualWidth / 2, unscaled: currentUnscaledX + baseSize / 2 });
+
+        currentUnscaledX += baseSize;
+        currentVisualX += visualWidth;
+      } else if (child.id === 'dock-minimized-separator') {
+        currentUnscaledX += 9;
+        currentVisualX += 9;
+      } else if (child.id === 'dock-resizer-line') {
+        currentUnscaledX += 9;
+        currentVisualX += 9;
+      } else if (child.id === 'dock-minimized-container') {
+        const minimizedChildren = Array.from(child.children).filter(c => c.style.display !== 'none');
+        minimizedChildren.forEach((minChild, mIdx) => {
+          if (mIdx > 0) {
+            currentUnscaledX += 8; // gap inside minimized container
+            currentVisualX += 8;
+          }
+          const state = iconStates.find(s => s.element === minChild);
+          const scale = state ? state.currentScale : 1;
+          const visualWidth = baseSize * scale;
+
+          unscaledIconCenters.push({ element: minChild, center: currentUnscaledX + baseSize / 2 });
+          unscaledPoints.push({ visual: currentVisualX + visualWidth / 2, unscaled: currentUnscaledX + baseSize / 2 });
+
+          currentUnscaledX += baseSize;
+          currentVisualX += visualWidth;
+        });
+      }
+    });
+
+    unscaledPoints.push({ 
+      visual: (typeof window.lastComputedDockLeft !== 'undefined' ? window.lastComputedDockLeft + window.lastComputedDockWidth : startX + unscaledDockWidth), 
+      unscaled: startX + unscaledDockWidth 
+    });
+
     if (isHovering && mouseX !== null && !isWindowDraggingActive) {
-      const currentLeft = (typeof window.lastComputedDockLeft !== 'undefined') ? window.lastComputedDockLeft : X_baseLeft_visual;
-
-      // Additive correction: shift mouseX back into unscaled space using the
-      // known offset applied last frame, instead of rescaling by a ratio of widths.
-      const unscaledMouseXRaw = mouseX - currentLeft + X_baseLeft_visual;
-
-      pTarget = (unscaledMouseXRaw - startX) / unscaledDockWidth;
-      pTarget = Math.max(0, Math.min(1, pTarget));
+      if (mouseX <= unscaledPoints[0].visual) {
+        unscaledMouseX = unscaledPoints[0].unscaled + (mouseX - unscaledPoints[0].visual);
+      } else if (mouseX >= unscaledPoints[unscaledPoints.length - 1].visual) {
+        unscaledMouseX = unscaledPoints[unscaledPoints.length - 1].unscaled + (mouseX - unscaledPoints[unscaledPoints.length - 1].visual);
+      } else {
+        for (let i = 0; i < unscaledPoints.length - 1; i++) {
+          const p1 = unscaledPoints[i];
+          const p2 = unscaledPoints[i+1];
+          if (mouseX >= p1.visual && mouseX <= p2.visual) {
+            if (p2.visual - p1.visual === 0) {
+               unscaledMouseX = p1.unscaled;
+            } else {
+               const t = (mouseX - p1.visual) / (p2.visual - p1.visual);
+               unscaledMouseX = p1.unscaled + t * (p2.unscaled - p1.unscaled);
+            }
+            break;
+          }
+        }
+      }
     }
 
-    // Map normalized mouse position back to unscaled dock coordinates for stable magnification calculations
-    const unscaledMouseX = startX + pTarget * unscaledDockWidth;
-
     // Calculate raw target scales based on unscaled mapped coordinates
-    const rawTargetScales = visibleIconStates.map((state, visibleIndex) => {
+    const rawTargetScales = visibleIconStates.map((state) => {
       if (isHovering && mouseX !== null && !isWindowDraggingActive) {
-        const unscaledIconCenterX = startX + 13 + visibleIndex * (baseSize + 9) + baseSize / 2;
+        const iconCenterObj = unscaledIconCenters.find(c => c.element === state.element);
+        const unscaledIconCenterX = iconCenterObj ? iconCenterObj.center : (startX + 13 + baseSize / 2);
         const distance = Math.abs(unscaledMouseX - unscaledIconCenterX);
         return interpolate(distance, inputDistances, outputScales);
       }
       return 1;
     });
 
-    // Use natural unscaled target scales directly. As the cursor moves across the dock,
-    // the magnification bulge naturally slides along, meaning icons far from the cursor
-    // automatically contract back to 1.0, while icons near the cursor expand up to 2.0.
-    // This creates a perfectly stable, native macOS "sliding window" effect.
     const targetScales = rawTargetScales;
 
     const dockHeightLimit = -2000;
@@ -14730,51 +14934,43 @@ if (val === 'help') {
       state.element.style.transform = `translateY(${lift}px)`;
     });
 
-    // Calculate stable, lag-free mathematical dock width dynamically based on freshly calculated icon scaling
-    let computedWidth = 26;
-    visibleIconStates.forEach((state, idx) => {
-      computedWidth += baseSize * state.currentScale;
-      if (idx > 0) computedWidth += 9;
+    // Calculate stable, lag-free mathematical dock width dynamically based on freshly calculated icon scaling and exact visible layout
+    let computedWidth = 26; // 13px padding left + 13px padding right
+    visibleDirectChildren.forEach((child, idx) => {
+      if (child.classList.contains('dock-icon')) {
+        const state = iconStates.find(s => s.element === child);
+        const scale = state ? state.currentScale : 1;
+        computedWidth += baseSize * scale;
+      } else if (child.id === 'dock-minimized-separator') {
+        computedWidth += 9;
+      } else if (child.id === 'dock-resizer-line') {
+        computedWidth += 9;
+      } else if (child.id === 'dock-minimized-container') {
+        let containerWidth = 0;
+        const minimizedChildren = Array.from(child.children).filter(c => c.style.display !== 'none');
+        minimizedChildren.forEach((minChild, mIdx) => {
+          const state = iconStates.find(s => s.element === minChild);
+          const scale = state ? state.currentScale : 1;
+          containerWidth += baseSize * scale;
+          if (mIdx > 0) containerWidth += 8;
+        });
+        computedWidth += containerWidth;
+      }
+      if (idx > 0) {
+        computedWidth += 9; // flex gap
+      }
     });
-    computedWidth += extraWidth;
 
     const stableWidth = computedWidth;
     const stableHeight = baseSize + 26;
-    // Asymmetric visual positioning based on our smooth pivot factor
     const Delta_W = stableWidth - W_base_visual;
 
-    let Delta_W_center = 0;
-    if (isHovering && mouseX !== null && !isWindowDraggingActive) {
-      const unscaledMouseX_center = startX + 0.5 * unscaledDockWidth;
-      const centerScales = visibleIconStates.map((state, visibleIndex) => {
-        const unscaledIconCenterX = startX + 13 + visibleIndex * (baseSize + 9) + baseSize / 2;
-        const distance = Math.abs(unscaledMouseX_center - unscaledIconCenterX);
-        return interpolate(distance, inputDistances, outputScales);
-      });
-      let W_center = 26;
-      centerScales.forEach((tScale, idx) => {
-        W_center += baseSize * tScale;
-        if (idx > 0) W_center += 9;
-      });
-      W_center += extraWidth;
-      Delta_W_center = W_center - W_base_visual;
-    }
+    // Symmetrical dock expansion from the center - identical to the native macOS dock.
+    // This keeps both the left and right sides expanding and contracting at the exact same speed,
+    // completely eliminating any "lazy" or laggy movement on either side of the dock.
+    currentDockP = 0.5;
 
-    let dockPTarget = 0.5;
-    if (isHovering && mouseX !== null && !isWindowDraggingActive) {
-      if (Delta_W <= 0.1) {
-        dockPTarget = 0.5;
-      } else if (pTarget <= 0.5) {
-        dockPTarget = 1.0 - 0.5 * (Delta_W_center / Delta_W);
-      } else {
-        dockPTarget = 0.5 * (Delta_W_center / Delta_W);
-      }
-      dockPTarget = Math.max(0, Math.min(1, dockPTarget));
-    }
-
-    currentDockP += (dockPTarget - currentDockP) * smoothness;
-
-    const stableLeft = X_baseLeft_visual - currentDockP * Delta_W;
+    const stableLeft = X_baseLeft_visual - 0.5 * Delta_W;
     const stableTop = window.innerHeight - stableHeight - 20;
 
     window.lastComputedDockWidth = stableWidth;
@@ -16331,7 +16527,7 @@ if (val === 'help') {
     dmBtn.subtitle = initialDark ? "Enabled" : "Disabled";
   }
 
-  // Initial runss
+  // Initial runs
   renderCCGrid();
 
   animate();
