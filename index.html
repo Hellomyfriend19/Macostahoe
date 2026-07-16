@@ -5097,9 +5097,9 @@
           <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
             <div style="display: flex; justify-content: space-between; align-items: center;">
               <span style="font-weight: 500; font-size: 14px;">Dock Blur</span>
-              <span id="dock-blur-value" style="font-size: 13px; opacity: 0.7;">2px</span>
+              <span id="dock-blur-value" style="font-size: 13px; opacity: 0.7;">1px</span>
             </div>
-            <input type="range" id="dock-blur-slider" min="0" max="20" step="1" value="2" style="width: 100%;">
+            <input type="range" id="dock-blur-slider" min="0" max="20" step="1" value="1" style="width: 100%;">
           </div>
           <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
             <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -5122,8 +5122,14 @@
             </div>
             <input type="range" id="dock-rim-opacity-slider" min="0" max="100" step="1" value="50" style="width: 100%;">
           </div>
+          <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-weight: 500; font-size: 14px;">Reflection Resolution</span>
+              <span id="dock-res-value" style="font-size: 13px; opacity: 0.7;">512x512</span>
+            </div>
+            <input type="range" id="dock-res-slider" min="512" max="2048" step="1" value="512" style="width: 100%;">
+          </div>
         </div>
-
         <h3 style="margin: 24px 0 12px 0; font-weight: 600; font-size: 16px;">Apps (Launchpad) Liquid Glass</h3>
         <div style="background: rgba(0, 0, 0, 0.05); padding: 20px; border-radius: 12px; border: 1px solid rgba(0, 0, 0, 0.1);">
           <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
@@ -5871,7 +5877,7 @@
   <span class="dock-tooltip-text" id="remove-tooltip-text">Remove</span>
 </div>
 
-<glass-element id="dock-glass-wrapper" style="position:fixed; bottom:7px; left:50%; transform:translateX(-50%); z-index:2147483647;" radius="25" rim-angle="-59" rim-opacity="0.5" depth="4" blur="2" strength="120" background-color="transparent" chromatic-aberration="1" auto-size>
+<glass-element id="dock-glass-wrapper" style="position:fixed; bottom:7px; left:50%; transform:translateX(-50%); z-index:2147483647;" radius="25" rim-angle="-59" rim-opacity="0.5" downscale="512" depth="4" blur="1" strength="120" background-color="transparent" chromatic-aberration="1" auto-size>
 <div class="dock-container" id="dock" style="margin-bottom:0; background:transparent; backdrop-filter:none; -webkit-backdrop-filter:none; box-shadow:none; border-radius:25px; position:relative;">
   
   <div class="dock-tooltip" id="tooltip" style="position: fixed !important; pointer-events: none; z-index: 2147483647;">
@@ -7525,6 +7531,9 @@ class GlassElement extends HTMLElement {
             vec3 refractedColor = vec3(r_val, g_val, b_val);
 
             vec3 glassColor = mix(refractedColor, u_glassColor, u_frostedOpacity);
+            if (u_isDock > 0.5 && u_glassColor.x > 0.5) {
+              glassColor = ((0.05 * glassColor - 0.1) * glassColor + 0.713) * glassColor + 0.203;
+            }
             float grain = 0.0;
             glassColor += vec3(grain);
 
@@ -7614,19 +7623,10 @@ class GlassElement extends HTMLElement {
 
                 let targetWidth = Math.ceil(rect.width);
         let targetHeight = Math.ceil(rect.height);
-        if (this.downscale && this.downscale > 0) {
-            const scale = this.downscale / Math.max(targetWidth, targetHeight);
-            targetWidth = Math.max(1, Math.ceil(targetWidth * scale));
-            targetHeight = Math.max(1, Math.ceil(targetHeight * scale));
-        }
-                if (canvas.width !== targetWidth || canvas.height !== targetHeight) {
+        if (canvas.width !== targetWidth || canvas.height !== targetHeight) {
             canvas.width = targetWidth;
             canvas.height = targetHeight;
-            if (this.downscale && this.downscale > 0) {
-                canvas.style.imageRendering = 'pixelated';
-            } else {
-                canvas.style.imageRendering = 'auto';
-            }
+            canvas.style.imageRendering = "auto";
         }
 
         gl.viewport(0, 0, canvas.width, canvas.height);
@@ -9806,6 +9806,24 @@ customElements.define('glass-element', GlassElement);
       }
     });
   }
+  const dockResSlider = document.getElementById("dock-res-slider");
+  const dockResValue = document.getElementById("dock-res-value");
+  if (dockResSlider) {
+    if (dockGlassWrapper) {
+      const attr = dockGlassWrapper.getAttribute("downscale");
+      if (attr) {
+        dockResSlider.value = attr;
+        dockResValue.textContent = attr + "x" + attr;
+      }
+    }
+    dockResSlider.addEventListener("input", (e) => {
+      const res = parseInt(e.target.value);
+      dockResValue.textContent = res + "x" + res;
+      if (dockGlassWrapper) {
+        dockGlassWrapper.setAttribute("downscale", res);
+      }
+    });
+  }
 
   const musicDepthSlider = document.getElementById('music-depth-slider');
   const musicDepthValue = document.getElementById('music-depth-value');
@@ -10080,6 +10098,9 @@ customElements.define('glass-element', GlassElement);
 
         // Blending & noise grain
         vec3 glassColor = mix(refractedColor, u_glassColor, u_frostedOpacity);
+            if (u_isDock > 0.5 && u_glassColor.x > 0.5) {
+              glassColor = ((0.05 * glassColor - 0.1) * glassColor + 0.713) * glassColor + 0.203;
+            }
         float grain = 0.0;
         glassColor += vec3(grain);
 
@@ -11132,26 +11153,12 @@ customElements.define('glass-element', GlassElement);
         height: roundedHeight
       };
 
-            let targetWidth = roundedWidth;
+      let targetWidth = roundedWidth;
       let targetHeight = roundedHeight;
-      const localDockGlassWrapper = document.getElementById('dock-glass-wrapper');
-      if (localDockGlassWrapper) {
-          const dsAttr = localDockGlassWrapper.getAttribute('downscale');
-          const downscale = parseInt(dsAttr) || 0;
-          if (downscale > 0) {
-              const scale = downscale / Math.max(targetWidth, targetHeight);
-              targetWidth = Math.max(1, Math.round(targetWidth * scale));
-              targetHeight = Math.max(1, Math.round(targetHeight * scale));
-          }
-      }
-            if (canvas.width !== targetWidth || canvas.height !== targetHeight) {
+      if (canvas.width !== targetWidth || canvas.height !== targetHeight) {
         canvas.width = targetWidth;
         canvas.height = targetHeight;
-        if (localDockGlassWrapper && parseInt(localDockGlassWrapper.getAttribute('downscale')||'0') > 0) {
-            canvas.style.imageRendering = 'pixelated';
-        } else {
-            canvas.style.imageRendering = 'auto';
-        }
+        canvas.style.imageRendering = "auto";
       }
 
       const sw = window.innerWidth;
@@ -11596,7 +11603,8 @@ customElements.define('glass-element', GlassElement);
 
             gl.bindTexture(gl.TEXTURE_2D, bgTexture);
       
-      const dsAttr2 = localDockGlassWrapper ? localDockGlassWrapper.getAttribute('downscale') : null;
+      const localDockGlassWrapper = document.getElementById("dock-glass-wrapper");
+      const dsAttr2 = localDockGlassWrapper ? localDockGlassWrapper.getAttribute("downscale") : null;
       const downscaleRes = dsAttr2 ? parseInt(dsAttr2) : 512;
       
       if (!window._downscaleCanvas) {
